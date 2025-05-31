@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
+import router from '../router'
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
@@ -41,6 +41,9 @@ export const useTabsStore = defineStore('tabs', {
     closeTab(targetPath) {
       const targetIndex = this.tabs.findIndex(tab => tab.path === targetPath)
       
+      // 如果找不到标签，直接返回
+      if (targetIndex === -1) return
+      
       // 如果关闭的是当前激活的标签，则需要激活其他标签
       if (this.activeTab === targetPath) {
         // 优先激活右侧标签，如果没有则激活左侧标签
@@ -64,7 +67,7 @@ export const useTabsStore = defineStore('tabs', {
         this.activeTab = '/dashboard'
       }
       
-      const router = useRouter()
+      // 使用导入的路由实例而不是useRouter()
       router.push(this.activeTab)
       this.saveTabs()
     },
@@ -72,7 +75,6 @@ export const useTabsStore = defineStore('tabs', {
     // 切换标签
     switchTab(path) {
       this.activeTab = path
-      const router = useRouter()
       router.push(path)
       this.saveTabs()
     },
@@ -99,7 +101,6 @@ export const useTabsStore = defineStore('tabs', {
       // 默认激活第一个标签
       if (this.tabs.length > 0) {
         this.activeTab = this.tabs[0].path
-        const router = useRouter()
         router.push(this.activeTab)
       }
       this.saveTabs()
