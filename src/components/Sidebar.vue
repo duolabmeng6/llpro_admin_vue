@@ -113,27 +113,7 @@ const showMenuText = computed(() => props.isOpen)
         @click="toggleSidebar"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            v-if="isOpen"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-          />
-          <path
-            v-else
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 5l7 7-7 7M5 5l7 7-7 7"
-          />
-        </svg>
+        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-6 h-6 flex items-center justify-center"></i>
       </button>
     </div>
     
@@ -155,27 +135,15 @@ const showMenuText = computed(() => props.isOpen)
           ]"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
-          <svg
-            class="h-6 w-6 flex-shrink-0"
-            :class="{ 'mr-3': showMenuText }"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            v-html="menuItem.icon"
-          ></svg>
+          <i :class="[menuItem.icon, { 'mr-3': showMenuText }]" class="h-6 w-6 flex-shrink-0 flex items-center justify-center"></i>
           <span v-if="showMenuText" class="flex-1 truncate">{{ menuItem.title }}</span>
           
           <!-- 展开/收起箭头（仅当有子菜单时显示） -->
-          <svg
+          <i 
             v-if="hasChildren(menuItem) && showMenuText"
-            class="ml-auto h-5 w-5 transform transition-transform duration-200"
+            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-200"
             :class="{ 'rotate-90': isExpanded(menuItem.id) }"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
+          ></i>
         </div>
         
         <!-- 二级菜单 - 展开状态 -->
@@ -195,6 +163,7 @@ const showMenuText = computed(() => props.isOpen)
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
+            <i v-if="childItem.icon" :class="childItem.icon" class="mr-2 w-4 h-4 flex items-center justify-center"></i>
             <span class="truncate">{{ childItem.title }}</span>
           </div>
         </div>
@@ -215,6 +184,7 @@ const showMenuText = computed(() => props.isOpen)
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
+            <i v-if="childItem.icon" :class="childItem.icon" class="mr-2 w-4 h-4 flex items-center justify-center"></i>
             <span class="truncate">{{ childItem.title }}</span>
           </div>
         </div>
