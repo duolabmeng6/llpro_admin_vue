@@ -28,10 +28,10 @@ const logout = async () => {
   <header class="bg-white shadow-sm z-10">
     <div class="px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
       <div class="flex items-center">
-        <button @click="toggleSidebar" class="text-gray-500 hover:text-gray-700">
-          <i class="fas fa-bars h-6 w-6"></i>
+        <button @click="toggleSidebar" class="flex items-center justify-center text-gray-600 hover:text-primary-600 transition-colors duration-200">
+          <i class="fas fa-bars text-xl"></i>
         </button>
-        <h2 class="ml-3 text-lg font-medium text-gray-900">欢迎使用</h2>
+        <h2 class="ml-3 text-lg font-medium bg-gradient-to-r from-primary-600 to-blue-500 bg-clip-text text-transparent">欢迎使用</h2>
       </div>
       
       <div class="flex items-center">

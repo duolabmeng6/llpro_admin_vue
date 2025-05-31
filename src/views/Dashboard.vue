@@ -31,15 +31,15 @@ onMounted(async () => {
 const getIcon = (iconName) => {
   switch (iconName) {
     case 'users':
-      return '<i class="fas fa-users h-6 w-6"></i>'
+      return '<i class="fas fa-users text-xl"></i>'
     case 'user-check':
-      return '<i class="fas fa-user-check h-6 w-6"></i>'
+      return '<i class="fas fa-user-check text-xl"></i>'
     case 'user-x':
-      return '<i class="fas fa-user-times h-6 w-6"></i>'
+      return '<i class="fas fa-user-times text-xl"></i>'
     case 'shield':
-      return '<i class="fas fa-shield-alt h-6 w-6"></i>'
+      return '<i class="fas fa-shield-alt text-xl"></i>'
     default:
-      return '<i class="fas fa-question h-6 w-6"></i>'
+      return '<i class="fas fa-question text-xl"></i>'
   }
 }
 </script>
@@ -57,12 +57,12 @@ const getIcon = (iconName) => {
         <div
           v-for="(item, index) in stats"
           :key="index"
-          class="bg-white overflow-hidden shadow rounded-lg"
+          class="bg-white overflow-hidden shadow-lg rounded-lg border-l-4 border-primary-500 transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px]"
         >
           <div class="p-5">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <div class="p-3 bg-primary-100 text-primary-600 rounded-md" v-html="getIcon(item.icon)"></div>
+                <div class="p-3 bg-gradient-to-br from-primary-50 to-primary-100 text-primary-600 rounded-md flex items-center justify-center" v-html="getIcon(item.icon)"></div>
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
