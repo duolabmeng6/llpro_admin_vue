@@ -35,12 +35,116 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useThemeStore } from '../stores/theme'
+
+const props = defineProps({
+  // 通知标题
+  title: {
+    type: String,
+    default: ''
+  },
+  // 通知内容
+  message: {
+    type: String,
+    default: ''
+  },
+  // 通知类型
+  type: {
+    type: String,
+    default: 'info',
+    validator: (value) => ['info', 'success', 'warning', 'error'].includes(value)
+  },
+  // 通知持续时间（毫秒），设为0则不自动关闭
+  duration: {
+    type: Number,
+    default: 4500
+  },
+  // 是否显示关闭按钮
+  showClose: {
+    type: Boolean,
+    default: true
+  },
+  // 位置
+  position: {
+    type: String,
+    default: 'top-right',
+    validator: (value) => [
+      'top-right', 'top-left', 'bottom-right', 'bottom-left', 'top', 'bottom'
+    ].includes(value)
+  },
+  // 是否显示图标
+  showIcon: {
+    type: Boolean,
+    default: true
+  },
+  // 距离边缘的偏移量
+  offset: {
+    type: Number,
+    default: 16
+  },
+  // z-index
+  zIndex: {
+    type: Number,
+    default: 9999
+  }
+})
+
+const emit = defineEmits(['close'])
 
 const notifications = ref([])
 const defaultDuration = 5000 // 默认显示时间（毫秒）
 const animationInterval = 10 // 进度条动画更新间隔（毫秒）
+
+// 获取主题store
+const themeStore = useThemeStore()
+const currentTheme = computed(() => themeStore.currentTheme)
+
+// 是否显示通知
+const visible = ref(false)
+// 通知ID
+const notificationId = ref(`notification-${Date.now()}`)
+// 计时器ID
+let timer = null
+
+// 通知图标
+const notificationIcon = computed(() => {
+  switch (props.type) {
+    case 'success':
+      return 'fa-solid fa-check-circle';
+    case 'warning':
+      return 'fa-solid fa-exclamation-triangle';
+    case 'error':
+      return 'fa-solid fa-times-circle';
+    case 'info':
+    default:
+      return 'fa-solid fa-info-circle';
+  }
+})
+
+// 计算通知位置样式
+const positionStyle = computed(() => {
+  const style = {
+    zIndex: props.zIndex
+  }
+  
+  if (props.position.includes('top')) {
+    style.top = `${props.offset}px`
+  } else {
+    style.bottom = `${props.offset}px`
+  }
+  
+  if (props.position.includes('right')) {
+    style.right = `${props.offset}px`
+  } else if (props.position.includes('left')) {
+    style.left = `${props.offset}px`
+  } else {
+    style.left = '50%'
+    style.transform = 'translateX(-50%)'
+  }
+  
+  return style
+})
 
 // 添加通知
 const notify = ({ type = 'info', message, duration = defaultDuration }) => {
@@ -93,6 +197,47 @@ const clearAll = () => {
   })
   notifications.value = []
 }
+
+// 显示通知
+const show = () => {
+  visible.value = true
+  
+  // 设置自动关闭
+  if (props.duration > 0) {
+    timer = setTimeout(() => {
+      close()
+    }, props.duration)
+  }
+}
+
+// 关闭通知
+const close = () => {
+  visible.value = false
+  clearTimeout(timer)
+  emit('close', notificationId.value)
+}
+
+// 鼠标进入，暂停计时器
+const onMouseEnter = () => {
+  if (timer) {
+    clearTimeout(timer)
+    timer = null
+  }
+}
+
+// 鼠标离开，恢复计时器
+const onMouseLeave = () => {
+  if (props.duration > 0 && visible.value) {
+    timer = setTimeout(() => {
+      close()
+    }, props.duration)
+  }
+}
+
+// 组件挂载时显示通知
+onMounted(() => {
+  show()
+})
 
 // 组件卸载前清除所有计时器
 onBeforeUnmount(() => {

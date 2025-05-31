@@ -1,10 +1,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useTabsStore } from '../stores/tabs'
+import { useThemeStore } from '../stores/theme'
 
 const tabsStore = useTabsStore()
+const themeStore = useThemeStore()
 const tabs = computed(() => tabsStore.getTabs)
 const activeTab = computed(() => tabsStore.getActiveTab)
+const currentTheme = computed(() => themeStore.currentTheme)
 
 // 切换标签
 const switchTab = (path) => {
@@ -22,7 +25,16 @@ const closeTab = (e, path) => {
 const handleContextMenu = (e, tab) => {
   e.preventDefault()
   const menu = document.createElement('div')
-  menu.className = 'tab-context-menu glass-morphism-light'
+  
+  // 根据当前主题设置右键菜单样式
+  if (currentTheme.value === 'dark') {
+    menu.className = 'tab-context-menu context-menu-dark'
+  } else if (currentTheme.value === 'light') {
+    menu.className = 'tab-context-menu context-menu-light'
+  } else {
+    menu.className = 'tab-context-menu context-menu-cyber'
+  }
+  
   menu.style.position = 'fixed'
   menu.style.top = `${e.clientY}px`
   menu.style.left = `${e.clientX}px`
@@ -30,8 +42,26 @@ const handleContextMenu = (e, tab) => {
   menu.style.padding = '8px 0'
   menu.style.zIndex = '1000'
   menu.style.minWidth = '180px'
-  menu.style.border = '1px solid rgba(255, 255, 255, 0.1)'
-  menu.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.3)'
+  
+  if (currentTheme.value === 'dark') {
+    menu.style.background = 'rgba(15, 23, 42, 0.95)'
+    menu.style.backdropFilter = 'blur(12px)'
+    menu.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+    menu.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.3)'
+    menu.style.color = 'white'
+  } else if (currentTheme.value === 'light') {
+    menu.style.background = 'rgba(255, 255, 255, 0.95)'
+    menu.style.backdropFilter = 'blur(12px)'
+    menu.style.border = '1px solid rgba(0, 0, 0, 0.1)'
+    menu.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+    menu.style.color = '#1e293b'
+  } else {
+    menu.style.background = 'rgba(13, 2, 33, 0.95)'
+    menu.style.backdropFilter = 'blur(12px)'
+    menu.style.border = '1px solid rgba(255, 44, 240, 0.3)'
+    menu.style.boxShadow = '0 0 15px rgba(255, 44, 240, 0.3)'
+    menu.style.color = 'white'
+  }
   
   const createMenuItem = (text, icon, onClick) => {
     const item = document.createElement('div')
@@ -39,7 +69,6 @@ const handleContextMenu = (e, tab) => {
     item.style.padding = '10px 16px'
     item.style.cursor = 'pointer'
     item.style.fontSize = '14px'
-    item.style.color = 'white'
     item.style.display = 'flex'
     item.style.alignItems = 'center'
     item.style.transition = 'all 0.2s ease'
@@ -59,7 +88,13 @@ const handleContextMenu = (e, tab) => {
     
     item.addEventListener('click', onClick)
     item.addEventListener('mouseover', () => {
-      item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+      if (currentTheme.value === 'dark') {
+        item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+      } else if (currentTheme.value === 'light') {
+        item.style.backgroundColor = 'rgba(241, 245, 249, 0.8)'
+      } else {
+        item.style.backgroundColor = 'rgba(255, 44, 240, 0.1)'
+      }
     })
     item.addEventListener('mouseout', () => {
       item.style.backgroundColor = 'transparent'
@@ -114,21 +149,37 @@ const handleContextMenu = (e, tab) => {
 </script>
 
 <template>
-  <div class="tabs-nav glass-morphism-light border-b border-opacity-10 border-white">
+  <div 
+    class="tabs-nav" 
+    :class="{
+      'tabs-nav-dark': currentTheme === 'dark',
+      'tabs-nav-light': currentTheme === 'light',
+      'tabs-nav-cyber': currentTheme === 'cyberpunk'
+    }"
+  >
     <div class="tabs-wrapper overflow-x-auto">
       <div class="tabs-list flex h-full">
         <div
           v-for="tab in tabs"
           :key="tab.path"
           class="tab flex items-center px-4 py-2 cursor-pointer whitespace-nowrap transition-all duration-300"
-          :class="{ 'tab-active': activeTab === tab.path }"
+          :class="[
+            activeTab === tab.path 
+              ? `tab-active-${currentTheme}` 
+              : `tab-inactive-${currentTheme}`
+          ]"
           @click="switchTab(tab.path)"
           @contextmenu="handleContextMenu($event, tab)"
         >
           <span class="tab-title">{{ tab.title }}</span>
           <button
             v-if="tab.closable"
-            class="ml-2 text-gray-400 hover:text-white close-btn"
+            class="ml-2 close-btn"
+            :class="{
+              'close-btn-dark': currentTheme === 'dark',
+              'close-btn-light': currentTheme === 'light',
+              'close-btn-cyber': currentTheme === 'cyberpunk'
+            }"
             @click="closeTab($event, tab.path)"
           >
             <i class="fa-solid fa-xmark w-3 h-3 flex items-center justify-center"></i>
@@ -140,11 +191,31 @@ const handleContextMenu = (e, tab) => {
 </template>
 
 <style scoped>
+/* 基本样式 */
 .tabs-nav {
   height: 42px;
   display: flex;
   align-items: center;
+}
+
+/* 深色主题 */
+.tabs-nav-dark {
   background: rgba(15, 23, 42, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 明亮主题 */
+.tabs-nav-light {
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 赛博朋克主题 */
+.tabs-nav-cyber {
+  background: rgba(13, 2, 33, 0.7);
+  border-bottom: 1px solid rgba(255, 44, 240, 0.3);
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.2);
 }
 
 .tabs-wrapper {
@@ -154,17 +225,46 @@ const handleContextMenu = (e, tab) => {
   scrollbar-width: thin;
 }
 
-.tabs-wrapper::-webkit-scrollbar {
+/* 滚动条样式 - 深色主题 */
+.tabs-nav-dark .tabs-wrapper::-webkit-scrollbar {
   height: 3px;
 }
 
-.tabs-wrapper::-webkit-scrollbar-thumb {
-  background-color: rgba(99, 102, 241, 0.5);
+.tabs-nav-dark .tabs-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.5);
   border-radius: 1.5px;
 }
 
-.tabs-wrapper::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(99, 102, 241, 0.8);
+.tabs-nav-dark .tabs-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 130, 246, 0.8);
+}
+
+/* 滚动条样式 - 明亮主题 */
+.tabs-nav-light .tabs-wrapper::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tabs-nav-light .tabs-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.3);
+  border-radius: 1.5px;
+}
+
+.tabs-nav-light .tabs-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 130, 246, 0.5);
+}
+
+/* 滚动条样式 - 赛博朋克主题 */
+.tabs-nav-cyber .tabs-wrapper::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tabs-nav-cyber .tabs-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 44, 240, 0.5);
+  border-radius: 1.5px;
+}
+
+.tabs-nav-cyber .tabs-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 44, 240, 0.8);
 }
 
 .tabs-list {
@@ -174,10 +274,9 @@ const handleContextMenu = (e, tab) => {
 .tab {
   height: 100%;
   position: relative;
-  color: rgba(255, 255, 255, 0.7);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* 标签底部指示线 */
 .tab::before {
   content: '';
   position: absolute;
@@ -185,27 +284,100 @@ const handleContextMenu = (e, tab) => {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-neon-blue), var(--color-neon-purple));
   transition: width 0.3s ease;
 }
 
-.tab:hover::before {
-  width: 100%;
+/* 深色主题标签 */
+.tab-inactive-dark {
+  color: rgba(255, 255, 255, 0.7);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.tab:hover {
+.tab-inactive-dark::before {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.tab-inactive-dark:hover {
   background: rgba(255, 255, 255, 0.05);
   color: white;
 }
 
-.tab-active {
-  background: rgba(99, 102, 241, 0.15);
+.tab-inactive-dark:hover::before {
+  width: 100%;
+}
+
+.tab-active-dark {
+  background: rgba(59, 130, 246, 0.15);
+  color: white;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tab-active-dark::before {
+  width: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* 明亮主题标签 */
+.tab-inactive-light {
+  color: #64748b;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tab-inactive-light::before {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+}
+
+.tab-inactive-light:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+}
+
+.tab-inactive-light:hover::before {
+  width: 100%;
+}
+
+.tab-active-light {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1e293b;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tab-active-light::before {
+  width: 100%;
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 赛博朋克主题标签 */
+.tab-inactive-cyberpunk {
+  color: rgba(255, 255, 255, 0.7);
+  border-right: 1px solid rgba(255, 44, 240, 0.1);
+}
+
+.tab-inactive-cyberpunk::before {
+  background: linear-gradient(90deg, #ff2cf0, #00eeff);
+}
+
+.tab-inactive-cyberpunk:hover {
+  background: rgba(255, 44, 240, 0.1);
   color: white;
 }
 
-.tab-active::before {
+.tab-inactive-cyberpunk:hover::before {
   width: 100%;
-  box-shadow: 0 0 8px var(--color-neon-blue);
+}
+
+.tab-active-cyberpunk {
+  background: rgba(255, 44, 240, 0.15);
+  color: white;
+  border-right: 1px solid rgba(255, 44, 240, 0.1);
+}
+
+.tab-active-cyberpunk::before {
+  width: 100%;
+  background: linear-gradient(90deg, #ff2cf0, #00eeff);
+  box-shadow: 0 0 8px rgba(255, 44, 240, 0.5);
 }
 
 .tab-title {
@@ -213,6 +385,7 @@ const handleContextMenu = (e, tab) => {
   z-index: 1;
 }
 
+/* 关闭按钮 */
 .close-btn {
   opacity: 0.7;
   transition: all 0.2s ease;
@@ -224,8 +397,35 @@ const handleContextMenu = (e, tab) => {
   justify-content: center;
 }
 
-.close-btn:hover {
+.close-btn-dark {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.close-btn-dark:hover {
   background: rgba(255, 255, 255, 0.2);
+  color: white;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.close-btn-light {
+  color: #64748b;
+}
+
+.close-btn-light:hover {
+  background: rgba(100, 116, 139, 0.2);
+  color: #1e293b;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.close-btn-cyber {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.close-btn-cyber:hover {
+  background: rgba(255, 44, 240, 0.3);
+  color: white;
   opacity: 1;
   transform: scale(1.1);
 }

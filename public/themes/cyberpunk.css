@@ -1,336 +1,373 @@
-/* 赛博朋克主题 - Cyberpunk Theme */
+/**
+ * 赛博朋克风格主题
+ */
 
-/* 颜色变量 */
 :root {
-  /* 基础颜色 */
-  --color-gray-50: oklch(0.984 0.003 247.858);
-  --color-gray-100: oklch(0.968 0.007 247.896);
-  --color-gray-200: oklch(0.929 0.013 255.508);
-  --color-gray-300: oklch(0.869 0.022 252.894);
-  --color-gray-400: oklch(0.704 0.04 256.788);
-  --color-gray-500: oklch(0.554 0.046 257.417);
-  --color-gray-600: oklch(0.446 0.043 257.281);
-  --color-gray-700: oklch(0.372 0.044 257.287);
-  --color-gray-800: oklch(0.279 0.041 260.031);
-  --color-gray-900: oklch(0.208 0.042 265.755);
-  --color-gray-950: oklch(0.129 0.042 264.695);
-
-  /* 赛博朋克主色调 - 霓虹粉 */
-  --color-primary-50: oklch(0.98 0.02 350);
-  --color-primary-100: oklch(0.95 0.05 350);
-  --color-primary-200: oklch(0.9 0.1 350);
-  --color-primary-300: oklch(0.85 0.15 350);
-  --color-primary-400: oklch(0.8 0.2 350);
-  --color-primary-500: oklch(0.75 0.25 350);
-  --color-primary-600: oklch(0.7 0.3 350);
-  --color-primary-700: oklch(0.65 0.25 350);
-  --color-primary-800: oklch(0.6 0.2 350);
-  --color-primary-900: oklch(0.55 0.15 350);
-  --color-primary-950: oklch(0.5 0.1 350);
-
-  /* 赛博朋克次色调 - 霓虹蓝 */
-  --color-secondary-50: oklch(0.98 0.02 220);
-  --color-secondary-100: oklch(0.95 0.05 220);
-  --color-secondary-200: oklch(0.9 0.1 220);
-  --color-secondary-300: oklch(0.85 0.15 220);
-  --color-secondary-400: oklch(0.8 0.2 220);
-  --color-secondary-500: oklch(0.75 0.25 220);
-  --color-secondary-600: oklch(0.7 0.3 220);
-  --color-secondary-700: oklch(0.65 0.25 220);
-  --color-secondary-800: oklch(0.6 0.2 220);
-  --color-secondary-900: oklch(0.55 0.15 220);
-  --color-secondary-950: oklch(0.5 0.1 220);
+  /* 主色调 */
+  --color-primary: #ff2cf0;
+  --color-primary-light: #ff73f4;
+  --color-primary-dark: #c300b7;
   
-  /* 赛博朋克背景色 */
-  --color-cyber-bg: oklch(0.1 0.01 260);
-  --color-cyber-surface: oklch(0.15 0.01 260);
-  --color-cyber-border: oklch(0.2 0.05 260);
+  /* 背景色 */
+  --color-cyber-bg: #0d0221;
+  --color-cyber-surface: #1c0636;
+  --color-cyber-card: rgba(20, 3, 54, 0.7);
   
-  /* 霓虹色调 */
-  --color-neon-pink: oklch(0.7 0.3 350);
-  --color-neon-blue: oklch(0.7 0.3 220);
-  --color-neon-yellow: oklch(0.85 0.3 100);
-  --color-neon-green: oklch(0.8 0.3 150);
+  /* 霓虹色彩 */
+  --color-neon-pink: #ff2cf0;
+  --color-neon-blue: #00eeff;
+  --color-neon-green: #00ff8f;
+  --color-neon-yellow: #ffff00;
+  
+  /* 文本颜色 */
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-disabled: rgba(255, 255, 255, 0.4);
+  
+  /* 边框颜色 */
+  --color-border: rgba(255, 44, 240, 0.3);
+  --color-border-light: rgba(255, 44, 240, 0.1);
+  --color-border-focus: rgba(255, 44, 240, 0.7);
+  
+  /* 阴影 */
+  --shadow-sm: 0 0 5px rgba(255, 44, 240, 0.3);
+  --shadow-md: 0 0 15px rgba(255, 44, 240, 0.4);
+  --shadow-lg: 0 0 25px rgba(255, 44, 240, 0.5);
+  --shadow-focus: 0 0 0 3px rgba(255, 44, 240, 0.3);
+  
+  /* 表格 */
+  --color-table-header: rgba(20, 3, 54, 0.9);
+  --color-table-row: rgba(28, 6, 54, 0.5);
+  --color-table-row-hover: rgba(255, 44, 240, 0.15);
+  
+  /* 状态颜色 */
+  --color-success: #00ff8f;
+  --color-warning: #ffff00;
+  --color-error: #ff1644;
+  --color-info: #00eeff;
 }
 
-/* 霓虹发光效果 */
-.neon-glow-pink {
-  box-shadow: 0 0 10px 2px var(--color-neon-pink),
-              0 0 20px 4px var(--color-neon-pink);
+/* 背景样式 */
+body {
+  background-color: var(--color-cyber-bg);
+  background-image: 
+    linear-gradient(0deg, rgba(28, 6, 54, 0.7) 0%, transparent 70%),
+    radial-gradient(circle at 50% 0%, rgba(255, 44, 240, 0.1), transparent 40%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 5px);
+  background-size: 100% 100%, 100% 100%, 10px 10px;
+  color: var(--color-text-primary);
 }
 
-.neon-glow-blue {
-  box-shadow: 0 0 10px 2px var(--color-neon-blue),
-              0 0 20px 4px var(--color-neon-blue);
+/* 滚动条样式 */
+::-webkit-scrollbar-track {
+  background: rgba(13, 2, 33, 0.5);
+  box-shadow: inset 0 0 3px rgba(255, 44, 240, 0.3);
 }
 
-.neon-glow-yellow {
-  box-shadow: 0 0 10px 2px var(--color-neon-yellow),
-              0 0 20px 4px var(--color-neon-yellow);
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ff2cf0, #00eeff);
+  border-radius: 3px;
 }
 
-.neon-glow-green {
-  box-shadow: 0 0 10px 2px var(--color-neon-green),
-              0 0 20px 4px var(--color-neon-green);
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #ff73f4, #73f5ff);
 }
 
-/* 故障效果 */
-.glitch-text {
+/* 卡片样式 */
+.card,
+.bg-white,
+[class*="bg-white"],
+[class*="bg-gray-50"],
+[class*="bg-gray-100"] {
+  background-color: var(--color-cyber-card) !important;
+  color: var(--color-text-primary) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-md) !important;
+  border-radius: 0.25rem;
   position: relative;
-  animation: glitch 1s linear infinite;
+  overflow: hidden;
 }
 
-@keyframes glitch {
-  2%, 64% {
-    transform: translate(2px, 0) skew(0deg);
-  }
-  4%, 60% {
-    transform: translate(-2px, 0) skew(0deg);
-  }
-  62% {
-    transform: translate(0, 0) skew(5deg);
-  }
+.card::before,
+.bg-white::before,
+[class*="bg-white"]::before,
+[class*="bg-gray-50"]::before,
+[class*="bg-gray-100"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-neon-pink), transparent);
 }
 
-.glitch-text:before,
-.glitch-text:after {
-  content: attr(data-text);
+/* 强调卡片 */
+.card.accent,
+.card-accent {
+  border-left: 3px solid var(--color-neon-pink);
+}
+
+/* 文本颜色 */
+[class*="text-gray-900"],
+[class*="text-gray-800"],
+[class*="text-gray-700"] {
+  color: var(--color-text-primary) !important;
+}
+
+[class*="text-gray-600"],
+[class*="text-gray-500"],
+[class*="text-gray-400"] {
+  color: var(--color-text-secondary) !important;
+}
+
+/* 表单元素 */
+input,
+select,
+textarea {
+  background-color: rgba(13, 2, 33, 0.7) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 0 5px rgba(255, 44, 240, 0.2);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-neon-pink) !important;
+  box-shadow: var(--shadow-focus), inset 0 0 5px rgba(255, 44, 240, 0.3) !important;
+  outline: none;
+}
+
+/* 按钮样式 */
+button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(28, 6, 54, 0.7) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+button:hover:not(:disabled):not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(28, 6, 54, 0.9) !important;
+  border-color: var(--color-neon-pink) !important;
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.5);
+}
+
+/* 表格样式 */
+table {
+  background-color: transparent !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.2);
+}
+
+table th {
+  background-color: var(--color-table-header) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--color-neon-pink);
+  text-shadow: 0 0 5px rgba(255, 44, 240, 0.7);
+}
+
+table td {
+  background-color: var(--color-table-row) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border-light) !important;
+  padding: 0.75rem 1rem;
+}
+
+table tr:hover td {
+  background-color: var(--color-table-row-hover) !important;
+}
+
+/* 链接样式 */
+a:not([class]) {
+  color: var(--color-neon-blue);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 5px rgba(0, 238, 255, 0.5);
+}
+
+a:not([class]):hover {
+  color: var(--color-neon-pink);
+  text-decoration: none;
+  text-shadow: 0 0 8px rgba(255, 44, 240, 0.7);
+}
+
+/* 导航栏样式 */
+.navbar {
+  background-color: rgba(13, 2, 33, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+}
+
+/* 侧边栏样式 */
+.sidebar {
+  background-color: rgba(13, 2, 33, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid var(--color-border);
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+}
+
+/* 分割线 */
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-neon-pink), transparent);
+  opacity: 0.5;
+  margin: 1.5rem 0;
+}
+
+/* 霓虹文本 */
+.neon-text-pink {
+  color: var(--color-neon-pink);
+  text-shadow: 0 0 5px var(--color-neon-pink), 0 0 10px var(--color-neon-pink);
+}
+
+.neon-text-blue {
+  color: var(--color-neon-blue);
+  text-shadow: 0 0 5px var(--color-neon-blue), 0 0 10px var(--color-neon-blue);
+}
+
+.neon-text-green {
+  color: var(--color-neon-green);
+  text-shadow: 0 0 5px var(--color-neon-green), 0 0 10px var(--color-neon-green);
+}
+
+/* 霓虹边框 */
+.neon-border-pink {
+  border: 1px solid var(--color-neon-pink);
+  box-shadow: 0 0 10px var(--color-neon-pink);
+}
+
+.neon-border-blue {
+  border: 1px solid var(--color-neon-blue);
+  box-shadow: 0 0 10px var(--color-neon-blue);
+}
+
+.neon-border-green {
+  border: 1px solid var(--color-neon-green);
+  box-shadow: 0 0 10px var(--color-neon-green);
+}
+
+/* 赛博朋克特定元素 */
+.cyber-panel {
+  position: relative;
+  background-color: rgba(28, 6, 54, 0.7);
+  border: 1px solid var(--color-neon-pink);
+  border-radius: 0.25rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+  overflow: hidden;
+}
+
+.cyber-panel::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background: 
+    linear-gradient(90deg, transparent 50%, rgba(255, 44, 240, 0.1) 50%),
+    linear-gradient(rgba(0, 238, 255, 0.05) 50%, transparent 50%);
+  background-size: 4px 4px;
+  pointer-events: none;
 }
 
-.glitch-text:before {
-  left: 2px;
-  text-shadow: -2px 0 var(--color-neon-blue);
-  clip: rect(44px, 450px, 56px, 0);
-  animation: glitch-anim 5s infinite linear alternate-reverse;
+.cyber-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--color-neon-pink), 
+    var(--color-neon-blue), 
+    var(--color-neon-green), 
+    var(--color-neon-yellow)
+  );
 }
 
-.glitch-text:after {
-  left: -2px;
-  text-shadow: -2px 0 var(--color-neon-pink);
-  clip: rect(44px, 450px, 56px, 0);
-  animation: glitch-anim2 5s infinite linear alternate-reverse;
-}
-
-@keyframes glitch-anim {
-  0% {
-    clip: rect(31px, 9999px, 94px, 0);
-  }
-  5% {
-    clip: rect(70px, 9999px, 71px, 0);
-  }
-  10% {
-    clip: rect(29px, 9999px, 83px, 0);
-  }
-  15% {
-    clip: rect(50px, 9999px, 5px, 0);
-  }
-  20% {
-    clip: rect(33px, 9999px, 92px, 0);
-  }
-  25% {
-    clip: rect(13px, 9999px, 17px, 0);
-  }
-  30% {
-    clip: rect(37px, 9999px, 56px, 0);
-  }
-  35% {
-    clip: rect(47px, 9999px, 4px, 0);
-  }
-  40% {
-    clip: rect(89px, 9999px, 75px, 0);
-  }
-  45% {
-    clip: rect(6px, 9999px, 34px, 0);
-  }
-  50% {
-    clip: rect(82px, 9999px, 67px, 0);
-  }
-  55% {
-    clip: rect(29px, 9999px, 46px, 0);
-  }
-  60% {
-    clip: rect(65px, 9999px, 64px, 0);
-  }
-  65% {
-    clip: rect(93px, 9999px, 3px, 0);
-  }
-  70% {
-    clip: rect(99px, 9999px, 69px, 0);
-  }
-  75% {
-    clip: rect(76px, 9999px, 67px, 0);
-  }
-  80% {
-    clip: rect(18px, 9999px, 67px, 0);
-  }
-  85% {
-    clip: rect(69px, 9999px, 92px, 0);
-  }
-  90% {
-    clip: rect(10px, 9999px, 28px, 0);
-  }
-  95% {
-    clip: rect(47px, 9999px, 47px, 0);
-  }
-  100% {
-    clip: rect(79px, 9999px, 70px, 0);
-  }
-}
-
-@keyframes glitch-anim2 {
-  0% {
-    clip: rect(65px, 9999px, 91px, 0);
-  }
-  5% {
-    clip: rect(93px, 9999px, 68px, 0);
-  }
-  10% {
-    clip: rect(10px, 9999px, 60px, 0);
-  }
-  15% {
-    clip: rect(37px, 9999px, 19px, 0);
-  }
-  20% {
-    clip: rect(28px, 9999px, 57px, 0);
-  }
-  25% {
-    clip: rect(89px, 9999px, 38px, 0);
-  }
-  30% {
-    clip: rect(52px, 9999px, 67px, 0);
-  }
-  35% {
-    clip: rect(74px, 9999px, 96px, 0);
-  }
-  40% {
-    clip: rect(46px, 9999px, 65px, 0);
-  }
-  45% {
-    clip: rect(2px, 9999px, 96px, 0);
-  }
-  50% {
-    clip: rect(54px, 9999px, 43px, 0);
-  }
-  55% {
-    clip: rect(88px, 9999px, 40px, 0);
-  }
-  60% {
-    clip: rect(31px, 9999px, 88px, 0);
-  }
-  65% {
-    clip: rect(62px, 9999px, 82px, 0);
-  }
-  70% {
-    clip: rect(49px, 9999px, 46px, 0);
-  }
-  75% {
-    clip: rect(7px, 9999px, 45px, 0);
-  }
-  80% {
-    clip: rect(40px, 9999px, 95px, 0);
-  }
-  85% {
-    clip: rect(98px, 9999px, 36px, 0);
-  }
-  90% {
-    clip: rect(86px, 9999px, 24px, 0);
-  }
-  95% {
-    clip: rect(1px, 9999px, 69px, 0);
-  }
-  100% {
-    clip: rect(44px, 9999px, 58px, 0);
-  }
-}
-
-/* 全局赛博朋克主题样式覆盖 */
-body {
-  background-color: var(--color-cyber-bg);
-  color: white;
-  background-image: 
-    linear-gradient(0deg, rgba(20, 20, 30, 0.9) 0%, transparent 100%),
-    repeating-linear-gradient(45deg, rgba(var(--color-neon-blue), 0.05) 0, rgba(var(--color-neon-blue), 0.05) 1px, transparent 1px, transparent 10px);
-}
-
-/* 卡片样式覆盖 */
-.card, 
-.bg-white, 
-[class*="bg-white"], 
-[class*="bg-gray-50"], 
-[class*="bg-gray-100"] {
-  background-color: rgba(20, 20, 30, 0.7) !important;
-  color: white !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--color-neon-pink);
-  box-shadow: 0 0 10px rgba(var(--color-neon-pink), 0.3) !important;
-}
-
-/* 文本颜色覆盖 */
-[class*="text-gray-900"], 
-[class*="text-gray-800"], 
-[class*="text-gray-700"] {
-  color: rgba(255, 255, 255, 0.95) !important;
-}
-
-[class*="text-gray-600"], 
-[class*="text-gray-500"], 
-[class*="text-gray-400"] {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* 表单元素样式覆盖 */
-input, 
-select, 
-textarea {
-  background-color: rgba(20, 20, 30, 0.7) !important;
-  color: white !important;
-  border-color: var(--color-neon-blue) !important;
-}
-
-input:focus, 
-select:focus, 
-textarea:focus {
-  border-color: var(--color-neon-pink) !important;
-  box-shadow: 0 0 0 2px rgba(var(--color-neon-pink), 0.25) !important;
-}
-
-/* 按钮样式覆盖 */
-button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
-  background-color: rgba(20, 20, 30, 0.7) !important;
-  color: var(--color-neon-blue) !important;
-  border-color: var(--color-neon-blue) !important;
-  text-shadow: 0 0 5px var(--color-neon-blue);
-}
-
-button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]):hover {
-  background-color: var(--color-neon-blue) !important;
-  color: black !important;
-  box-shadow: 0 0 10px var(--color-neon-blue);
-}
-
-/* 表格样式覆盖 */
-table {
+/* 按钮样式 */
+.cyber-btn {
   background-color: transparent !important;
-}
-
-table th {
-  background-color: rgba(20, 20, 30, 0.8) !important;
   color: var(--color-neon-pink) !important;
-  border-bottom: 2px solid var(--color-neon-pink) !important;
+  border: 1px solid var(--color-neon-pink) !important;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
+  text-shadow: 0 0 5px rgba(255, 44, 240, 0.7);
 }
 
-table td {
-  background-color: rgba(20, 20, 30, 0.3) !important;
-  color: white !important;
-  border-color: rgba(var(--color-neon-blue), 0.3) !important;
+.cyber-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 44, 240, 0.3), transparent);
+  transition: all 0.5s ease;
+  z-index: -1;
 }
 
-table tr:hover td {
-  background-color: rgba(var(--color-neon-pink), 0.15) !important;
+.cyber-btn:hover::before {
+  left: 100%;
+}
+
+.cyber-btn:hover {
+  background-color: rgba(255, 44, 240, 0.1) !important;
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.5);
+}
+
+/* 故障效果 */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch-text {
+  position: relative;
+  animation: glitch 0.5s infinite;
+  animation-timing-function: steps(2);
+  animation-play-state: paused;
+}
+
+.glitch-text:hover {
+  animation-play-state: running;
+}
+
+/* 赛博朋克模式特定样式 */
+.cyber-mode-only {
+  display: block;
+}
+
+.not-cyber-mode {
+  display: none;
 } 

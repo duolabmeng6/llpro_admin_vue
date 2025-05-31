@@ -1,0 +1,604 @@
+/**
+ * 表单元素的主题样式
+ * 包含输入框、选择框、复选框、单选按钮等的主题适配
+ */
+
+/* ====== 共享表单动画和过渡效果 ====== */
+:root {
+  --form-transition-duration: 0.3s;
+  --form-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --form-focus-scale: 1.01;
+  --form-hover-brightness: 1.05;
+  --form-disabled-opacity: 0.6;
+}
+
+/* 表单控件共享样式 */
+.form-control,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  transition: all var(--form-transition-duration) var(--form-transition-timing);
+  will-change: transform, box-shadow, border-color;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* 表单元素交互状态动画 */
+.form-control:hover:not(:disabled):not(:focus),
+input:hover:not(:disabled):not(:focus),
+textarea:hover:not(:disabled):not(:focus),
+select:hover:not(:disabled):not(:focus) {
+  filter: brightness(var(--form-hover-brightness));
+}
+
+.form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  transform: scale(var(--form-focus-scale));
+  outline: none;
+}
+
+/* 禁用状态共享样式 */
+.form-control:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: var(--form-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* 复选框和单选按钮共享样式 */
+.form-checkbox input[type="checkbox"],
+.form-radio input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all var(--form-transition-duration) var(--form-transition-timing);
+  position: relative;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+/* 复选框和单选按钮悬停状态 */
+.form-checkbox:hover input[type="checkbox"]:not(:disabled),
+.form-radio:hover input[type="radio"]:not(:disabled) {
+  transform: scale(1.1);
+}
+
+/* 复选框和单选按钮选中过渡动画 */
+@keyframes checkbox-check {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes radio-check {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.form-checkbox input[type="checkbox"]:checked::before,
+.form-radio input[type="radio"]:checked::before {
+  animation: checkbox-check 0.2s ease-in-out forwards;
+}
+
+.form-radio input[type="radio"]:checked::before {
+  animation: radio-check 0.2s ease-in-out forwards;
+}
+
+/* ============= 深色主题表单元素 ============= */
+.dark .form-control,
+.dark input[type="text"],
+.dark input[type="password"],
+.dark input[type="email"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark textarea,
+.dark select {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.dark .form-control:focus,
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: rgba(59, 130, 246, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+}
+
+.dark .form-control:disabled,
+.dark input:disabled,
+.dark textarea:disabled,
+.dark select:disabled {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .form-control::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 复选框和单选按钮 */
+.dark .form-checkbox,
+.dark .form-radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dark .form-checkbox input[type="checkbox"],
+.dark .form-radio input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .form-checkbox input[type="checkbox"] {
+  border-radius: 0.25rem;
+}
+
+.dark .form-radio input[type="radio"] {
+  border-radius: 50%;
+}
+
+.dark .form-checkbox input[type="checkbox"]:checked,
+.dark .form-radio input[type="radio"]:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.dark .form-checkbox input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+}
+
+.dark .form-radio input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.dark .form-checkbox input[type="checkbox"]:focus,
+.dark .form-radio input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* 标签 */
+.dark .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 必填标记 */
+.dark .form-required:after {
+  content: "*";
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+/* 表单错误状态 */
+.dark .form-control.error,
+.dark input.error,
+.dark textarea.error,
+.dark select.error {
+  border-color: #ef4444 !important;
+}
+
+.dark .form-error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* 表单组 */
+.dark .form-group {
+  margin-bottom: 1rem;
+}
+
+/* 表单内联布局 */
+.dark .form-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dark .form-inline .form-group {
+  margin-right: 1rem;
+}
+
+/* ============= 明亮主题表单元素 ============= */
+.light .form-control,
+.light input[type="text"],
+.light input[type="password"],
+.light input[type="email"],
+.light input[type="number"],
+.light input[type="search"],
+.light input[type="tel"],
+.light input[type="url"],
+.light input[type="date"],
+.light input[type="time"],
+.light textarea,
+.light select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.light .form-control:focus,
+.light input:focus,
+.light textarea:focus,
+.light select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+.light .form-control:disabled,
+.light input:disabled,
+.light textarea:disabled,
+.light select:disabled {
+  background-color: #f8fafc !important;
+  color: #94a3b8 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light .form-control::placeholder,
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* 复选框和单选按钮 */
+.light .form-checkbox,
+.light .form-radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.light .form-checkbox input[type="checkbox"],
+.light .form-radio input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.light .form-checkbox input[type="checkbox"] {
+  border-radius: 0.25rem;
+}
+
+.light .form-radio input[type="radio"] {
+  border-radius: 50%;
+}
+
+.light .form-checkbox input[type="checkbox"]:checked,
+.light .form-radio input[type="radio"]:checked {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.light .form-checkbox input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+}
+
+.light .form-radio input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.light .form-checkbox input[type="checkbox"]:focus,
+.light .form-radio input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* 标签 */
+.light .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* 必填标记 */
+.light .form-required:after {
+  content: "*";
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+/* 表单错误状态 */
+.light .form-control.error,
+.light input.error,
+.light textarea.error,
+.light select.error {
+  border-color: #ef4444 !important;
+}
+
+.light .form-error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* 表单组 */
+.light .form-group {
+  margin-bottom: 1rem;
+}
+
+/* 表单内联布局 */
+.light .form-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.light .form-inline .form-group {
+  margin-right: 1rem;
+}
+
+/* ============= 赛博朋克主题表单元素 ============= */
+.cyberpunk .form-control,
+.cyberpunk input[type="text"],
+.cyberpunk input[type="password"],
+.cyberpunk input[type="email"],
+.cyberpunk input[type="number"],
+.cyberpunk input[type="search"],
+.cyberpunk input[type="tel"],
+.cyberpunk input[type="url"],
+.cyberpunk input[type="date"],
+.cyberpunk input[type="time"],
+.cyberpunk textarea,
+.cyberpunk select {
+  --neon-glow-color: rgba(255, 44, 240, 0.3);
+  background-color: rgba(13, 2, 33, 0.7) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 44, 240, 0.3) !important;
+  box-shadow: 0 0 5px var(--neon-glow-color);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.cyberpunk .form-control:focus,
+.cyberpunk input:focus,
+.cyberpunk textarea:focus,
+.cyberpunk select:focus {
+  border-color: rgba(255, 44, 240, 0.8) !important;
+  box-shadow: 0 0 8px rgba(255, 44, 240, 0.5), 0 0 15px rgba(255, 44, 240, 0.3) !important;
+  transform: scale(1.02);
+}
+
+.cyberpunk .form-control:hover:not(:disabled):not(:focus),
+.cyberpunk input:hover:not(:disabled):not(:focus),
+.cyberpunk textarea:hover:not(:disabled):not(:focus),
+.cyberpunk select:hover:not(:disabled):not(:focus) {
+  box-shadow: 0 0 8px rgba(255, 44, 240, 0.4);
+  border-color: rgba(255, 44, 240, 0.5) !important;
+}
+
+.cyberpunk .form-control:disabled,
+.cyberpunk input:disabled,
+.cyberpunk textarea:disabled,
+.cyberpunk select:disabled {
+  background-color: rgba(13, 2, 33, 0.4) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 44, 240, 0.1) !important;
+  box-shadow: none;
+}
+
+.cyberpunk .form-control::placeholder,
+.cyberpunk input::placeholder,
+.cyberpunk textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 2px rgba(255, 44, 240, 0.5);
+}
+
+/* 复选框和单选按钮 */
+.cyberpunk .form-checkbox,
+.cyberpunk .form-radio {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cyberpunk .form-checkbox input[type="checkbox"],
+.cyberpunk .form-radio input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: rgba(13, 2, 33, 0.7);
+  border: 1px solid rgba(255, 44, 240, 0.4);
+  box-shadow: 0 0 4px rgba(255, 44, 240, 0.3);
+}
+
+.cyberpunk .form-checkbox input[type="checkbox"] {
+  border-radius: 0.2rem;
+}
+
+.cyberpunk .form-radio input[type="radio"] {
+  border-radius: 50%;
+}
+
+.cyberpunk .form-checkbox input[type="checkbox"]:checked,
+.cyberpunk .form-radio input[type="radio"]:checked {
+  background-color: rgba(255, 44, 240, 0.8);
+  border-color: rgba(255, 44, 240, 0.8);
+  box-shadow: 0 0 8px rgba(255, 44, 240, 0.5);
+}
+
+.cyberpunk .form-checkbox input[type="checkbox"]:checked::before {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.cyberpunk .form-radio input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 4px white;
+}
+
+.cyberpunk .form-checkbox input[type="checkbox"]:focus,
+.cyberpunk .form-radio input[type="radio"]:focus {
+  box-shadow: 0 0 0 2px rgba(255, 44, 240, 0.4), 0 0 8px rgba(255, 44, 240, 0.3);
+}
+
+/* 标签 */
+.cyberpunk .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 4px rgba(255, 44, 240, 0.5);
+  letter-spacing: 0.5px;
+}
+
+/* 必填标记 */
+.cyberpunk .form-required:after {
+  content: "*";
+  color: #ff2cf0;
+  margin-left: 0.25rem;
+  text-shadow: 0 0 4px rgba(255, 44, 240, 0.8);
+}
+
+/* 表单错误状态 */
+.cyberpunk .form-control.error,
+.cyberpunk input.error,
+.cyberpunk textarea.error,
+.cyberpunk select.error {
+  border-color: #ff4d4d !important;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.5) !important;
+}
+
+.cyberpunk .form-error-message {
+  color: #ff4d4d;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  text-shadow: 0 0 4px rgba(255, 77, 77, 0.5);
+}
+
+/* 表单组 */
+.cyberpunk .form-group {
+  margin-bottom: 1.25rem;
+}
+
+/* 表单内联布局 */
+.cyberpunk .form-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cyberpunk .form-inline .form-group {
+  margin-right: 1.25rem;
+}
+
+/* 赛博朋克特有的霓虹表单容器 */
+.cyberpunk .form-neon {
+  position: relative;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.cyberpunk .form-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.5rem;
+  padding: 2px;
+  background: linear-gradient(45deg, #ff2cf0, #00eeff, #ff2cf0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.5);
+  animation: neon-glow 3s linear infinite;
+}
+
+/* 霓虹表单中的输入框 */
+.cyberpunk .form-neon .form-control,
+.cyberpunk .form-neon input,
+.cyberpunk .form-neon textarea,
+.cyberpunk .form-neon select {
+  background-color: rgba(13, 2, 33, 0.85) !important;
+}
+
+/* 在主题过渡时的表单波浪动画 */
+.theme-transition .form-group:nth-child(1) { transition-delay: calc(var(--theme-transition-delay-unit) * 1); }
+.theme-transition .form-group:nth-child(2) { transition-delay: calc(var(--theme-transition-delay-unit) * 2); }
+.theme-transition .form-group:nth-child(3) { transition-delay: calc(var(--theme-transition-delay-unit) * 3); }
+.theme-transition .form-group:nth-child(4) { transition-delay: calc(var(--theme-transition-delay-unit) * 4); }
+.theme-transition .form-group:nth-child(5) { transition-delay: calc(var(--theme-transition-delay-unit) * 5); }
+.theme-transition .form-group:nth-child(6) { transition-delay: calc(var(--theme-transition-delay-unit) * 6); }
+.theme-transition .form-group:nth-child(7) { transition-delay: calc(var(--theme-transition-delay-unit) * 7); }
+.theme-transition .form-group:nth-child(8) { transition-delay: calc(var(--theme-transition-delay-unit) * 8); }
+.theme-transition .form-group:nth-child(9) { transition-delay: calc(var(--theme-transition-delay-unit) * 9); }
+.theme-transition .form-group:nth-child(10) { transition-delay: calc(var(--theme-transition-delay-unit) * 10); } 

@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore } from '../stores/tabs'
+import { useThemeStore } from '../stores/theme'
 import { menuConfig } from '../config/menu'
 
 const props = defineProps({
@@ -15,6 +16,10 @@ const emit = defineEmits(['toggle'])
 const router = useRouter()
 const route = useRoute()
 const tabsStore = useTabsStore()
+const themeStore = useThemeStore()
+
+// 当前主题
+const currentTheme = computed(() => themeStore.currentTheme)
 
 // 菜单展开状态
 const expandedMenus = ref({})
@@ -103,18 +108,33 @@ const showMenuText = computed(() => props.isOpen)
 
 <template>
   <aside
-    class="glass-morphism text-white flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20 sidebar-bg"
-    :class="[isOpen ? 'w-64' : 'w-16']"
+    class="sidebar-container flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20"
+    :class="[
+      isOpen ? 'w-64' : 'w-16',
+      currentTheme === 'dark' ? 'sidebar-dark' :
+      currentTheme === 'light' ? 'sidebar-light' :
+      'sidebar-cyber'
+    ]"
   >
-    <div class="p-4 flex items-center justify-between border-b border-opacity-20 border-white">
+    <div class="p-4 flex items-center justify-between sidebar-header">
       <h1 
-        class="text-xl font-bold truncate bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent" 
         v-if="showMenuText"
+        class="text-xl font-bold truncate sidebar-title"
+        :class="{
+          'sidebar-title-dark': currentTheme === 'dark',
+          'sidebar-title-light': currentTheme === 'light',
+          'sidebar-title-cyber': currentTheme === 'cyberpunk'
+        }"
       >
         LL Pro 系统
       </h1>
       <button
-        class="p-2 rounded-md hover:text-neon-blue transition-colors duration-300 ml-auto"
+        class="p-2 rounded-md sidebar-toggle-btn transition-colors duration-300 ml-auto"
+        :class="{
+          'sidebar-toggle-dark': currentTheme === 'dark',
+          'sidebar-toggle-light': currentTheme === 'light',
+          'sidebar-toggle-cyber': currentTheme === 'cyberpunk'
+        }"
         @click="toggleSidebar"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
@@ -135,8 +155,8 @@ const showMenuText = computed(() => props.isOpen)
           class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
           :class="[
             isMenuActive(menuItem) 
-              ? 'menu-active' 
-              : 'text-gray-300 hover:text-white'
+              ? `menu-active-${currentTheme}` 
+              : `menu-inactive-${currentTheme}`
           ]"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
@@ -171,8 +191,8 @@ const showMenuText = computed(() => props.isOpen)
             class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300"
             :class="[
               isSubmenuActive(childItem.path)
-                ? 'submenu-active'
-                : 'text-gray-400 hover:text-white'
+                ? `submenu-active-${currentTheme}`
+                : `submenu-inactive-${currentTheme}`
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
@@ -188,7 +208,12 @@ const showMenuText = computed(() => props.isOpen)
         <!-- 二级菜单 - 收起状态下的悬停弹出 -->
         <div
           v-if="hasChildren(menuItem) && !isOpen && isExpanded(menuItem.id)"
-          class="absolute left-16 top-0 z-10 w-48 glass-morphism rounded-lg shadow-lg py-2 submenu-popup"
+          class="absolute left-16 top-0 z-10 w-48 rounded-lg shadow-lg py-2 submenu-popup"
+          :class="{
+            'submenu-popup-dark': currentTheme === 'dark',
+            'submenu-popup-light': currentTheme === 'light',
+            'submenu-popup-cyber': currentTheme === 'cyberpunk'
+          }"
         >
           <div
             v-for="childItem in menuItem.children"
@@ -196,8 +221,8 @@ const showMenuText = computed(() => props.isOpen)
             class="group flex items-center px-4 py-2 text-sm font-medium cursor-pointer transition-all duration-300"
             :class="[
               isSubmenuActive(childItem.path)
-                ? 'submenu-active'
-                : 'text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-white'
+                ? `popup-item-active-${currentTheme}`
+                : `popup-item-inactive-${currentTheme}`
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
@@ -215,78 +240,280 @@ const showMenuText = computed(() => props.isOpen)
 </template>
 
 <style scoped>
-/* 侧边栏背景 */
-.sidebar-bg {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.85));
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+/* 侧边栏基础样式 */
+.sidebar-container {
+  transition: all 0.3s ease;
 }
 
-/* 菜单项样式 */
+/* 深色主题侧边栏 */
+.sidebar-dark {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  color: var(--color-text-primary);
+}
+
+.sidebar-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 明亮主题侧边栏 */
+.sidebar-light {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+/* 赛博朋克主题侧边栏 */
+.sidebar-cyber {
+  background: rgba(13, 2, 33, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 44, 240, 0.3);
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+  color: var(--color-text-primary);
+}
+
+/* 侧边栏标题样式 */
+.sidebar-title-dark {
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 5px rgba(96, 165, 250, 0.5);
+}
+
+.sidebar-title-light {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sidebar-title-cyber {
+  background: linear-gradient(90deg, #ff2cf0, #00eeff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(255, 44, 240, 0.7);
+}
+
+/* 切换按钮样式 */
+.sidebar-toggle-dark {
+  color: #60a5fa;
+}
+
+.sidebar-toggle-dark:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
+}
+
+.sidebar-toggle-light {
+  color: #2563eb;
+}
+
+.sidebar-toggle-light:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.sidebar-toggle-cyber {
+  color: #ff2cf0;
+  text-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
+}
+
+.sidebar-toggle-cyber:hover {
+  background-color: rgba(255, 44, 240, 0.15);
+  color: #ff73f4;
+}
+
+/* 菜单项样式 - 深色主题 */
 .menu-item {
   border-left: 2px solid transparent;
   transition: all 0.3s ease;
 }
 
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateX(2px);
-}
-
-.menu-active {
-  background: rgba(99, 102, 241, 0.2);
-  border-left: 2px solid var(--color-neon-blue);
-  color: white;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-}
-
-.menu-active i {
-  color: var(--color-neon-blue);
-  filter: drop-shadow(0 0 3px var(--color-neon-blue));
-}
-
-/* 子菜单样式 */
-.submenu-item {
-  border-left: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.submenu-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateX(2px);
-}
-
-.submenu-active {
-  background: rgba(99, 102, 241, 0.15);
-  border-left: 2px solid var(--color-neon-purple);
+.menu-active-dark {
+  background: rgba(59, 130, 246, 0.15);
+  border-left: 2px solid #3b82f6;
   color: white;
 }
 
-/* 弹出子菜单样式 */
+.menu-active-dark i {
+  color: #3b82f6;
+}
+
+.menu-inactive-dark {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-inactive-dark:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  transform: translateX(2px);
+}
+
+/* 菜单项样式 - 明亮主题 */
+.menu-active-light {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 2px solid #2563eb;
+  color: #1e293b;
+}
+
+.menu-active-light i {
+  color: #2563eb;
+}
+
+.menu-inactive-light {
+  color: #64748b;
+}
+
+.menu-inactive-light:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+  transform: translateX(2px);
+}
+
+/* 菜单项样式 - 赛博朋克主题 */
+.menu-active-cyberpunk {
+  background: rgba(255, 44, 240, 0.15);
+  border-left: 2px solid #ff2cf0;
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
+}
+
+.menu-active-cyberpunk i {
+  color: #ff2cf0;
+  text-shadow: 0 0 5px rgba(255, 44, 240, 0.7);
+}
+
+.menu-inactive-cyberpunk {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-inactive-cyberpunk:hover {
+  background: rgba(255, 44, 240, 0.1);
+  color: white;
+  transform: translateX(2px);
+}
+
+/* 子菜单样式 - 深色主题 */
+.submenu-active-dark {
+  background: rgba(59, 130, 246, 0.1);
+  color: white;
+}
+
+.submenu-inactive-dark {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.submenu-inactive-dark:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+/* 子菜单样式 - 明亮主题 */
+.submenu-active-light {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1e293b;
+}
+
+.submenu-inactive-light {
+  color: #64748b;
+}
+
+.submenu-inactive-light:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+}
+
+/* 子菜单样式 - 赛博朋克主题 */
+.submenu-active-cyberpunk {
+  background: rgba(255, 44, 240, 0.15);
+  color: white;
+}
+
+.submenu-inactive-cyberpunk {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.submenu-inactive-cyberpunk:hover {
+  background: rgba(255, 44, 240, 0.1);
+  color: white;
+}
+
+/* 弹出菜单样式 */
 .submenu-popup {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.2s ease-out;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+.submenu-popup-dark {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* 自定义滚动条样式 */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
+.submenu-popup-light {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
+.submenu-popup-cyber {
+  background: rgba(13, 2, 33, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 44, 240, 0.3);
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+}
+
+/* 弹出菜单项样式 */
+.popup-item-active-dark {
+  background: rgba(59, 130, 246, 0.15);
+  color: white;
+}
+
+.popup-item-inactive-dark {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.popup-item-inactive-dark:hover {
   background: rgba(255, 255, 255, 0.05);
+  color: white;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.3);
-  border-radius: 2px;
+.popup-item-active-light {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1e293b;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.5);
+.popup-item-inactive-light {
+  color: #64748b;
+}
+
+.popup-item-inactive-light:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+}
+
+.popup-item-active-cyberpunk {
+  background: rgba(255, 44, 240, 0.15);
+  color: white;
+}
+
+.popup-item-inactive-cyberpunk {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.popup-item-inactive-cyberpunk:hover {
+  background: rgba(255, 44, 240, 0.1);
+  color: white;
 }
 </style> 

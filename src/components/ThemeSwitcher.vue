@@ -92,15 +92,13 @@ const closeThemeSelector = () => {
     <!-- 主题切换按钮 -->
     <button
       @click="toggleThemeSelector"
-      class="flex items-center justify-center p-2 rounded-full transition-colors duration-300"
+      class="theme-toggle-btn flex items-center justify-center p-2 rounded-full transition-all duration-300"
       :class="[
         isLoading ? 'opacity-50 cursor-wait' : '',
-        hasError ? 'text-red-500 animate-pulse' : '',
-        !hasError && (
-          currentTheme === 'dark' ? 'text-blue-400 hover:text-blue-300' :
-          currentTheme === 'light' ? 'text-blue-600 hover:text-blue-500' :
-          'text-pink-500 hover:text-pink-400'
-        )
+        hasError ? 'theme-toggle-error' : '',
+        !hasError && currentTheme === 'dark' ? 'theme-toggle-dark' :
+        !hasError && currentTheme === 'light' ? 'theme-toggle-light' :
+        !hasError && currentTheme === 'cyberpunk' ? 'theme-toggle-cyber' : ''
       ]"
       :disabled="isLoading"
       :title="hasError ? '主题加载出错，点击重试' : '切换主题'"
@@ -113,7 +111,7 @@ const closeThemeSelector = () => {
     <!-- 主题选择弹窗 -->
     <div
       v-if="isOpen"
-      class="absolute right-0 mt-2 w-64 rounded-lg shadow-xl z-50 overflow-hidden theme-selector"
+      class="absolute right-0 mt-2 w-72 rounded-lg z-50 overflow-hidden theme-selector"
       :class="{
         'dark-theme-selector': currentTheme === 'dark',
         'light-theme-selector': currentTheme === 'light',
@@ -121,59 +119,69 @@ const closeThemeSelector = () => {
       }"
     >
       <div class="p-4">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-medium selector-title">选择主题</h3>
-          <button @click="closeThemeSelector" class="selector-close-btn">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-medium text-lg selector-title">选择主题</h3>
+          <button @click="closeThemeSelector" class="selector-close-btn hover:opacity-100 p-1">
             <i class="fa-solid fa-times"></i>
           </button>
         </div>
         
         <!-- 错误消息 -->
-        <div v-if="errorMessage" class="mb-3 p-2 text-xs rounded error-message">
+        <div v-if="errorMessage" class="mb-4 p-3 text-sm rounded error-message">
+          <i class="fa-solid fa-exclamation-circle mr-2"></i>
           {{ errorMessage }}
         </div>
         
         <!-- 主题列表 -->
-        <div class="space-y-3">
+        <div class="space-y-4">
           <button
-            v-for="theme in availableThemes"
+            v-for="theme in themeStore.availableThemes"
             :key="theme.id"
             @click="changeTheme(theme.id)"
-            class="w-full p-3 rounded-lg transition-all duration-300 flex items-center theme-item"
+            class="w-full transition-all duration-300 flex items-start theme-item"
             :disabled="isLoading || theme.id === currentTheme"
             :class="{
               'opacity-50 cursor-wait': isLoading && theme.id === currentTheme,
               'theme-item-active': theme.id === currentTheme,
-              'theme-item-inactive': theme.id !== currentTheme
+              'theme-item-inactive': theme.id !== currentTheme,
+              'dark-theme-item': theme.id === 'dark',
+              'light-theme-item': theme.id === 'light',
+              'cyber-theme-item': theme.id === 'cyberpunk'
             }"
           >
-            <!-- 主题图标 -->
-            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 theme-icon"
-              :class="{
-                'dark-icon': theme.id === 'dark',
-                'light-icon': theme.id === 'light',
-                'cyber-icon': theme.id === 'cyberpunk'
-              }"
-            >
-              <i
-                :class="[
-                  theme.id === currentTheme && isLoading ? 'fa-solid fa-circle-notch fa-spin' :
-                  theme.id === 'dark' ? 'fa-solid fa-moon' :
-                  theme.id === 'light' ? 'fa-solid fa-sun' :
-                  'fa-solid fa-bolt'
-                ]"
-              ></i>
+            <!-- 主题预览 -->
+            <div class="w-16 h-16 rounded-lg theme-preview mr-3 flex items-center justify-center overflow-hidden">
+              <div v-if="theme.id === 'dark'" class="dark-theme-preview w-full h-full">
+                <div class="preview-navbar"></div>
+                <div class="preview-content">
+                  <div class="preview-card"></div>
+                </div>
+              </div>
+              <div v-else-if="theme.id === 'light'" class="light-theme-preview w-full h-full">
+                <div class="preview-navbar"></div>
+                <div class="preview-content">
+                  <div class="preview-card"></div>
+                </div>
+              </div>
+              <div v-else class="cyber-theme-preview w-full h-full">
+                <div class="preview-navbar"></div>
+                <div class="preview-content">
+                  <div class="preview-card"></div>
+                </div>
+              </div>
             </div>
             
             <!-- 主题信息 -->
-            <div class="text-left">
-              <div class="font-medium">{{ theme.name }}</div>
-              <div class="text-xs opacity-70">{{ theme.description }}</div>
-            </div>
-            
-            <!-- 当前选中标记 -->
-            <div v-if="theme.id === currentTheme" class="ml-auto">
-              <i class="fa-solid fa-check"></i>
+            <div class="text-left flex-1">
+              <div class="font-medium text-base">{{ theme.name }}</div>
+              <div class="text-xs opacity-70 mt-1">{{ theme.description }}</div>
+              
+              <!-- 活动指示器 -->
+              <div class="mt-2 flex items-center" v-if="theme.id === currentTheme">
+                <span class="h-2 w-2 rounded-full mr-2" 
+                  :class="isLoading ? 'loading-indicator' : 'active-indicator'"></span>
+                <span class="text-xs">{{ isLoading ? '加载中...' : '当前使用' }}</span>
+              </div>
             </div>
           </button>
         </div>
@@ -183,92 +191,258 @@ const closeThemeSelector = () => {
 </template>
 
 <style scoped>
+/* 通用过渡效果 */
 .theme-transition {
-  transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+/* 切换按钮样式 */
+.theme-toggle-btn {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+}
+
+.theme-toggle-dark {
+  color: #60a5fa;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+.theme-toggle-dark:hover {
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.theme-toggle-light {
+  color: #3b82f6;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle-light:hover {
+  color: #2563eb;
+  background: #ffffff;
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-cyber {
+  color: #ff2cf0;
+  background: rgba(13, 2, 33, 0.9);
+  border: 1px solid rgba(255, 44, 240, 0.5);
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
+  text-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
+}
+
+.theme-toggle-cyber:hover {
+  color: #ff73f4;
+  border-color: #ff2cf0;
+  box-shadow: 0 0 15px rgba(255, 44, 240, 0.5);
+}
+
+.theme-toggle-error {
+  color: #ef4444;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 主题选择器容器样式 */
+.theme-selector {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* 深色主题选择器 */
 .dark-theme-selector {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
   color: white;
 }
 
 /* 明亮主题选择器 */
 .light-theme-selector {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  color: #1e293b;
 }
 
 /* 赛博朋克主题选择器 */
 .cyber-theme-selector {
-  background: rgba(20, 20, 30, 0.9);
+  background: rgba(13, 2, 33, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #ff00ff;
+  border: 1px solid rgba(255, 44, 240, 0.5);
   color: white;
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  box-shadow: 0 0 20px rgba(255, 44, 240, 0.4);
 }
 
 /* 主题项样式 */
-.theme-item-active {
-  background-color: rgba(100, 100, 150, 0.2);
+.theme-item {
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
-.dark-theme-selector .theme-item-active {
+.dark-theme-item.theme-item-active {
   background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.light-theme-selector .theme-item-active {
-  background-color: rgba(240, 240, 250, 0.8);
+.light-theme-item.theme-item-active {
+  background-color: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.cyber-theme-selector .theme-item-active {
-  background-color: rgba(60, 20, 60, 0.8);
-  border: 1px solid #ff00ff;
+.cyber-theme-item.theme-item-active {
+  background-color: rgba(28, 6, 54, 0.8);
+  border: 1px solid rgba(255, 44, 240, 0.5);
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.2);
 }
 
-/* 主题图标样式 */
-.dark-icon {
-  background-color: #1e293b;
-  color: #60a5fa;
+.theme-item-inactive:hover {
+  transform: translateY(-2px);
 }
 
-.light-icon {
+.dark-theme-item.theme-item-inactive:hover {
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+.light-theme-item.theme-item-inactive:hover {
+  background-color: rgba(241, 245, 249, 0.4);
+}
+
+.cyber-theme-item.theme-item-inactive:hover {
+  background-color: rgba(28, 6, 54, 0.4);
+}
+
+/* 主题预览样式 */
+.theme-preview {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark-theme-preview {
+  background-color: #0f172a;
+}
+
+.light-theme-preview {
   background-color: #f8fafc;
-  color: #3b82f6;
 }
 
-.cyber-icon {
-  background-color: #0f0f1a;
-  color: #ff00ff;
+.cyber-theme-preview {
+  background-color: #0d0221;
+  border: 1px solid #ff2cf0;
+  box-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
+}
+
+.preview-navbar {
+  height: 15%;
+  width: 100%;
+}
+
+.dark-theme-preview .preview-navbar {
+  background-color: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-theme-preview .preview-navbar {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cyber-theme-preview .preview-navbar {
+  background-color: rgba(13, 2, 33, 0.9);
+  border-bottom: 1px solid #ff2cf0;
+}
+
+.preview-content {
+  height: 85%;
+  width: 100%;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-card {
+  height: 60%;
+  width: 80%;
+  border-radius: 2px;
+}
+
+.dark-theme-preview .preview-card {
+  background-color: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.light-theme-preview .preview-card {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cyber-theme-preview .preview-card {
+  background-color: rgba(28, 6, 54, 0.7);
+  border: 1px solid rgba(255, 44, 240, 0.3);
+  box-shadow: 0 0 5px rgba(255, 44, 240, 0.2);
 }
 
 /* 关闭按钮样式 */
 .selector-close-btn {
   opacity: 0.7;
   transition: opacity 0.2s;
+  border-radius: 9999px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.selector-close-btn:hover {
-  opacity: 1;
+.dark-theme-selector .selector-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* 主题项悬停效果 */
-.theme-item-inactive:hover {
-  background-color: rgba(100, 100, 100, 0.1);
+.light-theme-selector .selector-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cyber-theme-selector .selector-close-btn:hover {
+  background-color: rgba(255, 44, 240, 0.2);
 }
 
 /* 错误消息样式 */
 .error-message {
-  background-color: rgba(254, 202, 202, 0.2);
-  color: #ef4444;
   border-left: 3px solid #ef4444;
+}
+
+.dark-theme-selector .error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+
+.light-theme-selector .error-message {
+  background-color: rgba(254, 226, 226, 0.8);
+  color: #ef4444;
+}
+
+.cyber-theme-selector .error-message {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ff1644;
+  border-color: #ff1644;
+  text-shadow: 0 0 5px rgba(255, 22, 68, 0.5);
 }
 
 /* 按钮动画 */
@@ -280,5 +454,17 @@ const closeThemeSelector = () => {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 活动指示器 */
+.active-indicator {
+  background-color: #10b981;
+  box-shadow: 0 0 5px #10b981;
+}
+
+.loading-indicator {
+  background-color: #f59e0b;
+  box-shadow: 0 0 5px #f59e0b;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style> 

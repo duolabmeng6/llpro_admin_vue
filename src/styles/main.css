@@ -13,10 +13,49 @@
   100% { box-shadow: 0 0 5px 0px currentColor; }
 }
 
+/* 波浪效果动画 */
+@keyframes wave-animation {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+/* 淡入淡出动画 */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* 颜色脉冲动画 */
+@keyframes color-pulse {
+  0% { filter: saturate(1); }
+  50% { filter: saturate(1.5); }
+  100% { filter: saturate(1); }
+}
+
+/* 主题切换动画 */
+@keyframes theme-morph {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(30deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+/* 流动边框动画 */
+@keyframes flow-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* 页面过渡动画 */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .page-enter-from,
@@ -25,47 +64,240 @@
   transform: translateY(10px);
 }
 
-/* 主题过渡动画 */
+/* 主题过渡变量 */
+:root {
+  --theme-transition-duration: 0.8s;
+  --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-transition-properties: background-color, color, border-color, box-shadow, transform, opacity;
+  --theme-transition-delay-unit: 0.05s;
+  --theme-transition-stagger-count: 10;
+}
+
+/* 全局主题过渡效果 */
+body,
 .theme-transition {
-  transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition-property: var(--theme-transition-properties);
+  transition-duration: var(--theme-transition-duration);
+  transition-timing-function: var(--theme-transition-timing);
 }
 
-/* 确保在主题切换过程中背景色不会变为白色 */
-body.theme-transition {
-  background-color: #111827 !important; /* 深色背景作为过渡底色 */
+/* 主题过渡背景 */
+.theme-transition-bg {
+  position: relative;
 }
 
-/* 全局主题过渡样式 */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+.theme-transition-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: inherit;
+  transition: background-color 0.8s ease;
+  pointer-events: none;
 }
 
-/* 主题切换时禁用过渡，避免闪烁 */
-.theme-transition * {
-  transition: none !important;
+/* 主题过渡遮罩样式 */
+.theme-transition-overlay {
+  background-color: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-/* 在主题完全加载后恢复过渡效果 */
-body:not(.theme-transition) * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+/* 元素级主题过渡 */
+.theme-transition button,
+.theme-transition input,
+.theme-transition select,
+.theme-transition .card,
+.theme-transition .navbar,
+.theme-transition .sidebar,
+.theme-transition table,
+.theme-transition .modal-container,
+.theme-transition .dropdown-options {
+  transition-property: var(--theme-transition-properties);
+  transition-duration: var(--theme-transition-duration);
+  transition-timing-function: var(--theme-transition-timing);
 }
 
-/* 添加滚动条样式 */
+/* 波浪式延迟过渡 */
+.theme-transition [data-theme-wave="1"] { transition-delay: calc(var(--theme-transition-delay-unit) * 1); }
+.theme-transition [data-theme-wave="2"] { transition-delay: calc(var(--theme-transition-delay-unit) * 2); }
+.theme-transition [data-theme-wave="3"] { transition-delay: calc(var(--theme-transition-delay-unit) * 3); }
+.theme-transition [data-theme-wave="4"] { transition-delay: calc(var(--theme-transition-delay-unit) * 4); }
+.theme-transition [data-theme-wave="5"] { transition-delay: calc(var(--theme-transition-delay-unit) * 5); }
+.theme-transition [data-theme-wave="6"] { transition-delay: calc(var(--theme-transition-delay-unit) * 6); }
+.theme-transition [data-theme-wave="7"] { transition-delay: calc(var(--theme-transition-delay-unit) * 7); }
+.theme-transition [data-theme-wave="8"] { transition-delay: calc(var(--theme-transition-delay-unit) * 8); }
+.theme-transition [data-theme-wave="9"] { transition-delay: calc(var(--theme-transition-delay-unit) * 9); }
+.theme-transition [data-theme-wave="10"] { transition-delay: calc(var(--theme-transition-delay-unit) * 10); }
+
+/* 滚动条样式 */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 3px;
+  background: rgba(120, 120, 120, 0.5);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
+  background: rgba(100, 100, 100, 0.7);
+}
+
+/* 导入组件样式文件 */
+@import "./components/forms.css";
+
+/* 主题类名 */
+.dark {
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #3b82f6;
+  --color-accent-light: #60a5fa;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --color-scrollbar-track: rgba(0, 0, 0, 0.3);
+}
+
+.light {
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f1f5f9;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-accent: #2563eb;
+  --color-accent-light: #3b82f6;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --color-scrollbar-track: rgba(0, 0, 0, 0.05);
+}
+
+.cyberpunk {
+  --color-bg-primary: #0d0221;
+  --color-bg-secondary: #1c0636;
+  --color-bg-tertiary: #36096d;
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-border: rgba(255, 44, 240, 0.3);
+  --color-accent: #ff2cf0;
+  --color-accent-light: #ff73f4;
+  --color-shadow: rgba(255, 44, 240, 0.3);
+  --color-neon-pink: #ff2cf0;
+  --color-neon-blue: #00eeff;
+  --color-neon-green: #00ff8f;
+  --color-neon-yellow: #ffff00;
+  --color-scrollbar-thumb: rgba(255, 44, 240, 0.5);
+  --color-scrollbar-track: rgba(13, 2, 33, 0.8);
+}
+
+/* 主题特定滚动条样式 */
+.dark::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+}
+
+.dark::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+.light::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+}
+
+.light::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+.cyberpunk::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  box-shadow: 0 0 8px var(--color-neon-pink);
+}
+
+.cyberpunk::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+/* 全局动画类 */
+.cyberpunk .neon-text {
+  text-shadow: 0 0 5px currentColor;
+}
+
+.cyberpunk .neon-border {
+  box-shadow: 0 0 10px var(--color-neon-pink);
+}
+
+.cyberpunk .neon-pulse {
+  animation: pulse-glow 2s infinite;
+}
+
+.cyberpunk .gradient-text {
+  background: linear-gradient(90deg, var(--color-neon-pink), var(--color-neon-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 波浪效果应用 */
+.wave-anim-item {
+  animation: wave-animation 3s ease infinite;
+}
+
+.wave-anim-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.wave-anim-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.wave-anim-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.wave-anim-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.wave-anim-delay-5 {
+  animation-delay: 0.5s;
+}
+
+/* 主题过渡波浪动画类 */
+.theme-wave-item {
+  transition-property: var(--theme-transition-properties);
+  transition-duration: var(--theme-transition-duration);
+  transition-timing-function: var(--theme-transition-timing);
+}
+
+.theme-wave-delay-1 {
+  transition-delay: 0.05s;
+}
+
+.theme-wave-delay-2 {
+  transition-delay: 0.1s;
+}
+
+.theme-wave-delay-3 {
+  transition-delay: 0.15s;
+}
+
+.theme-wave-delay-4 {
+  transition-delay: 0.2s;
+}
+
+.theme-wave-delay-5 {
+  transition-delay: 0.25s;
 }
 
 /* 玻璃拟态效果 */
@@ -111,9 +343,61 @@ body:not(.theme-transition) * {
   animation: neon-glow 8s ease infinite;
 }
 
+/* 主题变化强调动画 */
+.theme-emphasis {
+  animation: theme-morph 1s ease;
+}
+
+/* 流动边框 */
+.flow-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  background: linear-gradient(90deg, 
+    var(--color-accent), 
+    var(--color-accent-light), 
+    var(--color-accent), 
+    var(--color-accent-light)
+  ) border-box;
+  background-size: 300% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  animation: flow-border 3s linear infinite;
+}
+
 /* 发光文本效果 */
 .glow-text {
   text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* 交互元素悬停效果 */
+.interactive-element {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.interactive-element:hover {
+  transform: translateY(-2px);
+}
+
+/* 动画元素 */
+.animate-wave {
+  animation: wave-animation 2s ease-in-out infinite;
+}
+
+.animate-color-pulse {
+  animation: color-pulse 3s ease-in-out infinite;
 }
 
 /* 全局深色主题样式覆盖 */

@@ -1,56 +1,261 @@
 /* 深色主题 - Dark Theme */
 
-/* 颜色变量 */
+/**
+ * 深色科技风格主题
+ */
+
 :root {
-  /* 使用slate的颜色作为gray */
-  --color-gray-50: oklch(0.984 0.003 247.858);
-  --color-gray-100: oklch(0.968 0.007 247.896);
-  --color-gray-200: oklch(0.929 0.013 255.508);
-  --color-gray-300: oklch(0.869 0.022 252.894);
-  --color-gray-400: oklch(0.704 0.04 256.788);
-  --color-gray-500: oklch(0.554 0.046 257.417);
-  --color-gray-600: oklch(0.446 0.043 257.281);
-  --color-gray-700: oklch(0.372 0.044 257.287);
-  --color-gray-800: oklch(0.279 0.041 260.031);
-  --color-gray-900: oklch(0.208 0.042 265.755);
-  --color-gray-950: oklch(0.129 0.042 264.695);
-
-  /* 使用sky的颜色作为primary */
-  --color-primary-50: oklch(0.977 0.013 236.62);
-  --color-primary-100: oklch(0.951 0.026 236.824);
-  --color-primary-200: oklch(0.901 0.058 230.902);
-  --color-primary-300: oklch(0.828 0.111 230.318);
-  --color-primary-400: oklch(0.746 0.16 232.661);
-  --color-primary-500: oklch(0.685 0.169 237.323);
-  --color-primary-600: oklch(0.588 0.158 241.966);
-  --color-primary-700: oklch(0.5 0.134 242.749);
-  --color-primary-800: oklch(0.443 0.11 240.79);
-  --color-primary-900: oklch(0.391 0.09 240.876);
-  --color-primary-950: oklch(0.293 0.066 243.157);
-
-  /* 使用gray的颜色作为secondary */
-  --color-secondary-50: oklch(0.985 0.002 247.839);
-  --color-secondary-100: oklch(0.967 0.003 264.542);
-  --color-secondary-200: oklch(0.928 0.006 264.531);
-  --color-secondary-300: oklch(0.872 0.01 258.338);
-  --color-secondary-400: oklch(0.707 0.022 261.325);
-  --color-secondary-500: oklch(0.551 0.027 264.364);
-  --color-secondary-600: oklch(0.446 0.03 256.802);
-  --color-secondary-700: oklch(0.373 0.034 259.733);
-  --color-secondary-800: oklch(0.278 0.033 256.848);
-  --color-secondary-900: oklch(0.21 0.034 264.665);
-  --color-secondary-950: oklch(0.13 0.028 261.692);
+  /* 主色调 */
+  --color-primary: #3b82f6;
+  --color-primary-light: #60a5fa;
+  --color-primary-dark: #2563eb;
   
-  /* 科技感深色主题颜色 */
-  --color-dark-bg: oklch(0.15 0.02 260);
-  --color-dark-surface: oklch(0.18 0.02 260);
-  --color-dark-border: oklch(0.25 0.04 260);
+  /* 背景色 */
+  --color-dark-bg: #0f172a;
+  --color-dark-surface: #1e293b;
+  --color-dark-card: rgba(30, 41, 59, 0.7);
   
-  /* 霓虹色调 */
-  --color-neon-blue: oklch(0.7 0.2 250);
-  --color-neon-purple: oklch(0.65 0.25 300);
-  --color-neon-cyan: oklch(0.8 0.15 200);
-  --color-neon-pink: oklch(0.7 0.25 330);
+  /* 霓虹色彩 */
+  --color-neon-blue: #60a5fa;
+  --color-neon-purple: #a78bfa;
+  --color-neon-cyan: #67e8f9;
+  --color-neon-pink: #f472b6;
+  
+  /* 文本颜色 */
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-disabled: rgba(255, 255, 255, 0.4);
+  
+  /* 边框颜色 */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  --color-border-focus: rgba(59, 130, 246, 0.7);
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  
+  /* 表格 */
+  --color-table-header: rgba(15, 23, 42, 0.8);
+  --color-table-row: rgba(30, 41, 59, 0.3);
+  --color-table-row-hover: rgba(59, 130, 246, 0.15);
+  
+  /* 状态颜色 */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* 背景样式 */
+body {
+  background-color: var(--color-dark-bg);
+  background-image: 
+    radial-gradient(circle at 90% 5%, rgba(59, 130, 246, 0.1), transparent 20%),
+    radial-gradient(circle at 10% 90%, rgba(167, 139, 250, 0.1), transparent 30%);
+  color: var(--color-text-primary);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
+/* 卡片样式 */
+.card,
+.bg-white,
+[class*="bg-white"],
+[class*="bg-gray-50"],
+[class*="bg-gray-100"] {
+  background-color: var(--color-dark-card) !important;
+  color: var(--color-text-primary) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-md) !important;
+  border-radius: 0.5rem;
+}
+
+/* 强调卡片 */
+.card.accent,
+.card-accent {
+  border-top: 3px solid var(--color-primary);
+}
+
+/* 文本颜色 */
+[class*="text-gray-900"],
+[class*="text-gray-800"],
+[class*="text-gray-700"] {
+  color: var(--color-text-primary) !important;
+}
+
+[class*="text-gray-600"],
+[class*="text-gray-500"],
+[class*="text-gray-400"] {
+  color: var(--color-text-secondary) !important;
+}
+
+/* 表单元素 */
+input,
+select,
+textarea {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-focus) !important;
+  outline: none;
+}
+
+/* 按钮样式 */
+button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled):not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: var(--color-primary-light) !important;
+}
+
+/* 表格样式 */
+table {
+  background-color: transparent !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+table th {
+  background-color: var(--color-table-header) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+table td {
+  background-color: var(--color-table-row) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border-light) !important;
+  padding: 0.75rem 1rem;
+}
+
+table tr:hover td {
+  background-color: var(--color-table-row-hover) !important;
+}
+
+/* 链接样式 */
+a:not([class]) {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:not([class]):hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* 导航栏样式 */
+.navbar {
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 侧边栏样式 */
+.sidebar {
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid var(--color-border);
+}
+
+/* 分割线 */
+hr {
+  border-color: var(--color-border);
+  opacity: 0.5;
+}
+
+/* 科技风格元素 */
+.tech-border {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.tech-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    var(--color-primary) 40%, 
+    var(--color-primary-light) 50%, 
+    var(--color-primary) 60%, 
+    transparent 70%
+  );
+  background-size: 300% 100%;
+  animation: tech-border-animation 3s infinite linear;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes tech-border-animation {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 暗色模式特定样式 */
+.dark-mode-only {
+  display: block;
+}
+
+.light-mode-only {
+  display: none;
+}
+
+/* 卡片悬停效果 */
+.card.interactive,
+.interactive-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card.interactive:hover,
+.interactive-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg) !important;
+  border-color: var(--color-primary-light);
 }
 
 /* 玻璃拟态效果 */
@@ -105,20 +310,6 @@
 body {
   background-color: var(--color-dark-bg);
   color: white;
-}
-
-/* 卡片样式覆盖 */
-.card, 
-.bg-white, 
-[class*="bg-white"], 
-[class*="bg-gray-50"], 
-[class*="bg-gray-100"] {
-  background-color: rgba(30, 41, 59, 0.5) !important;
-  color: white !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* 文本颜色覆盖 */
