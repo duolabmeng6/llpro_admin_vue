@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '../stores/theme'
+import ThemeSwitcher from '../components/ThemeSwitcher.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -12,26 +13,12 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 const isLoading = ref(false)
-const isThemeMenuOpen = ref(false)
 
 // 当前主题
 const currentTheme = computed(() => themeStore.currentTheme)
 
 // 可用主题列表
 const availableThemes = computed(() => themeStore.availableThemes)
-
-// 切换主题
-const changeTheme = async (themeId) => {
-  if (themeId === currentTheme.value || themeStore.isLoading) {
-    return
-  }
-  
-  try {
-    await themeStore.setTheme(themeId)
-  } catch (error) {
-    console.error('切换主题失败:', error)
-  }
-}
 
 // 确保主题已正确应用
 const ensureThemeApplied = () => {
@@ -87,43 +74,15 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="login-container min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 theme-transition">
+  <div class="login-container min-h-full py-12 px-4 sm:px-6 lg:px-8 theme-transition">
     <div class="login-bg-animation"></div>
-    <div class="max-w-md w-full space-y-8 relative z-10">
+    <div class="max-w-md w-full space-y-6 relative z-10">
       <!-- 主题切换按钮 -->
-      <div class="absolute top-2 right-2 z-20">
-        <div class="theme-dropdown">
-          <button 
-            @click="isThemeMenuOpen = !isThemeMenuOpen" 
-            class="theme-toggle-btn"
-            :class="`theme-btn-${currentTheme}`"
-          >
-            <i class="fas fa-palette"></i>
-          </button>
-          
-          <div v-if="isThemeMenuOpen" class="theme-menu">
-            <div class="theme-menu-title">选择主题</div>
-            <div 
-              v-for="theme in availableThemes" 
-              :key="theme.id"
-              @click="changeTheme(theme.id); isThemeMenuOpen = false"
-              class="theme-menu-item"
-              :class="[theme.id === currentTheme ? 'active' : '']"
-            >
-              <div class="theme-color-preview" :class="`preview-${theme.id}`"></div>
-              <div class="theme-info">
-                <div class="theme-name">{{ theme.name }}</div>
-                <div class="theme-desc">{{ theme.description }}</div>
-              </div>
-              <div v-if="theme.id === currentTheme" class="theme-check">
-                <i class="fas fa-check"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="absolute top-3 right-3 z-20">
+        <ThemeSwitcher simple position="right" />
       </div>
       
-      <div class="glass-morphism p-8 rounded-xl neon-border">
+      <div class="glass-morphism p-6 rounded-xl neon-border">
         <div class="text-center">
           <h2 class="mt-2 text-center text-3xl font-bold glow-text">
             <span class="title-gradient">
@@ -171,13 +130,13 @@ const handleLogin = async () => {
             <button
               type="submit"
               :disabled="isLoading"
-              class="login-btn group relative w-full flex justify-center py-2.5 px-4 text-sm font-medium rounded-md text-white transition-all duration-300"
+              class="login-btn group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white transition-all duration-300"
             >
-              <span v-if="isLoading" class="flex items-center">
+              <span v-if="isLoading" class="flex items-center justify-center">
                 <i class="fas fa-spinner fa-spin mr-2"></i>
                 登录中...
               </span>
-              <span v-else class="flex items-center">
+              <span v-else class="flex items-center justify-center">
                 <i class="fas fa-sign-in-alt mr-2"></i>
                 登录
               </span>
@@ -200,6 +159,9 @@ const handleLogin = async () => {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 各主题背景样式 */
@@ -292,205 +254,6 @@ const handleLogin = async () => {
   opacity: 0.8;
 }
 
-/* 主题下拉菜单 */
-.theme-dropdown {
-  position: relative;
-}
-
-.theme-toggle-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  color: white;
-  font-size: 16px;
-}
-
-.theme-btn-dark {
-  background: linear-gradient(45deg, #3b82f6, #a78bfa);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-}
-
-.theme-btn-light {
-  background: linear-gradient(45deg, #f8fafc, #3b82f6);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-}
-
-.theme-btn-cyberpunk {
-  background: linear-gradient(45deg, #ff2cf0, #00eeff);
-  box-shadow: 0 0 10px rgba(255, 44, 240, 0.5);
-}
-
-.theme-toggle-btn:hover {
-  transform: scale(1.1);
-}
-
-.theme-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 8px;
-  min-width: 220px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  animation: fade-in-down 0.3s ease;
-  z-index: 100;
-}
-
-:root.dark .theme-menu {
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-:root.light .theme-menu {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-:root.cyberpunk .theme-menu {
-  background: rgba(28, 6, 54, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 44, 240, 0.4);
-  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
-}
-
-.theme-menu-title {
-  padding: 12px 16px;
-  font-weight: 500;
-  font-size: 14px;
-  border-bottom: 1px solid;
-  text-align: center;
-}
-
-:root.dark .theme-menu-title {
-  color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-:root.light .theme-menu-title {
-  color: #1e293b;
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-:root.cyberpunk .theme-menu-title {
-  color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(255, 44, 240, 0.3);
-}
-
-.theme-menu-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-:root.dark .theme-menu-item:hover {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-:root.light .theme-menu-item:hover {
-  background: rgba(241, 245, 249, 0.8);
-}
-
-:root.cyberpunk .theme-menu-item:hover {
-  background: rgba(255, 44, 240, 0.1);
-}
-
-.theme-menu-item.active {
-  position: relative;
-}
-
-:root.dark .theme-menu-item.active {
-  background: rgba(59, 130, 246, 0.15);
-}
-
-:root.light .theme-menu-item.active {
-  background: rgba(59, 130, 246, 0.05);
-}
-
-:root.cyberpunk .theme-menu-item.active {
-  background: rgba(255, 44, 240, 0.15);
-}
-
-.theme-color-preview {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  margin-right: 12px;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.preview-dark {
-  background: linear-gradient(45deg, #0f172a, #3b82f6);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.preview-light {
-  background: linear-gradient(45deg, #f8fafc, #3b82f6);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.preview-cyberpunk {
-  background: linear-gradient(45deg, #0d0221, #ff2cf0);
-  border: 1px solid rgba(255, 44, 240, 0.5);
-  box-shadow: 0 0 5px rgba(255, 44, 240, 0.3);
-}
-
-.theme-info {
-  flex: 1;
-}
-
-.theme-name {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-:root.dark .theme-name {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-:root.light .theme-name {
-  color: #1e293b;
-}
-
-:root.cyberpunk .theme-name {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.theme-desc {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-:root.dark .theme-desc {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-:root.light .theme-desc {
-  color: #64748b;
-}
-
-:root.cyberpunk .theme-desc {
-  color: rgba(255, 44, 240, 0.9);
-}
-
-.theme-check {
-  color: #10b981;
-  font-size: 14px;
-  margin-left: 8px;
-}
-
 /* 标题渐变文本 */
 .title-gradient {
   background-clip: text;
@@ -515,6 +278,7 @@ const handleLogin = async () => {
 /* 玻璃态效果 */
 .glass-morphism {
   transition: all 0.5s ease;
+  border-radius: 0.75rem;
 }
 
 :root.dark .glass-morphism {
@@ -545,6 +309,7 @@ const handleLogin = async () => {
 /* 霓虹边框 */
 .neon-border {
   position: relative;
+  overflow: hidden;
 }
 
 :root.dark .neon-border {
@@ -630,8 +395,8 @@ const handleLogin = async () => {
   box-shadow: 0 0 0 2px rgba(255, 44, 240, 0.3);
 }
 
-/* 登录按钮样式 - 增加选择器特异性并使用更明确的样式 */
-.login-container .login-btn {
+/* 登录按钮样式 */
+.login-btn {
   background-size: 200% 200%;
   animation: gradient-shift 5s ease infinite;
   position: relative;
@@ -640,49 +405,49 @@ const handleLogin = async () => {
   color: white !important;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  /* 统一按钮大小 */
+  padding: 0.5rem 1rem;
+  height: 2.5rem;
+  max-height: 2.5rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
 }
 
 /* 深色主题按钮 */
-html.dark .login-container .login-btn,
-:root.dark .login-container .login-btn {
+:root.dark .login-btn {
   background: linear-gradient(45deg, #3b82f6, #a78bfa) !important;
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
 }
 
-html.dark .login-container .login-btn:hover,
-:root.dark .login-container .login-btn:hover {
+:root.dark .login-btn:hover {
   box-shadow: 0 0 25px rgba(99, 102, 241, 0.8);
   transform: translateY(-2px);
 }
 
 /* 明亮主题按钮 */
-html.light .login-container .login-btn,
-:root.light .login-container .login-btn {
+:root.light .login-btn {
   background: linear-gradient(45deg, #2563eb, #3b82f6) !important;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
-html.light .login-container .login-btn:hover,
-:root.light .login-container .login-btn:hover {
+:root.light .login-btn:hover {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
 }
 
 /* 赛博朋克主题按钮 */
-html.cyberpunk .login-container .login-btn,
-:root.cyberpunk .login-container .login-btn {
+:root.cyberpunk .login-btn {
   background: linear-gradient(45deg, #ff2cf0, #00eeff) !important;
   box-shadow: 0 0 20px rgba(255, 44, 240, 0.6);
 }
 
-html.cyberpunk .login-container .login-btn:hover,
-:root.cyberpunk .login-container .login-btn:hover {
+:root.cyberpunk .login-btn:hover {
   box-shadow: 0 0 30px rgba(255, 44, 240, 0.8);
   transform: translateY(-2px);
 }
 
 /* 按钮悬停光效 */
-.login-container .login-btn::before {
+.login-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -699,7 +464,7 @@ html.cyberpunk .login-container .login-btn:hover,
   z-index: 0;
 }
 
-.login-container .login-btn:hover::before {
+.login-btn:hover::before {
   left: 100%;
   transition: 0.5s;
 }
