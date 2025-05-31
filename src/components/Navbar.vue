@@ -12,7 +12,8 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['toggle'])
+// 简化，不需要emit
+const emit = defineEmits([])
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -34,10 +35,6 @@ onMounted(() => {
   setInterval(updateTime, 1000)
 })
 
-const toggleSidebar = () => {
-  emit('toggle')
-}
-
 const logout = async () => {
   await authStore.logout()
   router.push('/login')
@@ -55,19 +52,8 @@ const logout = async () => {
   >
     <div class="navbar-content px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center relative z-10">
       <div class="flex items-center">
-        <button 
-          @click="toggleSidebar" 
-          class="navbar-toggle flex items-center justify-center transition-all duration-300 transform hover:scale-110"
-          :class="{
-            'toggle-dark': currentTheme === 'dark',
-            'toggle-light': currentTheme === 'light',
-            'toggle-cyber': currentTheme === 'cyberpunk'
-          }"
-        >
-          <i class="fas fa-bars text-xl"></i>
-        </button>
-        
-        <div class="ml-4 flex items-center">
+        <!-- 完全移除搜索按钮，保持简洁布局 -->
+        <div class="flex items-center">
           <h2 
             class="text-lg font-medium navbar-title"
             :class="{
@@ -162,33 +148,6 @@ const logout = async () => {
   border-bottom: 1px solid rgba(255, 44, 240, 0.3);
   color: white;
   box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
-}
-
-/* 侧边栏切换按钮 */
-.toggle-dark {
-  color: #60a5fa;
-}
-
-.toggle-dark:hover {
-  color: #93c5fd;
-}
-
-.toggle-light {
-  color: #3b82f6;
-}
-
-.toggle-light:hover {
-  color: #2563eb;
-}
-
-.toggle-cyber {
-  color: #ff2cf0;
-  text-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
-}
-
-.toggle-cyber:hover {
-  color: #ff73f4;
-  text-shadow: 0 0 8px rgba(255, 44, 240, 0.7);
 }
 
 /* 标题样式 */

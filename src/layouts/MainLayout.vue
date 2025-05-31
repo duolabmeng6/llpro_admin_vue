@@ -486,7 +486,6 @@ const initBgAnimation = () => {
       <!-- Top navbar -->
       <Navbar 
         :username="authStore.user?.username || '用户'" 
-        @toggle="toggleSidebar" 
       />
       
       <!-- Tabs navigation -->

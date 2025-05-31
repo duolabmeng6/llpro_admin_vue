@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
@@ -25,6 +25,8 @@ const currentTheme = computed(() => themeStore.currentTheme)
 const expandedMenus = ref({})
 // 当前悬停的菜单项
 const hoveredMenu = ref(null)
+// 控制鼠标悬停在收起侧边栏边缘时的预览
+const showEdgePreview = ref(false)
 
 // 监听侧边栏状态变化，当收起时关闭所有展开的子菜单
 watch(() => props.isOpen, (newValue) => {
@@ -32,6 +34,20 @@ watch(() => props.isOpen, (newValue) => {
     expandedMenus.value = {}
   }
 }, { immediate: true })
+
+// 添加键盘快捷键监听
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+// 处理键盘快捷键
+const handleKeydown = (event) => {
+  // Alt + S 切换侧边栏
+  if (event.altKey && event.key === 's') {
+    toggleSidebar()
+    event.preventDefault()
+  }
+}
 
 // 切换菜单展开状态
 const toggleSubmenu = (menuId, event) => {
@@ -53,6 +69,13 @@ const setHoveredMenu = (menuId) => {
 // 清除悬停菜单
 const clearHoveredMenu = () => {
   hoveredMenu.value = null
+}
+
+// 处理侧边栏边缘预览
+const handleEdgeHover = (isHovering) => {
+  if (!props.isOpen) {
+    showEdgePreview.value = isHovering
+  }
 }
 
 // 判断菜单项是否激活
@@ -113,8 +136,11 @@ const showMenuText = computed(() => props.isOpen)
       isOpen ? 'w-64' : 'w-16',
       currentTheme === 'dark' ? 'sidebar-dark' :
       currentTheme === 'light' ? 'sidebar-light' :
-      'sidebar-cyber'
+      'sidebar-cyber',
+      !isOpen && showEdgePreview ? 'sidebar-preview-active' : ''
     ]"
+    @mouseenter="handleEdgeHover(true)"
+    @mouseleave="handleEdgeHover(false)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header">
       <h1 
@@ -129,13 +155,17 @@ const showMenuText = computed(() => props.isOpen)
         LL Pro 系统
       </h1>
       <button
-        class="p-2 rounded-md sidebar-toggle-btn transition-colors duration-300 ml-auto"
-        :class="{
-          'sidebar-toggle-dark': currentTheme === 'dark',
-          'sidebar-toggle-light': currentTheme === 'light',
-          'sidebar-toggle-cyber': currentTheme === 'cyberpunk'
-        }"
+        class="p-2 rounded-md sidebar-toggle-btn transition-colors duration-300"
+        :class="[
+          {
+            'sidebar-toggle-dark': currentTheme === 'dark',
+            'sidebar-toggle-light': currentTheme === 'light',
+            'sidebar-toggle-cyber': currentTheme === 'cyberpunk'
+          },
+          !isOpen ? 'toggle-btn-collapsed' : 'ml-auto'
+        ]"
         @click="toggleSidebar"
+        :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
         <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-6 h-6 flex items-center justify-center"></i>
@@ -236,6 +266,11 @@ const showMenuText = computed(() => props.isOpen)
         </div>
       </div>
     </nav>
+    
+    <!-- 键盘快捷键提示 -->
+    <div v-if="isOpen" class="px-4 py-2 text-xs opacity-60 sidebar-footer">
+      <span>按下 <kbd class="px-1.5 py-1 rounded bg-opacity-20 bg-gray-500 mx-1">Alt+S</kbd> 可快速切换侧边栏</span>
+    </div>
   </aside>
 </template>
 
@@ -304,6 +339,19 @@ const showMenuText = computed(() => props.isOpen)
 }
 
 /* 切换按钮样式 */
+.sidebar-toggle-btn {
+  position: relative;
+  z-index: 20;
+}
+
+/* 收起状态下的切换按钮样式 */
+.toggle-btn-collapsed {
+  margin-left: auto;
+  margin-right: auto;
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 .sidebar-toggle-dark {
   color: #60a5fa;
 }
@@ -311,6 +359,7 @@ const showMenuText = computed(() => props.isOpen)
 .sidebar-toggle-dark:hover {
   background-color: rgba(59, 130, 246, 0.1);
   color: #93c5fd;
+  transform: scale(1.1);
 }
 
 .sidebar-toggle-light {
@@ -320,6 +369,7 @@ const showMenuText = computed(() => props.isOpen)
 .sidebar-toggle-light:hover {
   background-color: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
+  transform: scale(1.1);
 }
 
 .sidebar-toggle-cyber {
@@ -330,6 +380,17 @@ const showMenuText = computed(() => props.isOpen)
 .sidebar-toggle-cyber:hover {
   background-color: rgba(255, 44, 240, 0.15);
   color: #ff73f4;
+  transform: scale(1.1);
+}
+
+/* 侧边栏边缘预览效果 */
+.sidebar-preview-active {
+  opacity: 0.98;
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-preview-active.sidebar-cyber {
+  box-shadow: 5px 0 25px rgba(255, 44, 240, 0.4);
 }
 
 /* 菜单项样式 - 深色主题 */
@@ -515,5 +576,11 @@ const showMenuText = computed(() => props.isOpen)
 .popup-item-inactive-cyberpunk:hover {
   background: rgba(255, 44, 240, 0.1);
   color: white;
+}
+
+/* 底部快捷键提示 */
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: auto;
 }
 </style> 
