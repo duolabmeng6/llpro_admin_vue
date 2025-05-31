@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore } from '../stores/tabs'
 import { menuConfig } from '../config/menu'
@@ -18,10 +18,36 @@ const tabsStore = useTabsStore()
 
 // 菜单展开状态
 const expandedMenus = ref({})
+// 当前悬停的菜单项
+const hoveredMenu = ref(null)
+
+// 监听侧边栏状态变化，当收起时关闭所有展开的子菜单
+watch(() => props.isOpen, (newValue) => {
+  if (!newValue) {
+    expandedMenus.value = {}
+  }
+}, { immediate: true })
 
 // 切换菜单展开状态
-const toggleSubmenu = (menuId) => {
+const toggleSubmenu = (menuId, event) => {
+  // 如果侧边栏是收起状态，不处理点击事件（由悬停处理）
+  if (!props.isOpen) {
+    return
+  }
+  event.stopPropagation()
   expandedMenus.value[menuId] = !expandedMenus.value[menuId]
+}
+
+// 设置悬停菜单
+const setHoveredMenu = (menuId) => {
+  if (!props.isOpen && menuId) {
+    hoveredMenu.value = menuId
+  }
+}
+
+// 清除悬停菜单
+const clearHoveredMenu = () => {
+  hoveredMenu.value = null
 }
 
 // 判断菜单项是否激活
@@ -45,7 +71,12 @@ const toggleSidebar = () => {
 }
 
 // 点击菜单项时，添加或切换到对应的选项卡
-const handleMenuClick = (path) => {
+const handleMenuClick = (path, event) => {
+  // 阻止事件冒泡
+  if (event) {
+    event.stopPropagation()
+  }
+  
   // 如果已经在当前路由，不做任何操作
   if (route.path === path) return
   
@@ -60,6 +91,9 @@ const hasChildren = (menuItem) => {
 
 // 计算菜单是否展开
 const isExpanded = (menuId) => {
+  if (!props.isOpen) {
+    return hoveredMenu.value === menuId
+  }
   return !!expandedMenus.value[menuId]
 }
 
@@ -69,7 +103,7 @@ const showMenuText = computed(() => props.isOpen)
 
 <template>
   <aside
-    class="bg-secondary-800 text-white flex-shrink-0 transition-all duration-300 flex flex-col"
+    class="bg-secondary-800 text-white flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20"
     :class="[isOpen ? 'w-64' : 'w-16']"
   >
     <div class="p-4 flex items-center justify-between">
@@ -103,8 +137,14 @@ const showMenuText = computed(() => props.isOpen)
       </button>
     </div>
     
-    <nav class="mt-5 px-2 flex-1 overflow-y-auto">
-      <div v-for="menuItem in menuConfig" :key="menuItem.id" class="mb-1">
+    <nav class="mt-5 px-2 flex-1 overflow-y-auto scrollbar-thin">
+      <div 
+        v-for="menuItem in menuConfig" 
+        :key="menuItem.id" 
+        class="mb-1 relative"
+        @mouseenter="setHoveredMenu(menuItem.id)"
+        @mouseleave="clearHoveredMenu()"
+      >
         <!-- 一级菜单 -->
         <div
           class="group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
@@ -113,10 +153,11 @@ const showMenuText = computed(() => props.isOpen)
               ? 'bg-secondary-900 text-white' 
               : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
           ]"
-          @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id) : handleMenuClick(menuItem.path)"
+          @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
           <svg
-            class="mr-3 h-6 w-6 flex-shrink-0"
+            class="h-6 w-6 flex-shrink-0"
+            :class="{ 'mr-3': showMenuText }"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -137,15 +178,11 @@ const showMenuText = computed(() => props.isOpen)
           </svg>
         </div>
         
-        <!-- 二级菜单 -->
+        <!-- 二级菜单 - 展开状态 -->
         <div
-          v-if="hasChildren(menuItem)"
+          v-if="hasChildren(menuItem) && isOpen"
           class="mt-1 space-y-1 overflow-hidden transition-all duration-200"
-          :class="[
-            isExpanded(menuItem.id) ? 'max-h-60' : 'max-h-0',
-            !showMenuText ? 'absolute left-16 top-auto bg-secondary-800 rounded-md shadow-lg z-10 w-48' : ''
-          ]"
-          :style="!showMenuText && isExpanded(menuItem.id) ? { top: '0px' } : {}"
+          :class="[isExpanded(menuItem.id) ? 'max-h-60' : 'max-h-0']"
         >
           <div
             v-for="childItem in menuItem.children"
@@ -156,7 +193,27 @@ const showMenuText = computed(() => props.isOpen)
                 ? 'bg-secondary-900 text-white'
                 : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
             ]"
-            @click="handleMenuClick(childItem.path)"
+            @click="handleMenuClick(childItem.path, $event)"
+          >
+            <span class="truncate">{{ childItem.title }}</span>
+          </div>
+        </div>
+        
+        <!-- 二级菜单 - 收起状态下的悬停弹出 -->
+        <div
+          v-if="hasChildren(menuItem) && !isOpen && isExpanded(menuItem.id)"
+          class="absolute left-16 top-0 z-10 w-48 bg-secondary-800 rounded-md shadow-lg py-1"
+        >
+          <div
+            v-for="childItem in menuItem.children"
+            :key="childItem.id"
+            class="group flex items-center px-4 py-2 text-sm font-medium cursor-pointer"
+            :class="[
+              isSubmenuActive(childItem.path)
+                ? 'bg-secondary-900 text-white'
+                : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
+            ]"
+            @click="handleMenuClick(childItem.path, $event)"
           >
             <span class="truncate">{{ childItem.title }}</span>
           </div>
@@ -175,5 +232,23 @@ const showMenuText = computed(() => props.isOpen)
 
 .max-h-60 {
   max-height: 15rem;
+}
+
+/* 自定义滚动条样式 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 </style> 

@@ -39,7 +39,10 @@ onMounted(() => {
     <Sidebar :is-open="isSidebarOpen" @toggle="toggleSidebar" />
     
     <!-- Main content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div 
+      class="flex-1 flex flex-col overflow-hidden transition-all duration-300"
+      :class="[isSidebarOpen ? 'ml-64' : 'ml-16']"
+    >
       <!-- Top navbar -->
       <Navbar 
         :username="authStore.user?.username || '用户'" 

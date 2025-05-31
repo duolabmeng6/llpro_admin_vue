@@ -11,6 +11,7 @@
 - Tailwind CSS 4.1.8 - 样式框架
 - Axios - HTTP客户端
 - Express - 模拟数据服务
+- font-awesome 6.7
 
 ## 开发
 
