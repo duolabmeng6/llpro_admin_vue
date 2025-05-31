@@ -1,5 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import { useTabsStore } from '../stores/tabs'
 
 const props = defineProps({
   isOpen: {
@@ -9,11 +10,21 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['toggle'])
-
+const router = useRouter()
 const route = useRoute()
+const tabsStore = useTabsStore()
 
 const toggleSidebar = () => {
   emit('toggle')
+}
+
+// 点击菜单项时，添加或切换到对应的选项卡
+const handleMenuClick = (path) => {
+  // 如果已经在当前路由，不做任何操作
+  if (route.path === path) return
+  
+  // 导航到指定路径
+  router.push(path)
 }
 </script>
 
@@ -46,10 +57,10 @@ const toggleSidebar = () => {
     </div>
     
     <nav class="mt-5 px-2">
-      <router-link
-        to="/dashboard"
-        class="group flex items-center px-2 py-2 text-base font-medium rounded-md"
+      <div
+        class="group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
         :class="[route.path === '/dashboard' ? 'bg-secondary-900 text-white' : 'text-secondary-300 hover:bg-secondary-700 hover:text-white']"
+        @click="handleMenuClick('/dashboard')"
       >
         <svg
           class="mr-3 h-6 w-6"
@@ -65,12 +76,12 @@ const toggleSidebar = () => {
           />
         </svg>
         仪表盘
-      </router-link>
+      </div>
       
-      <router-link
-        to="/users"
-        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md"
+      <div
+        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
         :class="[route.path === '/users' ? 'bg-secondary-900 text-white' : 'text-secondary-300 hover:bg-secondary-700 hover:text-white']"
+        @click="handleMenuClick('/users')"
       >
         <svg
           class="mr-3 h-6 w-6"
@@ -86,12 +97,12 @@ const toggleSidebar = () => {
           />
         </svg>
         用户管理
-      </router-link>
+      </div>
       
-      <router-link
-        to="/roles"
-        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md"
+      <div
+        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
         :class="[route.path === '/roles' ? 'bg-secondary-900 text-white' : 'text-secondary-300 hover:bg-secondary-700 hover:text-white']"
+        @click="handleMenuClick('/roles')"
       >
         <svg
           class="mr-3 h-6 w-6"
@@ -107,12 +118,12 @@ const toggleSidebar = () => {
           />
         </svg>
         角色管理
-      </router-link>
+      </div>
       
-      <router-link
-        to="/settings"
-        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md"
+      <div
+        class="mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
         :class="[route.path === '/settings' ? 'bg-secondary-900 text-white' : 'text-secondary-300 hover:bg-secondary-700 hover:text-white']"
+        @click="handleMenuClick('/settings')"
       >
         <svg
           class="mr-3 h-6 w-6"
@@ -134,7 +145,7 @@ const toggleSidebar = () => {
           />
         </svg>
         系统设置
-      </router-link>
+      </div>
     </nav>
   </aside>
 </template> 
