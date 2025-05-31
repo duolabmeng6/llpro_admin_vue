@@ -16,6 +16,13 @@ export const menuConfig = [
     children: []
   },
   {
+    id: 'components',
+    title: '组件画廊',
+    path: '/components',
+    icon: 'fa-solid fa-puzzle-piece',
+    children: []
+  },
+  {
     id: 'user',
     title: '用户管理',
     path: '/users',

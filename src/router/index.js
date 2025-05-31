@@ -23,6 +23,12 @@ const routes = [
         meta: { title: '仪表盘', icon: 'dashboard' }
       },
       {
+        path: 'components',
+        name: 'ComponentsGallery',
+        component: () => import('../views/ComponentsGallery.vue'),
+        meta: { title: '组件画廊', icon: 'components' }
+      },
+      {
         path: 'users',
         name: 'UserManagement',
         component: () => import('../views/UserManagement.vue'),
