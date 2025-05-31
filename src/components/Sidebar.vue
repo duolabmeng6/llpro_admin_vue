@@ -23,15 +23,16 @@ const currentTheme = computed(() => themeStore.currentTheme)
 
 // 菜单展开状态
 const expandedMenus = ref({})
-// 当前悬停的菜单项
-const hoveredMenu = ref(null)
-// 控制鼠标悬停在收起侧边栏边缘时的预览
-const showEdgePreview = ref(false)
+// 侧边栏临时展开状态（鼠标悬停时）
+const tempExpanded = ref(false)
 
 // 监听侧边栏状态变化，当收起时关闭所有展开的子菜单
 watch(() => props.isOpen, (newValue) => {
   if (!newValue) {
     expandedMenus.value = {}
+  } else {
+    // 当展开侧边栏时，重置临时展开状态
+    tempExpanded.value = false
   }
 }, { immediate: true })
 
@@ -51,30 +52,20 @@ const handleKeydown = (event) => {
 
 // 切换菜单展开状态
 const toggleSubmenu = (menuId, event) => {
-  // 如果侧边栏是收起状态，不处理点击事件（由悬停处理）
-  if (!props.isOpen) {
-    return
+  // 阻止事件冒泡
+  if (event) {
+    event.stopPropagation();
   }
-  event.stopPropagation()
-  expandedMenus.value[menuId] = !expandedMenus.value[menuId]
+  
+  // 无论侧边栏是实际展开还是临时展开，都使用相同的切换逻辑
+  expandedMenus.value[menuId] = !expandedMenus.value[menuId];
 }
 
-// 设置悬停菜单
-const setHoveredMenu = (menuId) => {
-  if (!props.isOpen && menuId) {
-    hoveredMenu.value = menuId
-  }
-}
-
-// 清除悬停菜单
-const clearHoveredMenu = () => {
-  hoveredMenu.value = null
-}
-
-// 处理侧边栏边缘预览
-const handleEdgeHover = (isHovering) => {
+// 处理侧边栏鼠标悬停
+const handleSidebarHover = (isHovering) => {
+  // 只有当侧边栏处于收缩状态时，才应用临时展开
   if (!props.isOpen) {
-    showEdgePreview.value = isHovering
+    tempExpanded.value = isHovering;
   }
 }
 
@@ -119,28 +110,32 @@ const hasChildren = (menuItem) => {
 
 // 计算菜单是否展开
 const isExpanded = (menuId) => {
-  if (!props.isOpen) {
-    return hoveredMenu.value === menuId
-  }
   return !!expandedMenus.value[menuId]
 }
 
-// 计算是否显示菜单文本（在收起状态下只显示图标）
-const showMenuText = computed(() => props.isOpen)
+// 计算是否显示菜单文本（在收起状态下只显示图标，除非临时展开）
+const showMenuText = computed(() => props.isOpen || tempExpanded.value)
+
+// 计算侧边栏宽度
+const sidebarWidth = computed(() => {
+  if (props.isOpen || tempExpanded.value) {
+    return 'w-64';
+  }
+  return 'w-16';
+})
 </script>
 
 <template>
   <aside
     class="sidebar-container flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20"
     :class="[
-      isOpen ? 'w-64' : 'w-16',
+      sidebarWidth,
       currentTheme === 'dark' ? 'sidebar-dark' :
       currentTheme === 'light' ? 'sidebar-light' :
-      'sidebar-cyber',
-      !isOpen && showEdgePreview ? 'sidebar-preview-active' : ''
+      'sidebar-cyber'
     ]"
-    @mouseenter="handleEdgeHover(true)"
-    @mouseleave="handleEdgeHover(false)"
+    @mouseenter="handleSidebarHover(true)"
+    @mouseleave="handleSidebarHover(false)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header">
       <h1 
@@ -155,14 +150,15 @@ const showMenuText = computed(() => props.isOpen)
         LL Pro 系统
       </h1>
       <button
-        class="p-2 rounded-md sidebar-toggle-btn transition-colors duration-300"
+        v-if="props.isOpen || tempExpanded"
+        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300"
         :class="[
           {
             'sidebar-toggle-dark': currentTheme === 'dark',
             'sidebar-toggle-light': currentTheme === 'light',
             'sidebar-toggle-cyber': currentTheme === 'cyberpunk'
           },
-          !isOpen ? 'toggle-btn-collapsed' : 'ml-auto'
+          'ml-auto'
         ]"
         @click="toggleSidebar"
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
@@ -177,8 +173,6 @@ const showMenuText = computed(() => props.isOpen)
         v-for="menuItem in menuConfig" 
         :key="menuItem.id" 
         class="mb-3 relative"
-        @mouseenter="setHoveredMenu(menuItem.id)"
-        @mouseleave="clearHoveredMenu()"
       >
         <!-- 一级菜单 -->
         <div
@@ -209,9 +203,9 @@ const showMenuText = computed(() => props.isOpen)
           ></i>
         </div>
         
-        <!-- 二级菜单 - 展开状态 -->
+        <!-- 二级菜单 -->
         <div
-          v-if="hasChildren(menuItem) && isOpen"
+          v-if="hasChildren(menuItem) && showMenuText"
           class="mt-1 space-y-1 overflow-hidden transition-all duration-300"
           :class="[isExpanded(menuItem.id) ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0']"
         >
@@ -234,43 +228,8 @@ const showMenuText = computed(() => props.isOpen)
             <span class="truncate">{{ childItem.title }}</span>
           </div>
         </div>
-        
-        <!-- 二级菜单 - 收起状态下的悬停弹出 -->
-        <div
-          v-if="hasChildren(menuItem) && !isOpen && isExpanded(menuItem.id)"
-          class="absolute left-16 top-0 z-10 w-48 rounded-lg shadow-lg py-2 submenu-popup"
-          :class="{
-            'submenu-popup-dark': currentTheme === 'dark',
-            'submenu-popup-light': currentTheme === 'light',
-            'submenu-popup-cyber': currentTheme === 'cyberpunk'
-          }"
-        >
-          <div
-            v-for="childItem in menuItem.children"
-            :key="childItem.id"
-            class="group flex items-center px-4 py-2 text-sm font-medium cursor-pointer transition-all duration-300"
-            :class="[
-              isSubmenuActive(childItem.path)
-                ? `popup-item-active-${currentTheme}`
-                : `popup-item-inactive-${currentTheme}`
-            ]"
-            @click="handleMenuClick(childItem.path, $event)"
-          >
-            <i 
-              v-if="childItem.icon" 
-              :class="childItem.icon" 
-              class="mr-2 w-4 h-4 flex items-center justify-center"
-            ></i>
-            <span class="truncate">{{ childItem.title }}</span>
-          </div>
-        </div>
       </div>
     </nav>
-    
-    <!-- 键盘快捷键提示 -->
-    <div v-if="isOpen" class="px-4 py-2 text-xs opacity-60 sidebar-footer">
-      <span>按下 <kbd class="px-1.5 py-1 rounded bg-opacity-20 bg-gray-500 mx-1">Alt+S</kbd> 可快速切换侧边栏</span>
-    </div>
   </aside>
 </template>
 
@@ -344,14 +303,6 @@ const showMenuText = computed(() => props.isOpen)
   z-index: 20;
 }
 
-/* 收起状态下的切换按钮样式 */
-.toggle-btn-collapsed {
-  margin-left: auto;
-  margin-right: auto;
-  transform: scale(1.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
 .sidebar-toggle-dark {
   color: #60a5fa;
 }
@@ -381,16 +332,6 @@ const showMenuText = computed(() => props.isOpen)
   background-color: rgba(255, 44, 240, 0.15);
   color: #ff73f4;
   transform: scale(1.1);
-}
-
-/* 侧边栏边缘预览效果 */
-.sidebar-preview-active {
-  opacity: 0.98;
-  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
-}
-
-.sidebar-preview-active.sidebar-cyber {
-  box-shadow: 5px 0 25px rgba(255, 44, 240, 0.4);
 }
 
 /* 菜单项样式 - 深色主题 */
@@ -506,81 +447,5 @@ const showMenuText = computed(() => props.isOpen)
 .submenu-inactive-cyberpunk:hover {
   background: rgba(255, 44, 240, 0.1);
   color: white;
-}
-
-/* 弹出菜单样式 */
-.submenu-popup {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.submenu-popup-dark {
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.submenu-popup-light {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.submenu-popup-cyber {
-  background: rgba(13, 2, 33, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 44, 240, 0.3);
-  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
-}
-
-/* 弹出菜单项样式 */
-.popup-item-active-dark {
-  background: rgba(59, 130, 246, 0.15);
-  color: white;
-}
-
-.popup-item-inactive-dark {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.popup-item-inactive-dark:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-}
-
-.popup-item-active-light {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1e293b;
-}
-
-.popup-item-inactive-light {
-  color: #64748b;
-}
-
-.popup-item-inactive-light:hover {
-  background: rgba(241, 245, 249, 0.8);
-  color: #1e293b;
-}
-
-.popup-item-active-cyberpunk {
-  background: rgba(255, 44, 240, 0.15);
-  color: white;
-}
-
-.popup-item-inactive-cyberpunk {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.popup-item-inactive-cyberpunk:hover {
-  background: rgba(255, 44, 240, 0.1);
-  color: white;
-}
-
-/* 底部快捷键提示 */
-.sidebar-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: auto;
 }
 </style> 
