@@ -1,0 +1,188 @@
+/* 明亮主题 - Light Theme */
+
+/* 颜色变量 */
+:root {
+  /* 使用slate的颜色作为gray，但顺序相反 */
+  --color-gray-950: oklch(0.984 0.003 247.858);
+  --color-gray-900: oklch(0.968 0.007 247.896);
+  --color-gray-800: oklch(0.929 0.013 255.508);
+  --color-gray-700: oklch(0.869 0.022 252.894);
+  --color-gray-600: oklch(0.704 0.04 256.788);
+  --color-gray-500: oklch(0.554 0.046 257.417);
+  --color-gray-400: oklch(0.446 0.043 257.281);
+  --color-gray-300: oklch(0.372 0.044 257.287);
+  --color-gray-200: oklch(0.279 0.041 260.031);
+  --color-gray-100: oklch(0.208 0.042 265.755);
+  --color-gray-50: oklch(0.129 0.042 264.695);
+
+  /* 使用sky的颜色作为primary */
+  --color-primary-50: oklch(0.977 0.013 236.62);
+  --color-primary-100: oklch(0.951 0.026 236.824);
+  --color-primary-200: oklch(0.901 0.058 230.902);
+  --color-primary-300: oklch(0.828 0.111 230.318);
+  --color-primary-400: oklch(0.746 0.16 232.661);
+  --color-primary-500: oklch(0.685 0.169 237.323);
+  --color-primary-600: oklch(0.588 0.158 241.966);
+  --color-primary-700: oklch(0.5 0.134 242.749);
+  --color-primary-800: oklch(0.443 0.11 240.79);
+  --color-primary-900: oklch(0.391 0.09 240.876);
+  --color-primary-950: oklch(0.293 0.066 243.157);
+
+  /* 使用gray的颜色作为secondary */
+  --color-secondary-950: oklch(0.985 0.002 247.839);
+  --color-secondary-900: oklch(0.967 0.003 264.542);
+  --color-secondary-800: oklch(0.928 0.006 264.531);
+  --color-secondary-700: oklch(0.872 0.01 258.338);
+  --color-secondary-600: oklch(0.707 0.022 261.325);
+  --color-secondary-500: oklch(0.551 0.027 264.364);
+  --color-secondary-400: oklch(0.446 0.03 256.802);
+  --color-secondary-300: oklch(0.373 0.034 259.733);
+  --color-secondary-200: oklch(0.278 0.033 256.848);
+  --color-secondary-100: oklch(0.21 0.034 264.665);
+  --color-secondary-50: oklch(0.13 0.028 261.692);
+  
+  /* 明亮主题颜色 */
+  --color-light-bg: oklch(0.98 0.005 260);
+  --color-light-surface: oklch(0.95 0.01 260);
+  --color-light-border: oklch(0.85 0.02 260);
+  
+  /* 柔和色调 */
+  --color-soft-blue: oklch(0.8 0.1 250);
+  --color-soft-purple: oklch(0.85 0.1 300);
+  --color-soft-cyan: oklch(0.9 0.08 200);
+  --color-soft-pink: oklch(0.9 0.1 330);
+}
+
+/* 玻璃拟态效果 - 明亮版 */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.glass-morphism-light {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* 柔和边框效果 */
+.soft-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.soft-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    var(--color-soft-blue),
+    var(--color-soft-purple),
+    var(--color-soft-cyan),
+    var(--color-soft-pink)
+  );
+  background-size: 400% 400%;
+  animation: soft-glow 8s ease infinite;
+}
+
+/* 柔和文本效果 */
+.soft-text {
+  background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-700));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* 动画效果 */
+@keyframes soft-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 全局明亮主题样式覆盖 */
+body {
+  background-color: var(--color-light-bg);
+  color: var(--color-gray-800);
+}
+
+/* 卡片样式覆盖 */
+.card, 
+.bg-white, 
+[class*="bg-white"], 
+[class*="bg-gray-50"], 
+[class*="bg-gray-100"] {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--color-gray-800) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 文本颜色覆盖 */
+[class*="text-gray-900"], 
+[class*="text-gray-800"], 
+[class*="text-gray-700"] {
+  color: var(--color-gray-800) !important;
+}
+
+[class*="text-gray-600"], 
+[class*="text-gray-500"], 
+[class*="text-gray-400"] {
+  color: var(--color-gray-600) !important;
+}
+
+/* 表单元素样式覆盖 */
+input, 
+select, 
+textarea {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--color-gray-800) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
+}
+
+/* 按钮样式覆盖 */
+button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--color-gray-800) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 表格样式覆盖 */
+table {
+  background-color: transparent !important;
+}
+
+table th {
+  background-color: rgba(240, 240, 250, 0.8) !important;
+  color: var(--color-gray-800) !important;
+}
+
+table td {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  color: var(--color-gray-700) !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+table tr:hover td {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+} 

@@ -22,8 +22,22 @@ app.config.globalProperties.$notify = notify
 setupErrorHandler(app, notify)
 
 // 注册Pinia和路由
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
 
 // 挂载应用
 app.mount('#app')
+
+// 等待DOM更新后初始化主题
+setTimeout(() => {
+  try {
+    // 初始化主题
+    const { useThemeStore } = require('./stores/theme')
+    const themeStore = useThemeStore()
+    console.log('初始化主题...')
+    themeStore.initTheme()
+  } catch (error) {
+    console.error('初始化主题失败:', error)
+  }
+}, 100)

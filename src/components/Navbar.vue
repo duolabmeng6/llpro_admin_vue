@@ -2,6 +2,7 @@
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import ThemeSwitcher from './ThemeSwitcher.vue'
 
 const props = defineProps({
   username: {
@@ -65,6 +66,9 @@ const logout = async () => {
           <i class="fas fa-clock mr-2"></i>
           <span class="text-sm font-mono">{{ currentTime }}</span>
         </div>
+        
+        <!-- 主题切换器 -->
+        <ThemeSwitcher />
         
         <!-- 用户信息 -->
         <div class="flex items-center neon-border rounded-full px-3 py-1.5 bg-opacity-20 bg-black">

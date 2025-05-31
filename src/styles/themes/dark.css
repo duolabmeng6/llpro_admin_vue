@@ -1,71 +1,56 @@
-@import "tailwindcss";
+/* 深色主题 - Dark Theme */
 
-/* 基础动画效果 */
-@keyframes neon-glow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* 颜色变量 */
+:root {
+  /* 使用slate的颜色作为gray */
+  --color-gray-50: oklch(0.984 0.003 247.858);
+  --color-gray-100: oklch(0.968 0.007 247.896);
+  --color-gray-200: oklch(0.929 0.013 255.508);
+  --color-gray-300: oklch(0.869 0.022 252.894);
+  --color-gray-400: oklch(0.704 0.04 256.788);
+  --color-gray-500: oklch(0.554 0.046 257.417);
+  --color-gray-600: oklch(0.446 0.043 257.281);
+  --color-gray-700: oklch(0.372 0.044 257.287);
+  --color-gray-800: oklch(0.279 0.041 260.031);
+  --color-gray-900: oklch(0.208 0.042 265.755);
+  --color-gray-950: oklch(0.129 0.042 264.695);
 
-@keyframes pulse-glow {
-  0% { box-shadow: 0 0 5px 0px currentColor; }
-  50% { box-shadow: 0 0 15px 2px currentColor; }
-  100% { box-shadow: 0 0 5px 0px currentColor; }
-}
+  /* 使用sky的颜色作为primary */
+  --color-primary-50: oklch(0.977 0.013 236.62);
+  --color-primary-100: oklch(0.951 0.026 236.824);
+  --color-primary-200: oklch(0.901 0.058 230.902);
+  --color-primary-300: oklch(0.828 0.111 230.318);
+  --color-primary-400: oklch(0.746 0.16 232.661);
+  --color-primary-500: oklch(0.685 0.169 237.323);
+  --color-primary-600: oklch(0.588 0.158 241.966);
+  --color-primary-700: oklch(0.5 0.134 242.749);
+  --color-primary-800: oklch(0.443 0.11 240.79);
+  --color-primary-900: oklch(0.391 0.09 240.876);
+  --color-primary-950: oklch(0.293 0.066 243.157);
 
-/* 页面过渡动画 */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-/* 主题过渡动画 */
-.theme-transition {
-  transition: opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* 确保在主题切换过程中背景色不会变为白色 */
-body.theme-transition {
-  background-color: #111827 !important; /* 深色背景作为过渡底色 */
-}
-
-/* 全局主题过渡样式 */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* 主题切换时禁用过渡，避免闪烁 */
-.theme-transition * {
-  transition: none !important;
-}
-
-/* 在主题完全加载后恢复过渡效果 */
-body:not(.theme-transition) * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* 添加滚动条样式 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
+  /* 使用gray的颜色作为secondary */
+  --color-secondary-50: oklch(0.985 0.002 247.839);
+  --color-secondary-100: oklch(0.967 0.003 264.542);
+  --color-secondary-200: oklch(0.928 0.006 264.531);
+  --color-secondary-300: oklch(0.872 0.01 258.338);
+  --color-secondary-400: oklch(0.707 0.022 261.325);
+  --color-secondary-500: oklch(0.551 0.027 264.364);
+  --color-secondary-600: oklch(0.446 0.03 256.802);
+  --color-secondary-700: oklch(0.373 0.034 259.733);
+  --color-secondary-800: oklch(0.278 0.033 256.848);
+  --color-secondary-900: oklch(0.21 0.034 264.665);
+  --color-secondary-950: oklch(0.13 0.028 261.692);
+  
+  /* 科技感深色主题颜色 */
+  --color-dark-bg: oklch(0.15 0.02 260);
+  --color-dark-surface: oklch(0.18 0.02 260);
+  --color-dark-border: oklch(0.25 0.04 260);
+  
+  /* 霓虹色调 */
+  --color-neon-blue: oklch(0.7 0.2 250);
+  --color-neon-purple: oklch(0.65 0.25 300);
+  --color-neon-cyan: oklch(0.8 0.15 200);
+  --color-neon-pink: oklch(0.7 0.25 330);
 }
 
 /* 玻璃拟态效果 */
