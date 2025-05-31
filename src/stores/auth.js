@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import http from '../utils/axios'
 
-const API_URL = '/api'
+// const API_URL = '/api'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -22,8 +22,8 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       
       try {
-        const response = await axios.post(`${API_URL}/auth/login`, credentials)
-        const { user, token } = response.data
+        const response = await http.post('/auth/login', credentials)
+        const { user, token } = response
         
         this.user = user
         this.token = token
@@ -43,9 +43,7 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       try {
         if (this.token) {
-          await axios.post(`${API_URL}/auth/logout`, {}, {
-            headers: { Authorization: `Bearer ${this.token}` }
-          })
+          await http.post('/auth/logout')
         }
       } catch (error) {
         console.error('退出登录错误:', error)
@@ -63,11 +61,9 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       
       try {
-        const response = await axios.get(`${API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${this.token}` }
-        })
+        const response = await http.get('/auth/me')
         
-        this.user = response.data
+        this.user = response
         localStorage.setItem('user', JSON.stringify(this.user))
         
         return this.user

@@ -56,14 +56,34 @@ router.get('/me', (req, res) => {
   // In a real app, you would verify the token and get the user from it
   const authHeader = req.headers.authorization;
   
+  console.log('Authorization header:', authHeader);
+  
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
   
   const token = authHeader.split(' ')[1];
-  const userId = token.split('-')[2]; // Extract user ID from mock token
+  console.log('Token:', token);
+  
+  // 修复从token中提取用户ID的逻辑
+  let userId = '1'; // 默认使用ID为1的用户（admin）
+  
+  if (token.startsWith('mock-jwt-token-')) {
+    // 尝试提取用户ID
+    const parts = token.split('-');
+    console.log('Token parts:', parts);
+    // 正确提取用户ID，应该是第3个部分（索引为2）
+    if (parts.length >= 4) {
+      userId = parts[3]; // 修复：使用正确的索引位置
+    }
+  }
+  
+  console.log('User ID:', userId);
+  console.log('Available users:', users);
   
   const user = users.find(u => u.id === userId);
+  
+  console.log('Found user:', user);
   
   if (!user) {
     return res.status(404).json({ message: 'User not found' });

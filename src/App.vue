@@ -22,10 +22,23 @@ onMounted(async () => {
   // 获取当前用户信息
   if (authStore.token) {
     try {
+      console.log('正在获取用户信息...')
+      console.log('当前token:', authStore.token)
       await authStore.fetchCurrentUser()
+      console.log('获取用户信息成功:', authStore.user)
     } catch (error) {
-      console.error('Failed to fetch user data:', error)
+      console.error('获取用户信息失败:', error)
+      // 显示通知
+      if (notificationRef.value) {
+        notificationRef.value.notify({
+          type: 'error',
+          title: '获取用户信息失败',
+          message: error.message || '请重新登录'
+        })
+      }
     }
+  } else {
+    console.log('未找到token，用户未登录')
   }
 })
 </script>
