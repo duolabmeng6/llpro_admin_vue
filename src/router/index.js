@@ -29,16 +29,34 @@ const routes = [
         meta: { title: '用户管理', icon: 'users' }
       },
       {
+        path: 'users/profile',
+        name: 'UserProfile',
+        component: () => import('../views/UserProfile.vue'),
+        meta: { title: '用户档案', icon: 'users' }
+      },
+      {
         path: 'roles',
         name: 'RoleManagement',
         component: () => import('../views/RoleManagement.vue'),
         meta: { title: '角色管理', icon: 'roles' }
       },
       {
+        path: 'roles/permissions',
+        name: 'RolePermissions',
+        component: () => import('../views/RolePermissions.vue'),
+        meta: { title: '权限设置', icon: 'roles' }
+      },
+      {
         path: 'settings',
         name: 'Settings',
         component: () => import('../views/Settings.vue'),
         meta: { title: '系统设置', icon: 'settings' }
+      },
+      {
+        path: 'settings/backup',
+        name: 'Backup',
+        component: () => import('../views/Backup.vue'),
+        meta: { title: '备份恢复', icon: 'settings' }
       }
     ]
   },

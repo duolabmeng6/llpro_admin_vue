@@ -10,10 +10,11 @@ import TabsNav from '../components/TabsNav.vue'
 const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const route = useRoute()
-const isSidebarOpen = ref(true)
+const isSidebarOpen = ref(localStorage.getItem('sidebarOpen') !== 'false')
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
+  localStorage.setItem('sidebarOpen', isSidebarOpen.value)
 }
 
 // 监听路由变化，自动添加标签
