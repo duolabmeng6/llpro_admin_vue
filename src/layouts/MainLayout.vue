@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTabsStore } from '../stores/tabs'
@@ -47,11 +47,21 @@ const particleColors = computed(() => {
 watch(() => themeStore.currentTheme, (newTheme) => {
   currentTheme.value = newTheme;
   
+  // 确保HTML根元素类名正确设置
+  themeStore.updateHtmlThemeClass(newTheme);
+  
   // 主题变化时平滑过渡粒子颜色
   if (particles.value.length > 0) {
     transitionParticleColors();
   }
 }, { immediate: true });
+
+// 使用watchEffect监听主题变化并更新HTML根元素
+watchEffect(() => {
+  const theme = themeStore.currentTheme;
+  console.log('主题变化检测到:', theme);
+  themeStore.updateHtmlThemeClass(theme);
+});
 
 // 监听路由变化，自动添加标签
 watch(() => route.path, (newPath) => {
@@ -60,6 +70,37 @@ watch(() => route.path, (newPath) => {
     tabsStore.addTab(route)
   }
 }, { immediate: true })
+
+// 强制重新应用当前主题
+const reapplyCurrentTheme = async () => {
+  try {
+    const theme = themeStore.currentTheme;
+    console.log('管理面板重新应用当前主题:', theme);
+    
+    // 更新HTML根元素类名
+    themeStore.updateHtmlThemeClass(theme);
+    
+    // 确保主题CSS文件被正确加载
+    const themeConfig = themeStore.availableThemes.find(t => t.id === theme);
+    if (themeConfig && themeConfig.file) {
+      // 引入主题加载工具
+      const { loadTheme } = await import('../utils/themeLoader');
+      await loadTheme(themeConfig.file);
+      
+      // 强制重新应用主题变量
+      document.documentElement.style.setProperty('--theme-transition', 'all 0.3s ease');
+      setTimeout(() => {
+        document.documentElement.style.removeProperty('--theme-transition');
+      }, 300);
+    } else {
+      console.warn('主题配置不完整或未找到:', theme);
+    }
+    
+    console.log('主题重新应用成功');
+  } catch (error) {
+    console.error('重新应用主题时出错:', error);
+  }
+}
 
 // 平滑过渡粒子颜色
 const transitionParticleColors = () => {
@@ -185,18 +226,36 @@ const toggleSidebar = () => {
   localStorage.setItem('sidebarOpen', isSidebarOpen.value)
 }
 
-onMounted(() => {
-  // 初始化时，如果当前路由不是登录页，则添加到标签
-  if (route.meta.requiresAuth !== false && route.name !== 'NotFound') {
-    tabsStore.addTab(route)
-  }
+// 组件挂载时初始化
+onMounted(async () => {
+  console.log('MainLayout组件挂载，初始化主题...');
   
-  // 添加背景动画
-  initBackgroundAnimation()
-})
+  // 首先确保HTML根元素有正确的类名
+  themeStore.updateHtmlThemeClass(themeStore.currentTheme);
+  
+  // 重新应用当前主题
+  await reapplyCurrentTheme();
+  
+  // 初始化背景动画
+  initBgAnimation();
+  
+  // 定期检查主题是否正确应用（防止某些情况下主题类名丢失）
+  const themeCheckInterval = setInterval(() => {
+    const currentThemeClass = document.documentElement.getAttribute('data-theme');
+    if (currentThemeClass !== themeStore.currentTheme) {
+      console.warn('检测到主题不一致，重新应用主题');
+      themeStore.updateHtmlThemeClass(themeStore.currentTheme);
+    }
+  }, 5000);
+  
+  // 组件卸载时清除定时器
+  onBeforeUnmount(() => {
+    clearInterval(themeCheckInterval);
+  });
+});
 
 // 背景动画
-const initBackgroundAnimation = () => {
+const initBgAnimation = () => {
   const canvas = document.createElement('canvas')
   canvas.id = 'background-canvas'
   canvas.style.position = 'fixed'

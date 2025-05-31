@@ -37,6 +37,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useThemeStore } from '../stores/theme'
+import { v4 as uuidv4 } from 'uuid'
 
 const props = defineProps({
   // 通知标题

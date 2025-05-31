@@ -33,6 +33,24 @@ const changeTheme = async (themeId) => {
   }
 }
 
+// 确保主题已正确应用
+const ensureThemeApplied = () => {
+  // 确保HTML根元素类名正确设置
+  const themeName = themeStore.currentTheme;
+  const root = document.documentElement;
+  
+  // 移除所有主题类名
+  root.classList.remove('dark', 'light', 'cyberpunk');
+  
+  // 添加当前主题类名
+  root.classList.add(themeName);
+  
+  // 设置data-theme属性
+  root.setAttribute('data-theme', themeName);
+  
+  console.log('登录页确保主题已应用:', themeName);
+}
+
 const handleLogin = async () => {
   if (!username.value || !password.value) {
     error.value = '请输入用户名和密码'
@@ -47,6 +65,18 @@ const handleLogin = async () => {
       username: username.value,
       password: password.value
     })
+    
+    // 登录成功后，确保当前主题已被正确保存
+    const currentThemeId = themeStore.currentTheme;
+    console.log('登录成功，保存当前主题:', currentThemeId);
+    
+    // 确保主题已正确应用到HTML元素
+    ensureThemeApplied();
+    
+    // 保存主题设置到localStorage，确保它在跳转后能被正确读取
+    localStorage.setItem('ll_pro_admin_theme', currentThemeId);
+    
+    // 跳转到仪表盘
     router.push('/dashboard')
   } catch (err) {
     error.value = err.response?.data?.message || '登录失败，请重试'
@@ -96,7 +126,7 @@ const handleLogin = async () => {
       <div class="glass-morphism p-8 rounded-xl neon-border">
         <div class="text-center">
           <h2 class="mt-2 text-center text-3xl font-bold glow-text">
-            <span class="bg-gradient-to-r from-primary-gradient to-secondary-gradient bg-clip-text text-transparent">
+            <span class="title-gradient">
               LL Pro 系统
             </span>
           </h2>
@@ -461,6 +491,27 @@ const handleLogin = async () => {
   margin-left: 8px;
 }
 
+/* 标题渐变文本 */
+.title-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: gradient-shift 5s ease infinite;
+}
+
+:root.dark .title-gradient {
+  background-image: linear-gradient(45deg, #60a5fa, #a78bfa, #60a5fa);
+}
+
+:root.light .title-gradient {
+  background-image: linear-gradient(45deg, #2563eb, #3b82f6, #2563eb);
+}
+
+:root.cyberpunk .title-gradient {
+  background-image: linear-gradient(45deg, #ff2cf0, #00eeff, #ff2cf0);
+}
+
 /* 玻璃态效果 */
 .glass-morphism {
   transition: all 0.5s ease;
@@ -529,30 +580,6 @@ const handleLogin = async () => {
   transition: all 0.3s ease;
 }
 
-:root.dark .from-primary-gradient {
-  --tw-gradient-from: var(--color-neon-blue);
-}
-
-:root.dark .to-secondary-gradient {
-  --tw-gradient-to: var(--color-neon-purple);
-}
-
-:root.light .from-primary-gradient {
-  --tw-gradient-from: var(--color-primary);
-}
-
-:root.light .to-secondary-gradient {
-  --tw-gradient-to: var(--color-primary-light);
-}
-
-:root.cyberpunk .from-primary-gradient {
-  --tw-gradient-from: var(--color-neon-pink);
-}
-
-:root.cyberpunk .to-secondary-gradient {
-  --tw-gradient-to: var(--color-neon-blue);
-}
-
 :root.dark .glow-text {
   text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
 }
@@ -603,45 +630,59 @@ const handleLogin = async () => {
   box-shadow: 0 0 0 2px rgba(255, 44, 240, 0.3);
 }
 
-/* 登录按钮样式 */
-.login-btn {
+/* 登录按钮样式 - 增加选择器特异性并使用更明确的样式 */
+.login-container .login-btn {
   background-size: 200% 200%;
   animation: gradient-shift 5s ease infinite;
   position: relative;
   overflow: hidden;
+  /* 通用样式 - 确保所有主题下文本都是白色 */
+  color: white !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-:root.dark .login-btn {
-  background: linear-gradient(45deg, var(--color-neon-blue), var(--color-neon-purple));
+/* 深色主题按钮 */
+html.dark .login-container .login-btn,
+:root.dark .login-container .login-btn {
+  background: linear-gradient(45deg, #3b82f6, #a78bfa) !important;
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
 }
 
-:root.dark .login-btn:hover {
+html.dark .login-container .login-btn:hover,
+:root.dark .login-container .login-btn:hover {
   box-shadow: 0 0 25px rgba(99, 102, 241, 0.8);
   transform: translateY(-2px);
 }
 
-:root.light .login-btn {
-  background: linear-gradient(45deg, var(--color-primary), var(--color-primary-light));
+/* 明亮主题按钮 */
+html.light .login-container .login-btn,
+:root.light .login-container .login-btn {
+  background: linear-gradient(45deg, #2563eb, #3b82f6) !important;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
-:root.light .login-btn:hover {
+html.light .login-container .login-btn:hover,
+:root.light .login-container .login-btn:hover {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
 }
 
-:root.cyberpunk .login-btn {
-  background: linear-gradient(45deg, var(--color-neon-pink), var(--color-neon-blue));
+/* 赛博朋克主题按钮 */
+html.cyberpunk .login-container .login-btn,
+:root.cyberpunk .login-container .login-btn {
+  background: linear-gradient(45deg, #ff2cf0, #00eeff) !important;
   box-shadow: 0 0 20px rgba(255, 44, 240, 0.6);
 }
 
-:root.cyberpunk .login-btn:hover {
+html.cyberpunk .login-container .login-btn:hover,
+:root.cyberpunk .login-container .login-btn:hover {
   box-shadow: 0 0 30px rgba(255, 44, 240, 0.8);
   transform: translateY(-2px);
 }
 
-.login-btn::before {
+/* 按钮悬停光效 */
+.login-container .login-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -658,7 +699,7 @@ const handleLogin = async () => {
   z-index: 0;
 }
 
-.login-btn:hover::before {
+.login-container .login-btn:hover::before {
   left: 100%;
   transition: 0.5s;
 }

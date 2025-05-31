@@ -77,6 +77,17 @@ export const useThemeStore = defineStore('theme', () => {
         console.log('使用默认主题:', DEFAULT_THEME)
         setTheme(DEFAULT_THEME, false) // 不保存到localStorage，避免循环
       }
+      
+      // 验证主题是否正确应用到HTML
+      setTimeout(() => {
+        const htmlTheme = document.documentElement.getAttribute('data-theme')
+        if (htmlTheme !== currentTheme.value) {
+          console.warn('主题未正确应用到HTML，正在修复...')
+          updateHtmlThemeClass(currentTheme.value)
+        } else {
+          console.log('主题已正确应用到HTML')
+        }
+      }, 500)
     } catch (error) {
       console.error('初始化主题失败:', error)
       hasError.value = true
@@ -85,6 +96,34 @@ export const useThemeStore = defineStore('theme', () => {
       // 出错时更新状态但不尝试加载主题
       currentTheme.value = DEFAULT_THEME
       isLoading.value = false
+      
+      // 尝试应急恢复
+      try {
+        console.log('尝试应急恢复默认主题...')
+        updateHtmlThemeClass(DEFAULT_THEME)
+      } catch (recoveryError) {
+        console.error('应急恢复失败:', recoveryError)
+      }
+    }
+  }
+  
+  // 更新HTML主题类
+  const updateHtmlThemeClass = (themeId) => {
+    try {
+      const root = document.documentElement
+      
+      // 移除所有主题类
+      root.classList.remove('dark', 'light', 'cyberpunk')
+      
+      // 添加当前主题类
+      root.classList.add(themeId)
+      
+      // 设置data-theme属性
+      root.setAttribute('data-theme', themeId)
+      
+      console.log(`已更新HTML根元素类名: ${themeId}`)
+    } catch (error) {
+      console.error('更新HTML主题类失败:', error)
     }
   }
   
@@ -129,7 +168,11 @@ export const useThemeStore = defineStore('theme', () => {
         // 保存到本地存储
         if (saveToStorage) {
           localStorage.setItem(THEME_STORAGE_KEY, themeId)
+          console.log(`主题已保存到本地存储: ${themeId}`)
         }
+        
+        // 确保HTML类名更新
+        updateHtmlThemeClass(themeId)
         
         console.log(`已切换到主题: ${theme.name}`)
       } catch (error) {
@@ -153,11 +196,7 @@ export const useThemeStore = defineStore('theme', () => {
   // 监听主题变化
   watch(currentTheme, (newTheme) => {
     console.log('主题变更为:', newTheme)
-    document.documentElement.setAttribute('data-theme', newTheme)
-    
-    // 更新HTML元素的类名
-    document.documentElement.classList.remove('dark', 'light', 'cyberpunk')
-    document.documentElement.classList.add(newTheme)
+    updateHtmlThemeClass(newTheme)
   })
   
   return {
@@ -168,6 +207,7 @@ export const useThemeStore = defineStore('theme', () => {
     availableThemes,
     getCurrentTheme,
     initTheme,
-    setTheme
+    setTheme,
+    updateHtmlThemeClass
   }
 }) 
