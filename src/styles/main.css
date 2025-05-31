@@ -39,4 +39,183 @@
   --color-secondary-800: oklch(0.278 0.033 256.848);
   --color-secondary-900: oklch(0.21 0.034 264.665);
   --color-secondary-950: oklch(0.13 0.028 261.692);
+  
+  /* 新增科技感深色主题颜色 */
+  --color-dark-bg: oklch(0.15 0.02 260);
+  --color-dark-surface: oklch(0.18 0.02 260);
+  --color-dark-border: oklch(0.25 0.04 260);
+  
+  /* 霓虹色调 */
+  --color-neon-blue: oklch(0.7 0.2 250);
+  --color-neon-purple: oklch(0.65 0.25 300);
+  --color-neon-cyan: oklch(0.8 0.15 200);
+  --color-neon-pink: oklch(0.7 0.25 330);
+}
+
+/* 玻璃拟态效果 */
+.glass-morphism {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-morphism-light {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 霓虹边框效果 */
+.neon-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    var(--color-neon-blue),
+    var(--color-neon-purple),
+    var(--color-neon-cyan),
+    var(--color-neon-pink)
+  );
+  background-size: 400% 400%;
+  animation: neon-glow 8s ease infinite;
+}
+
+/* 发光文本效果 */
+.glow-text {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* 动画效果 */
+@keyframes neon-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px 0px currentColor; }
+  50% { box-shadow: 0 0 15px 2px currentColor; }
+  100% { box-shadow: 0 0 5px 0px currentColor; }
+}
+
+/* 页面过渡动画 */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* 添加滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.8);
+}
+
+/* 全局深色主题样式覆盖 */
+body {
+  background-color: var(--color-dark-bg);
+  color: white;
+}
+
+/* 卡片样式覆盖 */
+.card, 
+.bg-white, 
+[class*="bg-white"], 
+[class*="bg-gray-50"], 
+[class*="bg-gray-100"] {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+  color: white !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 文本颜色覆盖 */
+[class*="text-gray-900"], 
+[class*="text-gray-800"], 
+[class*="text-gray-700"] {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+[class*="text-gray-600"], 
+[class*="text-gray-500"], 
+[class*="text-gray-400"] {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 表单元素样式覆盖 */
+input, 
+select, 
+textarea {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--color-neon-blue) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+}
+
+/* 按钮样式覆盖 */
+button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 表格样式覆盖 */
+table {
+  background-color: transparent !important;
+}
+
+table th {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  color: white !important;
+}
+
+table td {
+  background-color: rgba(30, 41, 59, 0.3) !important;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+table tr:hover td {
+  background-color: rgba(99, 102, 241, 0.15) !important;
 } 

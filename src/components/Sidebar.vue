@@ -103,13 +103,18 @@ const showMenuText = computed(() => props.isOpen)
 
 <template>
   <aside
-    class="bg-secondary-800 text-white flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20"
+    class="glass-morphism text-white flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20 sidebar-bg"
     :class="[isOpen ? 'w-64' : 'w-16']"
   >
-    <div class="p-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold truncate" v-if="showMenuText">LL Pro 管理系统</h1>
+    <div class="p-4 flex items-center justify-between border-b border-opacity-20 border-white">
+      <h1 
+        class="text-xl font-bold truncate bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent" 
+        v-if="showMenuText"
+      >
+        LL Pro 系统
+      </h1>
       <button
-        class="p-2 rounded-md hover:bg-secondary-700 ml-auto"
+        class="p-2 rounded-md hover:text-neon-blue transition-colors duration-300 ml-auto"
         @click="toggleSidebar"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
@@ -121,27 +126,35 @@ const showMenuText = computed(() => props.isOpen)
       <div 
         v-for="menuItem in menuConfig" 
         :key="menuItem.id" 
-        class="mb-1 relative"
+        class="mb-3 relative"
         @mouseenter="setHoveredMenu(menuItem.id)"
         @mouseleave="clearHoveredMenu()"
       >
         <!-- 一级菜单 -->
         <div
-          class="group flex items-center px-2 py-2 text-base font-medium rounded-md cursor-pointer"
+          class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
           :class="[
             isMenuActive(menuItem) 
-              ? 'bg-secondary-900 text-white' 
-              : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
+              ? 'menu-active' 
+              : 'text-gray-300 hover:text-white'
           ]"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
-          <i :class="[menuItem.icon, { 'mr-3': showMenuText }]" class="h-6 w-6 flex-shrink-0 flex items-center justify-center"></i>
-          <span v-if="showMenuText" class="flex-1 truncate">{{ menuItem.title }}</span>
+          <i 
+            :class="[menuItem.icon, { 'mr-3': showMenuText }]" 
+            class="h-6 w-6 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
+          ></i>
+          <span 
+            v-if="showMenuText" 
+            class="flex-1 truncate"
+          >
+            {{ menuItem.title }}
+          </span>
           
           <!-- 展开/收起箭头（仅当有子菜单时显示） -->
           <i 
             v-if="hasChildren(menuItem) && showMenuText"
-            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-200"
+            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300"
             :class="{ 'rotate-90': isExpanded(menuItem.id) }"
           ></i>
         </div>
@@ -149,21 +162,25 @@ const showMenuText = computed(() => props.isOpen)
         <!-- 二级菜单 - 展开状态 -->
         <div
           v-if="hasChildren(menuItem) && isOpen"
-          class="mt-1 space-y-1 overflow-hidden transition-all duration-200"
-          :class="[isExpanded(menuItem.id) ? 'max-h-60' : 'max-h-0']"
+          class="mt-1 space-y-1 overflow-hidden transition-all duration-300"
+          :class="[isExpanded(menuItem.id) ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0']"
         >
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-md cursor-pointer"
+            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300"
             :class="[
               isSubmenuActive(childItem.path)
-                ? 'bg-secondary-900 text-white'
-                : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
+                ? 'submenu-active'
+                : 'text-gray-400 hover:text-white'
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
-            <i v-if="childItem.icon" :class="childItem.icon" class="mr-2 w-4 h-4 flex items-center justify-center"></i>
+            <i 
+              v-if="childItem.icon" 
+              :class="childItem.icon" 
+              class="mr-2 w-4 h-4 flex items-center justify-center"
+            ></i>
             <span class="truncate">{{ childItem.title }}</span>
           </div>
         </div>
@@ -171,20 +188,24 @@ const showMenuText = computed(() => props.isOpen)
         <!-- 二级菜单 - 收起状态下的悬停弹出 -->
         <div
           v-if="hasChildren(menuItem) && !isOpen && isExpanded(menuItem.id)"
-          class="absolute left-16 top-0 z-10 w-48 bg-secondary-800 rounded-md shadow-lg py-1"
+          class="absolute left-16 top-0 z-10 w-48 glass-morphism rounded-lg shadow-lg py-2 submenu-popup"
         >
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center px-4 py-2 text-sm font-medium cursor-pointer"
+            class="group flex items-center px-4 py-2 text-sm font-medium cursor-pointer transition-all duration-300"
             :class="[
               isSubmenuActive(childItem.path)
-                ? 'bg-secondary-900 text-white'
-                : 'text-secondary-300 hover:bg-secondary-700 hover:text-white'
+                ? 'submenu-active'
+                : 'text-gray-300 hover:text-white hover:bg-opacity-10 hover:bg-white'
             ]"
             @click="handleMenuClick(childItem.path, $event)"
           >
-            <i v-if="childItem.icon" :class="childItem.icon" class="mr-2 w-4 h-4 flex items-center justify-center"></i>
+            <i 
+              v-if="childItem.icon" 
+              :class="childItem.icon" 
+              class="mr-2 w-4 h-4 flex items-center justify-center"
+            ></i>
             <span class="truncate">{{ childItem.title }}</span>
           </div>
         </div>
@@ -194,14 +215,61 @@ const showMenuText = computed(() => props.isOpen)
 </template>
 
 <style scoped>
-/* 添加过渡效果 */
-.max-h-0 {
-  max-height: 0;
-  overflow: hidden;
+/* 侧边栏背景 */
+.sidebar-bg {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.85));
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-.max-h-60 {
-  max-height: 15rem;
+/* 菜单项样式 */
+.menu-item {
+  border-left: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(2px);
+}
+
+.menu-active {
+  background: rgba(99, 102, 241, 0.2);
+  border-left: 2px solid var(--color-neon-blue);
+  color: white;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.menu-active i {
+  color: var(--color-neon-blue);
+  filter: drop-shadow(0 0 3px var(--color-neon-blue));
+}
+
+/* 子菜单样式 */
+.submenu-item {
+  border-left: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.submenu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(2px);
+}
+
+.submenu-active {
+  background: rgba(99, 102, 241, 0.15);
+  border-left: 2px solid var(--color-neon-purple);
+  color: white;
+}
+
+/* 弹出子菜单样式 */
+.submenu-popup {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* 自定义滚动条样式 */
@@ -210,15 +278,15 @@ const showMenuText = computed(() => props.isOpen)
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(99, 102, 241, 0.3);
   border-radius: 2px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(99, 102, 241, 0.5);
 }
 </style> 
