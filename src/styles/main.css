@@ -400,18 +400,33 @@ body,
   animation: color-pulse 3s ease-in-out infinite;
 }
 
-/* 全局深色主题样式覆盖 */
-body {
+/* 主题特定样式 - 深色主题 */
+.dark {
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #3b82f6;
+  --color-accent-light: #60a5fa;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --color-scrollbar-track: rgba(0, 0, 0, 0.3);
+}
+
+/* 深色主题特定样式 */
+.dark body {
   background-color: var(--color-dark-bg);
   color: white;
 }
 
-/* 卡片样式覆盖 */
-.card, 
-.bg-white, 
-[class*="bg-white"], 
-[class*="bg-gray-50"], 
-[class*="bg-gray-100"] {
+/* 深色主题卡片样式 */
+.dark .card, 
+.dark .bg-white, 
+.dark [class*="bg-white"], 
+.dark [class*="bg-gray-50"], 
+.dark [class*="bg-gray-100"] {
   background-color: rgba(30, 41, 59, 0.5) !important;
   color: white !important;
   backdrop-filter: blur(8px);
@@ -420,58 +435,95 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* 文本颜色覆盖 */
-[class*="text-gray-900"], 
-[class*="text-gray-800"], 
-[class*="text-gray-700"] {
+/* 深色主题文本颜色 */
+.dark [class*="text-gray-900"], 
+.dark [class*="text-gray-800"], 
+.dark [class*="text-gray-700"] {
   color: rgba(255, 255, 255, 0.95) !important;
 }
 
-[class*="text-gray-600"], 
-[class*="text-gray-500"], 
-[class*="text-gray-400"] {
+.dark [class*="text-gray-600"], 
+.dark [class*="text-gray-500"], 
+.dark [class*="text-gray-400"] {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* 表单元素样式覆盖 */
-input, 
-select, 
-textarea {
+/* 深色主题表单元素样式 */
+.dark input, 
+.dark select, 
+.dark textarea {
   background-color: rgba(30, 41, 59, 0.7) !important;
   color: white !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-input:focus, 
-select:focus, 
-textarea:focus {
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
   border-color: var(--color-neon-blue) !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
 }
 
-/* 按钮样式覆盖 */
-button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
+/* 深色主题按钮样式 */
+.dark button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
   background-color: rgba(30, 41, 59, 0.7) !important;
   color: white !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* 表格样式覆盖 */
-table {
+/* 深色主题表格样式 */
+.dark table {
   background-color: transparent !important;
 }
 
-table th {
+.dark table th {
   background-color: rgba(15, 23, 42, 0.7) !important;
   color: white !important;
 }
 
-table td {
+.dark table td {
   background-color: rgba(30, 41, 59, 0.3) !important;
   color: white !important;
   border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
-table tr:hover td {
+.dark table tr:hover td {
   background-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* 明亮主题特定样式 */
+.light body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+/* 明亮主题卡片样式 */
+.light .card, 
+.light .bg-white, 
+.light [class*="bg-white"], 
+.light [class*="bg-gray-50"], 
+.light [class*="bg-gray-100"] {
+  background-color: var(--color-bg-secondary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* 明亮主题文本颜色 */
+.light [class*="text-gray-900"], 
+.light [class*="text-gray-800"], 
+.light [class*="text-gray-700"] {
+  color: var(--color-text-primary) !important;
+}
+
+.light [class*="text-gray-600"], 
+.light [class*="text-gray-500"], 
+.light [class*="text-gray-400"] {
+  color: var(--color-text-secondary) !important;
+}
+
+/* 赛博朋克主题特定样式 */
+.cyberpunk body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
 } 

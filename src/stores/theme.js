@@ -28,7 +28,7 @@ const themes = {
 }
 
 // 默认主题
-const DEFAULT_THEME = 'dark'
+const DEFAULT_THEME = 'light'
 
 // 主题存储键名
 const THEME_STORAGE_KEY = 'll_pro_admin_theme'
@@ -154,6 +154,10 @@ export const useThemeStore = defineStore('theme', () => {
   watch(currentTheme, (newTheme) => {
     console.log('主题变更为:', newTheme)
     document.documentElement.setAttribute('data-theme', newTheme)
+    
+    // 更新HTML元素的类名
+    document.documentElement.classList.remove('dark', 'light', 'cyberpunk')
+    document.documentElement.classList.add(newTheme)
   })
   
   return {

@@ -277,8 +277,13 @@ const logout = async () => {
 /* 退出按钮 */
 .logout-dark {
   background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-  color: white;
+  color: white !important;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.logout-dark span,
+.logout-dark i {
+  color: white !important;
 }
 
 .logout-dark:hover {
@@ -288,8 +293,13 @@ const logout = async () => {
 
 .logout-light {
   background: linear-gradient(45deg, #2563eb, #4f46e5);
-  color: white;
+  color: white !important;
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+}
+
+.logout-light span,
+.logout-light i {
+  color: white !important;
 }
 
 .logout-light:hover {
@@ -299,9 +309,14 @@ const logout = async () => {
 
 .logout-cyber {
   background: linear-gradient(45deg, #ff2cf0, #00eeff);
-  color: white;
+  color: white !important;
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
+}
+
+.logout-cyber span,
+.logout-cyber i {
+  color: white !important;
 }
 
 .logout-cyber:hover {
