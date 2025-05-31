@@ -113,9 +113,7 @@ const handleContextMenu = (e, tab) => {
             class="ml-2 text-gray-400 hover:text-gray-600"
             @click="closeTab($event, tab.path)"
           >
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i class="fa-solid fa-xmark w-3 h-3 flex items-center justify-center"></i>
           </button>
         </div>
       </div>
