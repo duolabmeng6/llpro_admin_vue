@@ -170,47 +170,162 @@ const handleFileSelect = (event) => {
   event.target.value = ''
 }
 
-// 拖放事件处理
-const handleDragOver = (event) => {
-  if (props.disabled || uploading.value) return
-  
-  event.preventDefault()
-  isDragging.value = true
-}
-
-const handleDragEnter = (event) => {
-  if (props.disabled || uploading.value) return
-  
-  event.preventDefault()
-  isDragActive.value = true
-  dropzoneHovered.value = true
-}
-
-const handleDragLeave = (event) => {
-  event.preventDefault()
-  isDragging.value = false
-  dropzoneHovered.value = false
-  
-  // 检查是否真的离开了元素（避免内部元素触发）
-  const rect = event.currentTarget.getBoundingClientRect()
-  const x = event.clientX
-  const y = event.clientY
-  
-  if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-    isDragActive.value = false
+// 文件排序处理 - 完全重构
+const handleDragStart = (event, file, index) => {
+  if (props.disabled || uploading.value || !props.allowSort) {
+    event.preventDefault()
+    return false
   }
+
+  // 记录被拖拽的文件信息
+  draggedFile.value = { file, index }
+  
+  // 设置拖拽效果和数据
+  event.dataTransfer.effectAllowed = 'move'
+  // 存储索引作为数据
+  event.dataTransfer.setData('text/plain', index.toString())
+  
+  // 添加拖拽中的视觉效果
+  const dragEl = event.target.closest('.preview-card')
+  if (dragEl) {
+    dragEl.classList.add('dragging')
+    
+    // 稍后移除类，确保在整个拖拽过程中保持视觉效果
+    setTimeout(() => {
+      dragEl.classList.add('drag-active')
+    }, 0)
+  }
+  
+  return true
 }
 
-const handleDrop = (event) => {
-  if (props.disabled || uploading.value) return
+// 当拖拽元素进入目标区域时触发
+const handleDragEnter = (event, index) => {
+  if (props.disabled || uploading.value || !props.allowSort || !draggedFile.value) {
+    return false
+  }
+  
+  // 仅在不同元素之间切换时更新
+  if (dragOverIndex.value !== index) {
+    dragOverIndex.value = index
+    
+    // 移除所有其他元素的drop-target类
+    const cards = document.querySelectorAll('.preview-card')
+    cards.forEach(card => card.classList.remove('drop-target'))
+    
+    // 添加当前目标的drop-target类
+    const currentTarget = event.currentTarget
+    if (currentTarget && currentTarget.classList.contains('preview-card')) {
+      currentTarget.classList.add('drop-target')
+    }
+  }
   
   event.preventDefault()
-  isDragging.value = false
-  isDragActive.value = false
-  dropzoneHovered.value = false
+  return true
+}
+
+// 当拖拽元素在目标区域上方移动时持续触发
+const handleDragOver = (event, index) => {
+  if (props.disabled || uploading.value || !props.allowSort || !draggedFile.value) {
+    return false
+  }
   
-  if (event.dataTransfer.files.length > 0) {
-    addFiles(event.dataTransfer.files)
+  // 设置放置效果
+  event.dataTransfer.dropEffect = 'move'
+  
+  // 阻止默认行为以允许放置
+  event.preventDefault()
+  return true
+}
+
+// 当拖拽元素离开目标区域时触发
+const handleDragLeave = (event) => {
+  if (props.disabled || uploading.value || !props.allowSort) {
+    return false
+  }
+  
+  // 确保我们真的离开了元素，而不是进入了子元素
+  const relatedTarget = event.relatedTarget
+  if (!event.currentTarget.contains(relatedTarget)) {
+    // 只移除当前目标的drop-target类
+    event.currentTarget.classList.remove('drop-target')
+  }
+  
+  return true
+}
+
+// 当拖拽元素放置到目标区域时触发
+const handleDrop = (event, index) => {
+  if (props.disabled || uploading.value || !props.allowSort || !draggedFile.value) {
+    return false
+  }
+  
+  // 阻止默认行为（例如某些元素的打开链接）
+  event.preventDefault()
+  event.stopPropagation()
+  
+  const sourceIndex = draggedFile.value.index
+  const targetIndex = index
+  
+  if (sourceIndex !== targetIndex) {
+    // 重新排序文件
+    const fileToMove = files.value.splice(sourceIndex, 1)[0]
+    files.value.splice(targetIndex, 0, fileToMove)
+    
+    // 触发事件
+    emit('files-sorted', files.value)
+    emit('files-change', files.value)
+    
+    // 更新modelValue
+    updateModelValue()
+    
+    // 显示成功提示
+    showSuccess('文件排序成功')
+  }
+  
+  // 清理所有拖拽状态
+  cleanupDragState()
+  
+  return false
+}
+
+// 当拖拽操作完成时触发（无论是否成功放置）
+const handleDragEnd = (event) => {
+  // 清理所有拖拽状态
+  cleanupDragState()
+  return false
+}
+
+// 清理所有拖拽相关状态
+const cleanupDragState = () => {
+  // 移除所有拖拽相关的类
+  const allCards = document.querySelectorAll('.preview-card')
+  allCards.forEach(card => {
+    card.classList.remove('dragging', 'drag-active', 'drop-target')
+  })
+  
+  // 重置拖拽状态变量
+  draggedFile.value = null
+  dragOverIndex.value = null
+}
+
+// 用于拖拽手柄的mousedown事件处理
+const handleSortHandleMouseDown = (event, file, index) => {
+  // 仅设置状态，实际拖拽由dragstart事件处理
+  if (!props.disabled && !uploading.value && props.allowSort) {
+    // 这里不做太多处理，只是为了视觉反馈
+    const card = event.target.closest('.preview-card')
+    if (card) {
+      card.classList.add('prepare-drag')
+      
+      // 添加一个全局的mouseup监听器，以防拖拽没有开始就结束了
+      const cleanup = () => {
+        card.classList.remove('prepare-drag')
+        window.removeEventListener('mouseup', cleanup)
+      }
+      
+      window.addEventListener('mouseup', cleanup, { once: true })
+    }
   }
 }
 
@@ -377,70 +492,6 @@ const closePreviewModal = () => {
   }, 300)
 }
 
-// 文件排序处理
-const handleDragStart = (file, index) => {
-  if (props.disabled || uploading.value || !props.allowSort) return
-  draggedFile.value = { file, index }
-  
-  // 添加拖拽中的视觉效果
-  nextTick(() => {
-    const elements = document.querySelectorAll('.preview-card')
-    if (elements[index]) {
-      elements[index].classList.add('dragging')
-    }
-  })
-}
-
-const handleDragEnterForSort = (index) => {
-  if (props.disabled || uploading.value || !props.allowSort) return
-  dragOverIndex.value = index
-  
-  // 添加拖拽目标的视觉效果
-  const elements = document.querySelectorAll('.preview-card')
-  elements.forEach((el, i) => {
-    if (i === index) {
-      el.classList.add('drag-over')
-    } else {
-      el.classList.remove('drag-over')
-    }
-  })
-}
-
-const handleDragEnd = () => {
-  // 移除所有拖拽相关的视觉效果
-  const elements = document.querySelectorAll('.preview-card')
-  elements.forEach(el => {
-    el.classList.remove('dragging')
-    el.classList.remove('drag-over')
-  })
-  
-  draggedFile.value = null
-  dragOverIndex.value = null
-}
-
-const handleDrop2 = (event, index) => {
-  event.preventDefault()
-  if (props.disabled || uploading.value || !props.allowSort || !draggedFile.value) return
-  
-  const sourceIndex = draggedFile.value.index
-  const targetIndex = index
-  
-  if (sourceIndex !== targetIndex) {
-    // 重新排序文件
-    const fileToMove = files.value.splice(sourceIndex, 1)[0]
-    files.value.splice(targetIndex, 0, fileToMove)
-    
-    // 触发事件
-    emit('files-sorted', files.value)
-    emit('files-change', files.value)
-    
-    // 更新modelValue
-    updateModelValue()
-  }
-  
-  handleDragEnd()
-}
-
 // 显示成功消息
 const showSuccess = (message) => {
   // 清除之前的定时器
@@ -575,6 +626,50 @@ defineExpose({
   uploadFiles,
   hasUnsavedFiles
 })
+
+// 处理上传区域的拖放事件
+const handleUploadAreaDragOver = (event) => {
+  if (props.disabled || uploading.value) return
+  
+  event.preventDefault()
+  isDragging.value = true
+}
+
+const handleUploadAreaDragEnter = (event) => {
+  if (props.disabled || uploading.value) return
+  
+  event.preventDefault()
+  isDragActive.value = true
+  dropzoneHovered.value = true
+}
+
+const handleUploadAreaDragLeave = (event) => {
+  event.preventDefault()
+  isDragging.value = false
+  dropzoneHovered.value = false
+  
+  // 检查是否真的离开了元素（避免内部元素触发）
+  const rect = event.currentTarget.getBoundingClientRect()
+  const x = event.clientX
+  const y = event.clientY
+  
+  if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+    isDragActive.value = false
+  }
+}
+
+const handleUploadAreaDrop = (event) => {
+  if (props.disabled || uploading.value) return
+  
+  event.preventDefault()
+  isDragging.value = false
+  isDragActive.value = false
+  dropzoneHovered.value = false
+  
+  if (event.dataTransfer.files.length > 0) {
+    addFiles(event.dataTransfer.files)
+  }
+}
 </script>
 
 <template>
@@ -633,10 +728,10 @@ defineExpose({
     <div
       :class="uploadAreaClasses"
       @click="openFileSelector"
-      @dragover="handleDragOver"
-      @dragenter="handleDragEnter"
-      @dragleave="handleDragLeave"
-      @drop="handleDrop"
+      @dragover="handleUploadAreaDragOver"
+      @dragenter="handleUploadAreaDragEnter"
+      @dragleave="handleUploadAreaDragLeave"
+      @drop="handleUploadAreaDrop"
     >
       <div class="flex flex-col items-center justify-center p-8">
         <div 
@@ -700,10 +795,11 @@ defineExpose({
           class="preview-card relative group"
           :class="{'opacity-75': draggedFile && draggedFile.index === index}"
           draggable="true"
-          @dragstart="handleDragStart(file, index)"
-          @dragenter="handleDragEnterForSort(index)"
-          @dragend="handleDragEnd"
-          @drop="handleDrop2($event, index)"
+          @dragstart="handleDragStart($event, file, index)"
+          @dragenter="handleDragEnter($event, index)"
+          @dragover="handleDragOver($event, index)"
+          @dragend="handleDragEnd($event)"
+          @drop="handleDrop($event, index)"
         >
           <div 
             class="preview-item overflow-hidden rounded-xl transition-all duration-300 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md"
@@ -854,7 +950,7 @@ defineExpose({
           <div v-if="props.allowSort && !props.disabled && !uploading" 
                class="absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-gray-700 rounded-full shadow flex items-center justify-center cursor-move opacity-0 group-hover:opacity-100 transition-opacity hover:shadow-md active:shadow-inner"
                title="拖动排序"
-               @mousedown="handleDragStart(file, index)"
+               @mousedown="handleSortHandleMouseDown($event, file, index)"
           >
             <i class="fas fa-grip-vertical text-gray-500 dark:text-gray-400"></i>
           </div>
@@ -1023,22 +1119,40 @@ defineExpose({
 }
 
 /* 拖放和排序相关动画 */
-.preview-card.dragging {
+.preview-card.dragging,
+.preview-card.drag-active {
   z-index: 10;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   opacity: 0.8;
   transform: scale(1.02) rotate(1deg);
   transition: all 0.2s ease;
+  pointer-events: none; /* 确保拖动中的元素不会干扰其他元素 */
 }
 
-.preview-card.drag-over {
+.preview-card.prepare-drag {
+  cursor: grabbing;
+  transform: scale(1.01);
+  transition: transform 0.1s ease;
+}
+
+.preview-card.drop-target {
   transform: scale(1.05);
   box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 5;
+  animation: pulse-border 1s infinite alternate;
 }
 
-.preview-card.drag-over::before {
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.6);
+  }
+}
+
+.preview-card.drop-target::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1049,6 +1163,16 @@ defineExpose({
   border-radius: 0.75rem;
   pointer-events: none;
   z-index: 1;
+  animation: pulse-opacity 1s infinite alternate;
+}
+
+@keyframes pulse-opacity {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.8;
+  }
 }
 
 /* 上传进度动画 */
