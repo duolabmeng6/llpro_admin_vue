@@ -13,6 +13,7 @@ import Notification from '../components/Notification.vue';
 import BarChart from '../components/charts/BarChart.vue';
 import LineChart from '../components/charts/LineChart.vue';
 import PieChart from '../components/charts/PieChart.vue';
+import { Form, FormGroup, Select, Checkbox, Radio, Textarea, Switch } from '../components/form';
 
 // 搜索和筛选状态
 const searchQuery = ref('');
@@ -248,6 +249,99 @@ const componentsData = [
           hoverOffset: 4
         }]
       }
+    }
+  },
+  {
+    name: 'Form',
+    component: Form,
+    category: 'form',
+    description: '表单容器组件，处理表单提交和验证',
+    staticPreview: true,
+    previewContent: `
+      <div class="form-preview p-4 border rounded-lg bg-white dark:bg-gray-800">
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">用户名</label>
+          <input type="text" class="block w-full px-3 py-2 border rounded-md" placeholder="请输入用户名">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">密码</label>
+          <input type="password" class="block w-full px-3 py-2 border rounded-md" placeholder="请输入密码">
+        </div>
+        <div class="flex justify-end">
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-md">提交</button>
+        </div>
+      </div>
+    `
+  },
+  {
+    name: 'FormGroup',
+    component: FormGroup,
+    category: 'form',
+    description: '表单项容器，提供标签和错误信息显示',
+    props: {
+      label: '用户名',
+      required: true,
+      helpText: '请输入4-16位字符'
+    },
+    slots: {
+      default: '<input class="block w-full px-3 py-2 border rounded-md" placeholder="请输入用户名">'
+    }
+  },
+  {
+    name: 'Select',
+    component: Select,
+    category: 'form',
+    description: '下拉选择框，支持选项组和多选',
+    props: {
+      options: [
+        { label: '选项1', value: '1' },
+        { label: '选项2', value: '2' },
+        { label: '选项3', value: '3' }
+      ],
+      placeholder: '请选择'
+    }
+  },
+  {
+    name: 'Checkbox',
+    component: Checkbox,
+    category: 'form',
+    description: '复选框，支持单个复选框和复选框组',
+    props: {
+      label: '我同意用户协议',
+      modelValue: true
+    }
+  },
+  {
+    name: 'Radio',
+    component: Radio,
+    category: 'form',
+    description: '单选按钮，用于在多个选项中选择一个',
+    props: {
+      label: '选项1',
+      value: '1',
+      modelValue: '1',
+      name: 'demo-radio'
+    }
+  },
+  {
+    name: 'Textarea',
+    component: Textarea,
+    category: 'form',
+    description: '多行文本输入，支持自动调整高度',
+    props: {
+      placeholder: '请输入内容',
+      rows: 3,
+      autoResize: true
+    }
+  },
+  {
+    name: 'Switch',
+    component: Switch,
+    category: 'form',
+    description: '开关组件，用于切换状态',
+    props: {
+      label: '开启通知',
+      modelValue: true
     }
   }
 ];

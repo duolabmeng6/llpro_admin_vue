@@ -23,6 +23,20 @@ export const menuConfig = [
     children: []
   },
   {
+    id: 'examples',
+    title: '示例',
+    path: '/examples',
+    icon: 'fa-solid fa-flask',
+    children: [
+      {
+        id: 'form-example',
+        title: '表单组件',
+        path: '/examples/form',
+        icon: 'fa-solid fa-clipboard-list'
+      }
+    ]
+  },
+  {
     id: 'upload-demo',
     title: '多图上传',
     path: '/upload-demo',

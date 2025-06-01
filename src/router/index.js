@@ -29,6 +29,12 @@ const routes = [
         meta: { title: '组件画廊', icon: 'components' }
       },
       {
+        path: 'examples/form',
+        name: 'FormExample',
+        component: () => import('../views/examples/FormExample.vue'),
+        meta: { title: '表单组件示例', icon: 'form' }
+      },
+      {
         path: 'upload-demo',
         name: 'UploadDemo',
         component: () => import('../views/UploadDemo.vue'),
