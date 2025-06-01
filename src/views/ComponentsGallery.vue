@@ -346,110 +346,7 @@ const componentsData = [
   }
 ];
 
-// 代码示例数据
-const componentExamples = {
-  Button: `<Button text="按钮文本" variant="primary" size="md" />`,
-  Card: `<Card title="卡片标题">
-  <div class="p-4">卡片内容</div>
-</Card>`,
-  Input: `<Input 
-  label="用户名" 
-  placeholder="请输入用户名" 
-  type="text" 
-/>`,
-  Alert: `<Alert 
-  type="info" 
-  title="提示信息" 
-  message="这是一条提示信息" 
-  closable 
-/>`,
-  Table: `<Table 
-  :columns="[
-    { key: 'name', label: '姓名' },
-    { key: 'age', label: '年龄' },
-    { key: 'address', label: '地址' }
-  ]"
-  :data="[
-    { name: '张三', age: 28, address: '北京市' },
-    { name: '李四', age: 32, address: '上海市' }
-  ]" 
-/>`,
-  Modal: `<Modal 
-  title="对话框标题" 
-  :visible="visible" 
-  width="500px"
->
-  <div class="p-4">这是模态框的内容</div>
-  <template #footer>
-    <div class="flex justify-end gap-2">
-      <button class="px-4 py-2 bg-gray-200 rounded">取消</button>
-      <button class="px-4 py-2 bg-blue-500 text-white rounded">确定</button>
-    </div>
-  </template>
-</Modal>`,
-  Dropdown: `<Dropdown 
-  label="下拉菜单" 
-  :options="[
-    { label: '选项 1', value: '1' },
-    { label: '选项 2', value: '2' },
-    { label: '选项 3', value: '3' }
-  ]" 
-/>`,
-  TabsNav: `<TabsNav 
-  :tabs="[
-    { id: 'tab1', label: '标签 1' },
-    { id: 'tab2', label: '标签 2' },
-    { id: 'tab3', label: '标签 3' }
-  ]"
-  activeTab="tab1" 
-/>`,
-  ThemeSwitcher: `<ThemeSwitcher />`,
-  Notification: `<Notification 
-  title="操作成功" 
-  message="数据已成功保存" 
-  type="success" 
-  :duration="3000" 
-/>`,
-  BarChart: `<BarChart 
-  :chartData="{
-    labels: ['一月', '二月', '三月', '四月'],
-    datasets: [{
-      label: '销售额',
-      data: [12, 19, 8, 15],
-      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      borderColor: 'rgb(75, 192, 192)',
-      borderWidth: 1
-    }]
-  }" 
-/>`,
-  LineChart: `<LineChart 
-  :chartData="{
-    labels: ['一月', '二月', '三月', '四月'],
-    datasets: [{
-      label: '用户增长',
-      data: [65, 59, 80, 81],
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    }]
-  }" 
-/>`,
-  PieChart: `<PieChart 
-  :chartData="{
-    labels: ['红色', '蓝色', '黄色'],
-    datasets: [{
-      label: '颜色分布',
-      data: [300, 50, 100],
-      backgroundColor: [
-        'rgb(255, 99, 132)',
-        'rgb(54, 162, 235)',
-        'rgb(255, 205, 86)'
-      ],
-      hoverOffset: 4
-    }]
-  }" 
-/>`
-};
+// 代码示例数据 - 移除预定义的componentExamples对象，改用动态生成
 
 // 过滤后的组件列表
 const filteredComponents = computed(() => {
@@ -477,14 +374,21 @@ const toggleCode = (componentName) => {
 };
 
 // 复制代码到剪贴板
-const copyCode = async (code) => {
+const copyCode = async (code, componentName) => {
   try {
     await navigator.clipboard.writeText(code);
-    // 这里可以添加复制成功的提示
+    // 添加复制成功的提示
+    copiedComponent.value = componentName;
+    setTimeout(() => {
+      copiedComponent.value = null;
+    }, 2000);
   } catch (err) {
     console.error('复制失败:', err);
   }
 };
+
+// 记录当前复制成功的组件
+const copiedComponent = ref(null);
 
 // 设置当前选中的分类
 const setCategory = (categoryId) => {
@@ -495,6 +399,146 @@ const setCategory = (categoryId) => {
 const clearFilters = () => {
   searchQuery.value = '';
   selectedCategory.value = 'all';
+};
+
+// 生成组件代码的函数
+const generateComponentCode = (component) => {
+  // 如果是静态预览，返回预览内容的HTML
+  if (component.staticPreview) {
+    // 为静态预览组件创建一个包装代码
+    return generateStaticPreviewCode(component);
+  }
+  
+  // 处理组件属性
+  let propsCode = '';
+  if (component.props && Object.keys(component.props).length > 0) {
+    propsCode = Object.entries(component.props).map(([key, value]) => {
+      // 根据值的类型生成不同的代码
+      if (typeof value === 'string') {
+        return `${key}="${value}"`;
+      } else if (typeof value === 'boolean') {
+        return value ? key : `:${key}="false"`;
+      } else if (typeof value === 'number') {
+        return `:${key}="${value}"`;
+      } else if (Array.isArray(value) || typeof value === 'object') {
+        return `:${key}="${formatObjectForDisplay(value)}"`;
+      }
+      return '';
+    }).filter(prop => prop).join('\n  ');
+  }
+
+  // 处理组件插槽
+  let slotsCode = '';
+  if (component.slots) {
+    if (component.slots.default) {
+      slotsCode = `\n  ${component.slots.default}\n`;
+    }
+    
+    // 处理具名插槽
+    Object.entries(component.slots).forEach(([name, content]) => {
+      if (name !== 'default') {
+        slotsCode += `\n  <template #${name}>${content}</template>\n`;
+      }
+    });
+  }
+
+  // 生成最终代码
+  let code = `<${component.name}`;
+  if (propsCode) {
+    code += `\n  ${propsCode}`;
+  }
+  
+  if (slotsCode) {
+    code += `>${slotsCode}</${component.name}>`;
+  } else {
+    code += ' />';
+  }
+  
+  return code;
+};
+
+// 为静态预览组件生成代码
+const generateStaticPreviewCode = (component) => {
+  switch (component.name) {
+    case 'Modal':
+      return `<Modal 
+  title="对话框标题" 
+  :visible="visible" 
+  width="500px"
+>
+  <div class="p-4">这是模态框的内容</div>
+  <template #footer>
+    <div class="flex justify-end gap-2">
+      <button class="px-4 py-2 bg-gray-200 rounded">取消</button>
+      <button class="px-4 py-2 bg-blue-500 text-white rounded">确定</button>
+    </div>
+  </template>
+</Modal>`;
+    case 'Dropdown':
+      return `<Dropdown 
+  label="下拉菜单" 
+  :options="[
+    { label: '选项 1', value: '1' },
+    { label: '选项 2', value: '2' },
+    { label: '选项 3', value: '3' }
+  ]" 
+/>`;
+    case 'ThemeSwitcher':
+      return `<ThemeSwitcher />`;
+    case 'Notification':
+      return `<Notification 
+  title="操作成功" 
+  message="数据已成功保存" 
+  type="success" 
+  :duration="3000" 
+/>`;
+    case 'Form':
+      return `<Form @submit="handleSubmit">
+  <FormGroup label="用户名" required>
+    <Input placeholder="请输入用户名" />
+  </FormGroup>
+  <FormGroup label="密码" required>
+    <Input type="password" placeholder="请输入密码" />
+  </FormGroup>
+  <div class="flex justify-end mt-4">
+    <Button text="提交" variant="primary" type="submit" />
+  </div>
+</Form>`;
+    default:
+      return `<!-- ${component.name} 静态预览 -->`;
+  }
+};
+
+// 格式化对象/数组为可读的代码字符串
+const formatObjectForDisplay = (value) => {
+  if (Array.isArray(value)) {
+    // 处理数组
+    if (typeof value[0] === 'object') {
+      // 如果是对象数组，格式化为多行
+      return `[\n    ${value.map(item => formatObjectForDisplay(item)).join(',\n    ')}\n  ]`;
+    } else {
+      // 简单类型数组
+      return `[${value.map(item => typeof item === 'string' ? `'${item}'` : item).join(', ')}]`;
+    }
+  } else if (typeof value === 'object') {
+    // 处理对象
+    const entries = Object.entries(value).map(([k, v]) => {
+      if (typeof v === 'string') {
+        return `${k}: '${v}'`;
+      } else if (typeof v === 'object') {
+        return `${k}: ${formatObjectForDisplay(v)}`;
+      } else {
+        return `${k}: ${v}`;
+      }
+    });
+    return `{ ${entries.join(', ')} }`;
+  }
+  return String(value);
+};
+
+// 获取组件代码
+const getComponentCode = (component) => {
+  return generateComponentCode(component);
 };
 </script>
 
@@ -642,17 +686,23 @@ const clearFilters = () => {
               
               <button
                 v-if="showCode[component.name]"
-                @click="copyCode(componentExamples[component.name])"
-                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
+                @click="copyCode(getComponentCode(component), component.name)"
+                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center relative"
               >
                 <i class="fas fa-copy mr-1.5"></i>
                 复制代码
+                <span 
+                  v-if="copiedComponent === component.name" 
+                  class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded text-xs whitespace-nowrap"
+                >
+                  复制成功!
+                </span>
               </button>
             </div>
 
             <!-- 代码示例 -->
             <div v-if="showCode[component.name]" class="code-container">
-              <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ componentExamples[component.name] }}</code></pre>
+              <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm font-mono"><code>{{ getComponentCode(component) }}</code></pre>
             </div>
           </div>
         </Card>
@@ -758,10 +808,19 @@ const clearFilters = () => {
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
 }
 
 .code-container pre {
   margin: 0;
   border-radius: 0;
+  line-height: 1.5;
+  tab-size: 2;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.code-container code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 </style> 
