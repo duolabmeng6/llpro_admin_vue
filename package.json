@@ -12,6 +12,7 @@
     "mock": "nodemon mock-server/index.js"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.5",
     "axios": "^1.9.0",
     "chart.js": "^4.4.9",
     "cors": "^2.8.5",

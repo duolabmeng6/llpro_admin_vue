@@ -2,6 +2,8 @@ import { createApp, ref } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
 import './styles/main.css'
+import "@fontsource/inter";
+
 import App from './App.vue'
 import { setupErrorHandler } from './utils/errorHandler'
 import { useThemeStore } from './stores/theme'
