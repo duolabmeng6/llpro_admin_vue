@@ -79,10 +79,10 @@ body {
 [class*="bg-white"],
 [class*="bg-gray-50"],
 [class*="bg-gray-100"] {
-  background-color: var(--color-light-card) !important;
-  color: var(--color-text-primary) !important;
+  background-color: var(--color-light-card) ;
+  color: var(--color-text-primary) ;
   border: 1px solid var(--color-border-light);
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: var(--shadow-md) ;
   border-radius: 0.5rem;
 }
 
@@ -96,22 +96,22 @@ body {
 [class*="text-gray-900"],
 [class*="text-gray-800"],
 [class*="text-gray-700"] {
-  color: var(--color-text-primary) !important;
+  color: var(--color-text-primary) ;
 }
 
 [class*="text-gray-600"],
 [class*="text-gray-500"],
 [class*="text-gray-400"] {
-  color: var(--color-text-secondary) !important;
+  color: var(--color-text-secondary) ;
 }
 
 /* 表单元素 */
 input,
 select,
 textarea {
-  background-color: #ffffff !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--color-border) !important;
+  background-color: #ffffff ;
+  color: var(--color-text-primary) ;
+  border-color: var(--color-border) ;
   border-radius: 0.375rem;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
@@ -120,30 +120,15 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: var(--shadow-focus) !important;
+  border-color: var(--color-primary) ;
+  box-shadow: var(--shadow-focus) ;
   outline: none;
 }
 
-/* 按钮样式 */
-button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
-  background-color: white !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--color-border) !important;
-  border-radius: 0.375rem;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-}
-
-button:hover:not(:disabled):not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
-  background-color: #f8fafc !important;
-  border-color: var(--color-primary-light) !important;
-  box-shadow: var(--shadow-md);
-}
 
 /* 表格样式 */
 table {
-  background-color: transparent !important;
+  background-color: transparent ;
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
@@ -152,22 +137,22 @@ table {
 }
 
 table th {
-  background-color: var(--color-table-header) !important;
-  color: var(--color-text-primary) !important;
+  background-color: var(--color-table-header) ;
+  color: var(--color-text-primary) ;
   font-weight: 600;
   padding: 0.75rem 1rem;
   border-bottom: 2px solid var(--color-border);
 }
 
 table td {
-  background-color: var(--color-table-row) !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--color-border-light) !important;
+  background-color: var(--color-table-row) ;
+  color: var(--color-text-primary) ;
+  border-color: var(--color-border-light) ;
   padding: 0.75rem 1rem;
 }
 
 table tr:hover td {
-  background-color: var(--color-table-row-hover) !important;
+  background-color: var(--color-table-row-hover) ;
 }
 
 /* 链接样式 */
@@ -237,34 +222,34 @@ hr {
 .card.interactive:hover,
 .interactive-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--shadow-lg) ;
 }
 
 /* 轻量级按钮 */
 .btn-light {
-  background-color: rgba(241, 245, 249, 0.8) !important;
-  color: var(--color-text-primary) !important;
+  background-color: rgba(241, 245, 249, 0.8) ;
+  color: var(--color-text-primary) ;
   font-weight: 500;
-  border: none !important;
+  border: none ;
   box-shadow: var(--shadow-sm);
 }
 
 .btn-light:hover {
-  background-color: rgba(224, 231, 240, 0.9) !important;
+  background-color: rgba(224, 231, 240, 0.9) ;
   box-shadow: var(--shadow-md);
 }
 
 /* 主要按钮 */
 .btn-primary {
-  background-color: var(--color-primary) !important;
-  color: white !important;
+  background-color: var(--color-primary) ;
+  color: white ;
   font-weight: 500;
-  border: none !important;
+  border: none ;
   box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-primary-dark) !important;
+  background-color: var(--color-primary-dark) ;
   box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
 }
 

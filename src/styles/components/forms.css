@@ -110,9 +110,9 @@ select:disabled {
 .dark input[type="time"],
 .dark textarea,
 .dark select {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(15, 23, 42, 0.6) ;
+  color: rgba(255, 255, 255, 0.95) ;
+  border: 1px solid rgba(255, 255, 255, 0.1) ;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
@@ -120,17 +120,17 @@ select:disabled {
 .dark input:focus,
 .dark textarea:focus,
 .dark select:focus {
-  border-color: rgba(59, 130, 246, 0.7) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(59, 130, 246, 0.7) ;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) ;
 }
 
 .dark .form-control:disabled,
 .dark input:disabled,
 .dark textarea:disabled,
 .dark select:disabled {
-  background-color: rgba(15, 23, 42, 0.4) !important;
-  color: rgba(255, 255, 255, 0.5) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(15, 23, 42, 0.4) ;
+  color: rgba(255, 255, 255, 0.5) ;
+  border-color: rgba(255, 255, 255, 0.05) ;
 }
 
 .dark .form-control::placeholder,
@@ -218,7 +218,7 @@ select:disabled {
 .dark input.error,
 .dark textarea.error,
 .dark select.error {
-  border-color: #ef4444 !important;
+  border-color: #ef4444 ;
 }
 
 .dark .form-error-message {
@@ -256,9 +256,9 @@ select:disabled {
 .light input[type="time"],
 .light textarea,
 .light select {
-  background-color: #ffffff !important;
-  color: #1e293b !important;
-  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  background-color: #ffffff ;
+  color: #1e293b ;
+  border: 1px solid rgba(203, 213, 225, 0.8) ;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -266,17 +266,17 @@ select:disabled {
 .light input:focus,
 .light textarea:focus,
 .light select:focus {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+  border-color: #3b82f6 ;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) ;
 }
 
 .light .form-control:disabled,
 .light input:disabled,
 .light textarea:disabled,
 .light select:disabled {
-  background-color: #f8fafc !important;
-  color: #94a3b8 !important;
-  border-color: #e2e8f0 !important;
+  background-color: #f8fafc ;
+  color: #94a3b8 ;
+  border-color: #e2e8f0 ;
 }
 
 .light .form-control::placeholder,
@@ -364,7 +364,7 @@ select:disabled {
 .light input.error,
 .light textarea.error,
 .light select.error {
-  border-color: #ef4444 !important;
+  border-color: #ef4444 ;
 }
 
 .light .form-error-message {
@@ -403,9 +403,9 @@ select:disabled {
 .cyberpunk textarea,
 .cyberpunk select {
   --neon-glow-color: rgba(255, 44, 240, 0.3);
-  background-color: rgba(13, 2, 33, 0.7) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(255, 44, 240, 0.3) !important;
+  background-color: rgba(13, 2, 33, 0.7) ;
+  color: rgba(255, 255, 255, 0.95) ;
+  border: 1px solid rgba(255, 44, 240, 0.3) ;
   box-shadow: 0 0 5px var(--neon-glow-color);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -415,8 +415,8 @@ select:disabled {
 .cyberpunk input:focus,
 .cyberpunk textarea:focus,
 .cyberpunk select:focus {
-  border-color: rgba(255, 44, 240, 0.8) !important;
-  box-shadow: 0 0 8px rgba(255, 44, 240, 0.5), 0 0 15px rgba(255, 44, 240, 0.3) !important;
+  border-color: rgba(255, 44, 240, 0.8) ;
+  box-shadow: 0 0 8px rgba(255, 44, 240, 0.5), 0 0 15px rgba(255, 44, 240, 0.3) ;
   transform: scale(1.02);
 }
 
@@ -425,16 +425,16 @@ select:disabled {
 .cyberpunk textarea:hover:not(:disabled):not(:focus),
 .cyberpunk select:hover:not(:disabled):not(:focus) {
   box-shadow: 0 0 8px rgba(255, 44, 240, 0.4);
-  border-color: rgba(255, 44, 240, 0.5) !important;
+  border-color: rgba(255, 44, 240, 0.5) ;
 }
 
 .cyberpunk .form-control:disabled,
 .cyberpunk input:disabled,
 .cyberpunk textarea:disabled,
 .cyberpunk select:disabled {
-  background-color: rgba(13, 2, 33, 0.4) !important;
-  color: rgba(255, 255, 255, 0.4) !important;
-  border-color: rgba(255, 44, 240, 0.1) !important;
+  background-color: rgba(13, 2, 33, 0.4) ;
+  color: rgba(255, 255, 255, 0.4) ;
+  border-color: rgba(255, 44, 240, 0.1) ;
   box-shadow: none;
 }
 
@@ -531,8 +531,8 @@ select:disabled {
 .cyberpunk input.error,
 .cyberpunk textarea.error,
 .cyberpunk select.error {
-  border-color: #ff4d4d !important;
-  box-shadow: 0 0 8px rgba(255, 77, 77, 0.5) !important;
+  border-color: #ff4d4d ;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.5) ;
 }
 
 .cyberpunk .form-error-message {
@@ -588,7 +588,7 @@ select:disabled {
 .cyberpunk .form-neon input,
 .cyberpunk .form-neon textarea,
 .cyberpunk .form-neon select {
-  background-color: rgba(13, 2, 33, 0.85) !important;
+  background-color: rgba(13, 2, 33, 0.85) ;
 }
 
 /* 在主题过渡时的表单波浪动画 */

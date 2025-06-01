@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+@theme {
+  /* 主要颜色 - Primary (蓝色系) */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+  
+  /* 次要颜色 - Secondary (紫色系) */
+  --color-secondary-50: #f5f3ff;
+  --color-secondary-100: #ede9fe;
+  --color-secondary-200: #ddd6fe;
+  --color-secondary-300: #c4b5fd;
+  --color-secondary-400: #a78bfa;
+  --color-secondary-500: #8b5cf6;
+  --color-secondary-600: #7c3aed;
+  --color-secondary-700: #6d28d9;
+  --color-secondary-800: #5b21b6;
+  --color-secondary-900: #4c1d95;
+  --color-secondary-950: #2e1065;
+}
+
 /* 基础动画效果 */
 @keyframes neon-glow {
   0% { background-position: 0% 50%; }
@@ -427,68 +455,68 @@ body,
 .dark [class*="bg-white"], 
 .dark [class*="bg-gray-50"], 
 .dark [class*="bg-gray-100"] {
-  background-color: rgba(30, 41, 59, 0.5) !important;
-  color: white !important;
+  background-color: rgba(30, 41, 59, 0.5) ;
+  color: white ;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) ;
 }
 
 /* 深色主题文本颜色 */
 .dark [class*="text-gray-900"], 
 .dark [class*="text-gray-800"], 
 .dark [class*="text-gray-700"] {
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: rgba(255, 255, 255, 0.95) ;
 }
 
 .dark [class*="text-gray-600"], 
 .dark [class*="text-gray-500"], 
 .dark [class*="text-gray-400"] {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7) ;
 }
 
 /* 深色主题表单元素样式 */
 .dark input, 
 .dark select, 
 .dark textarea {
-  background-color: rgba(30, 41, 59, 0.7) !important;
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(30, 41, 59, 0.7) ;
+  color: white ;
+  border-color: rgba(255, 255, 255, 0.1) ;
 }
 
 .dark input:focus, 
 .dark select:focus, 
 .dark textarea:focus {
-  border-color: var(--color-neon-blue) !important;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+  border-color: var(--color-neon-blue) ;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) ;
 }
 
 /* 深色主题按钮样式 */
 .dark button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
-  background-color: rgba(30, 41, 59, 0.7) !important;
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(30, 41, 59, 0.7) ;
+  color: white ;
+  border-color: rgba(255, 255, 255, 0.1) ;
 }
 
 /* 深色主题表格样式 */
 .dark table {
-  background-color: transparent !important;
+  background-color: transparent ;
 }
 
 .dark table th {
-  background-color: rgba(15, 23, 42, 0.7) !important;
-  color: white !important;
+  background-color: rgba(15, 23, 42, 0.7) ;
+  color: white ;
 }
 
 .dark table td {
-  background-color: rgba(30, 41, 59, 0.3) !important;
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(30, 41, 59, 0.3) ;
+  color: white ;
+  border-color: rgba(255, 255, 255, 0.05) ;
 }
 
 .dark table tr:hover td {
-  background-color: rgba(99, 102, 241, 0.15) !important;
+  background-color: rgba(99, 102, 241, 0.15) ;
 }
 
 /* 明亮主题特定样式 */
@@ -503,23 +531,23 @@ body,
 .light [class*="bg-white"], 
 .light [class*="bg-gray-50"], 
 .light [class*="bg-gray-100"] {
-  background-color: var(--color-bg-secondary) !important;
-  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg-secondary) ;
+  color: var(--color-text-primary) ;
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: var(--shadow-md) ;
 }
 
 /* 明亮主题文本颜色 */
 .light [class*="text-gray-900"], 
 .light [class*="text-gray-800"], 
 .light [class*="text-gray-700"] {
-  color: var(--color-text-primary) !important;
+  color: var(--color-text-primary) ;
 }
 
 .light [class*="text-gray-600"], 
 .light [class*="text-gray-500"], 
 .light [class*="text-gray-400"] {
-  color: var(--color-text-secondary) !important;
+  color: var(--color-text-secondary) ;
 }
 
 /* 赛博朋克主题特定样式 */

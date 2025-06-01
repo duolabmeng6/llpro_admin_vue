@@ -402,7 +402,7 @@ const handleLogin = async () => {
   position: relative;
   overflow: hidden;
   /* 通用样式 - 确保所有主题下文本都是白色 */
-  color: white !important;
+  color: white ;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   /* 统一按钮大小 */
@@ -415,7 +415,7 @@ const handleLogin = async () => {
 
 /* 深色主题按钮 */
 :root.dark .login-btn {
-  background: linear-gradient(45deg, #3b82f6, #a78bfa) !important;
+  background: linear-gradient(45deg, #3b82f6, #a78bfa) ;
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
 }
 
@@ -426,7 +426,7 @@ const handleLogin = async () => {
 
 /* 明亮主题按钮 */
 :root.light .login-btn {
-  background: linear-gradient(45deg, #2563eb, #3b82f6) !important;
+  background: linear-gradient(45deg, #2563eb, #3b82f6) ;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
@@ -437,7 +437,7 @@ const handleLogin = async () => {
 
 /* 赛博朋克主题按钮 */
 :root.cyberpunk .login-btn {
-  background: linear-gradient(45deg, #ff2cf0, #00eeff) !important;
+  background: linear-gradient(45deg, #ff2cf0, #00eeff) ;
   box-shadow: 0 0 20px rgba(255, 44, 240, 0.6);
 }
 

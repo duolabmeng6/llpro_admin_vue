@@ -538,6 +538,34 @@ const formatObjectForDisplay = (value) => {
 
 // 获取组件代码
 const getComponentCode = (component) => {
+  if (component.name === 'Button') {
+    return `<!-- 基本按钮 -->
+<Button variant="primary">基本按钮</Button>
+
+<!-- 不同变体 -->
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="success">Success</Button>
+<Button variant="danger">Danger</Button>
+<Button variant="warning">Warning</Button>
+<Button variant="info">Info</Button>
+<Button variant="outline">Outline</Button>
+
+<!-- 不同大小 -->
+<Button size="sm">小按钮</Button>
+<Button size="md">中按钮</Button>
+<Button size="lg">大按钮</Button>
+
+<!-- 不同状态 -->
+<Button disabled>禁用按钮</Button>
+<Button fullWidth>全宽按钮</Button>
+
+<!-- 带图标按钮 -->
+<Button>
+  <i class="fas fa-check mr-1"></i>
+  带图标按钮
+</Button>`;
+  }
   return generateComponentCode(component);
 };
 </script>
@@ -622,11 +650,12 @@ const getComponentCode = (component) => {
         
         <Button 
           v-if="searchQuery || selectedCategory !== 'all'" 
-          text="清除筛选" 
           variant="secondary" 
           size="sm" 
           @click="clearFilters"
-        />
+        >
+          清除筛选
+        </Button>
       </div>
       
       <!-- 组件展示区域 -->
@@ -662,15 +691,58 @@ const getComponentCode = (component) => {
 
             <!-- 组件预览 -->
             <div class="component-preview p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 flex items-center justify-center overflow-hidden">
+              <!-- Button组件特殊渲染 -->
+              <div v-if="component.name === 'Button'" class="button-variants-preview flex flex-col gap-6 w-full">
+                <!-- 不同变体按钮 -->
+                <div class="variants">
+                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮变体</h4>
+                  <div class="flex flex-wrap gap-3">
+                    <Button variant="primary">Primary</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="success">Success</Button>
+                    <Button variant="danger">Danger</Button>
+                    <Button variant="warning">Warning</Button>
+                    <Button variant="info">Info</Button>
+                    <Button variant="outline">Outline</Button>
+                  </div>
+                </div>
+                
+                <!-- 不同大小按钮 -->
+                <div class="sizes">
+                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮大小</h4>
+                  <div class="flex items-center gap-3">
+                    <Button size="sm" variant="primary">小按钮</Button>
+                    <Button size="md" variant="primary">中按钮</Button>
+                    <Button size="lg" variant="primary">大按钮</Button>
+                  </div>
+                </div>
+                
+                <!-- 按钮状态 -->
+                <div class="states">
+                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮状态</h4>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-3">
+                      <Button variant="primary">
+                        <i class="fas fa-check mr-1"></i>
+                        带图标按钮
+                      </Button>
+                      <Button disabled variant="primary">禁用按钮</Button>
+                    </div>
+                    <Button fullWidth variant="primary">全宽按钮</Button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 其他组件渲染 -->
               <component
-                v-if="!component.staticPreview"
+                v-else
                 :is="component.component"
                 v-bind="component.props"
               >
                 <template v-if="component.slots?.default" v-html="component.slots.default"></template>
                 <template v-if="component.slots?.footer" #footer v-html="component.slots.footer"></template>
               </component>
-              <div v-else v-html="component.previewContent" class="w-full"></div>
+              <div v-if="component.staticPreview" v-html="component.previewContent" class="w-full"></div>
             </div>
 
             <!-- 代码示例控制区 -->
@@ -715,7 +787,12 @@ const getComponentCode = (component) => {
         <p class="text-sm text-gray-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
           没有找到符合当前筛选条件的组件。请尝试调整搜索关键词或选择不同的分类。
         </p>
-        <Button text="显示全部组件" variant="primary" @click="clearFilters" />
+        <Button 
+          variant="primary" 
+          @click="clearFilters"
+        >
+          显示全部组件
+        </Button>
       </div>
     </div>
   </div>

@@ -23,6 +23,10 @@ const props = defineProps({
   fullWidth: {
     type: Boolean,
     default: false
+  },
+  text: {
+    type: String,
+    default: ''
   }
 })
 
@@ -73,6 +77,6 @@ const buttonClasses = computed(() => {
     :disabled="disabled"
     @click="handleClick"
   >
-    <slot></slot>
+    <slot>{{ text }}</slot>
   </button>
 </template> 
