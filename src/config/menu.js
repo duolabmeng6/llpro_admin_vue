@@ -23,6 +23,13 @@ export const menuConfig = [
     children: []
   },
   {
+    id: 'upload-demo',
+    title: '多图上传',
+    path: '/upload-demo',
+    icon: 'fa-solid fa-upload',
+    children: []
+  },
+  {
     id: 'user',
     title: '用户管理',
     path: '/users',

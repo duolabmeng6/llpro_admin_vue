@@ -29,6 +29,12 @@ const routes = [
         meta: { title: '组件画廊', icon: 'components' }
       },
       {
+        path: 'upload-demo',
+        name: 'UploadDemo',
+        component: () => import('../views/UploadDemo.vue'),
+        meta: { title: '多图上传示例', icon: 'upload' }
+      },
+      {
         path: 'users',
         name: 'UserManagement',
         component: () => import('../views/UserManagement.vue'),
