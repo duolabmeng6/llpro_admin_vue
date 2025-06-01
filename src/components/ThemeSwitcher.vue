@@ -6,8 +6,7 @@
       class="theme-toggle-btn flex items-center justify-center rounded-full transition-all duration-300"
       :class="[
         isLoading ? 'opacity-50 cursor-wait' : '',
-        hasError ? 'bg-red-500 text-white' : '',
-        `theme-toggle-${currentTheme}`
+        hasError ? 'bg-red-500 text-white' : ''
       ]"
       :disabled="isLoading"
       :title="hasError ? '主题加载出错，点击重试' : '切换主题'"
@@ -20,16 +19,13 @@
     <!-- 主题选择弹窗 -->
     <div
       v-if="isOpen"
-      class="absolute mt-2 rounded-lg z-50 theme-selector-panel shadow-lg"
-      :class="[
-        props.position === 'right' ? 'right-0' : 'left-0',
-        `theme-selector-${currentTheme}`
-      ]"
+      class="absolute mt-2 rounded-lg z-50 theme-selector-panel shadow-theme-lg glass-morphism"
+      :class="props.position === 'right' ? 'right-0' : 'left-0'"
     >
       <!-- 标题栏 -->
-      <div class="flex justify-between items-center p-3 border-b border-theme">
-        <h3 class="font-medium text-primary">选择主题</h3>
-        <button @click="closeThemeSelector" class="p-1 rounded-full hover:bg-tertiary text-secondary">
+      <div class="flex justify-between items-center p-3 border-b border-subtle">
+        <h3 class="font-medium text-heading">选择主题</h3>
+        <button @click="closeThemeSelector" class="p-1 rounded-full hover:bg-tertiary text-muted">
           <i class="fa-solid fa-times"></i>
         </button>
       </div>
@@ -47,16 +43,13 @@
           :key="theme.id"
           @click="changeTheme(theme.id)"
           class="theme-card flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200"
-          :class="[
-            theme.id === currentTheme ? 'theme-card-active' : '',
-            `theme-card-${theme.id}`
-          ]"
+          :class="theme.id === currentTheme ? 'theme-card-active' : ''"
           :disabled="isLoading || theme.id === currentTheme"
         >
           <!-- 主题预览 -->
           <div 
-            class="theme-preview w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-3 border"
-            :class="`theme-preview-${theme.id}`"
+            class="theme-preview w-12 h-12 rounded-md overflow-hidden flex-shrink-0 mr-3 border border-subtle"
+            :data-preview-theme="theme.id"
           >
             <div class="theme-preview-header h-2"></div>
             <div class="theme-preview-content h-10 flex">
@@ -70,8 +63,8 @@
           
           <!-- 主题信息 -->
           <div class="flex-1">
-            <div class="font-medium">{{ theme.name }}</div>
-            <div class="text-xs text-secondary">{{ theme.description }}</div>
+            <div class="font-medium text-heading">{{ theme.name }}</div>
+            <div class="text-xs text-muted">{{ theme.description }}</div>
             
             <!-- 状态指示器 -->
             <div v-if="theme.id === currentTheme" class="flex items-center mt-1 text-xs">
@@ -79,7 +72,7 @@
                 class="inline-block w-2 h-2 rounded-full mr-1"
                 :class="isLoading ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'"
               ></span>
-              <span class="text-secondary">{{ isLoading ? '加载中...' : '当前使用' }}</span>
+              <span class="text-muted">{{ isLoading ? '加载中...' : '当前使用' }}</span>
             </div>
           </div>
         </div>
@@ -194,6 +187,9 @@ const closeThemeSelector = () => {
   width: 36px;
   height: 36px;
   transition: all 0.2s ease;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
 }
 
 .simple-mode .theme-toggle-btn {
@@ -201,52 +197,10 @@ const closeThemeSelector = () => {
   height: 30px;
 }
 
-/* 主题切换按钮样式 - 随主题变化 */
-.theme-toggle-light {
-  background-color: white;
-  color: var(--color-primary-600);
-  border: 1px solid var(--color-gray-200);
-}
-
-.theme-toggle-dark {
-  background-color: var(--color-gray-800);
-  color: var(--color-primary-400);
-  border: 1px solid var(--color-gray-700);
-}
-
-.theme-toggle-cyberpunk {
-  background-color: var(--color-bg-primary);
-  color: oklch(70% 0.3 320);
-  border: 1px solid oklch(60% 0.25 320);
-  box-shadow: 0 0 5px oklch(70% 0.3 320);
-}
-
 /* 按钮悬停效果 */
 .theme-toggle-btn:hover {
   transform: translateY(-2px);
-}
-
-.theme-toggle-light:hover {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.theme-toggle-dark:hover {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.theme-toggle-cyberpunk:hover {
-  box-shadow: 0 0 10px oklch(70% 0.3 320);
-}
-
-/* 绿色主题按钮样式 */
-.theme-toggle-green {
-  background-color: oklch(92% 0.04 145);
-  color: oklch(45% 0.15 145);
-  border: 1px solid oklch(80% 0.08 145);
-}
-
-.theme-toggle-green:hover {
-  box-shadow: 0 0 10px oklch(45% 0.15 145);
+  box-shadow: 0 2px 8px var(--color-shadow);
 }
 
 /* 主题选择面板 */
@@ -254,28 +208,6 @@ const closeThemeSelector = () => {
   width: 280px;
   overflow: hidden;
   animation: fadeInUp 0.2s ease;
-}
-
-/* 主题选择面板样式 - 随主题变化 */
-.theme-selector-light {
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.theme-selector-dark {
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.theme-selector-cyberpunk {
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.theme-selector-green {
-  background-color: oklch(97% 0.02 140);
-  border: 1px solid oklch(80% 0.08 145);
-  box-shadow: 0 2px 10px rgba(0, 128, 0, 0.1);
 }
 
 /* 主题卡片样式 */
@@ -292,96 +224,91 @@ const closeThemeSelector = () => {
   border: 2px solid var(--color-accent);
 }
 
-/* 主题预览样式 */
-.theme-preview {
-  border-color: var(--color-border);
-}
-
-/* 明亮主题预览 */
-.theme-preview-light {
+/* 主题预览样式 - 使用data属性选择器 */
+.theme-preview[data-preview-theme="light"] {
   background-color: oklch(97.9% 0.005 256.8);
 }
 
-.theme-preview-light .theme-preview-header {
+.theme-preview[data-preview-theme="light"] .theme-preview-header {
   background-color: oklch(100% 0 0);
 }
 
-.theme-preview-light .theme-preview-sidebar {
+.theme-preview[data-preview-theme="light"] .theme-preview-sidebar {
   background-color: oklch(95% 0.01 250);
 }
 
-.theme-preview-light .theme-preview-card {
+.theme-preview[data-preview-theme="light"] .theme-preview-card {
   background-color: white;
   border: 1px solid oklch(90% 0.01 250);
 }
 
-.theme-preview-light .theme-preview-button {
+.theme-preview[data-preview-theme="light"] .theme-preview-button {
   background-color: var(--color-primary-600);
 }
 
 /* 深色主题预览 */
-.theme-preview-dark {
+.theme-preview[data-preview-theme="dark"] {
   background-color: oklch(19.2% 0.042 255.3);
 }
 
-.theme-preview-dark .theme-preview-header {
+.theme-preview[data-preview-theme="dark"] .theme-preview-header {
   background-color: oklch(15% 0.04 255);
 }
 
-.theme-preview-dark .theme-preview-sidebar {
+.theme-preview[data-preview-theme="dark"] .theme-preview-sidebar {
   background-color: oklch(12% 0.03 255);
 }
 
-.theme-preview-dark .theme-preview-card {
+.theme-preview[data-preview-theme="dark"] .theme-preview-card {
   background-color: oklch(25% 0.04 255);
   border: 1px solid oklch(30% 0.03 255);
 }
 
-.theme-preview-dark .theme-preview-button {
+.theme-preview[data-preview-theme="dark"] .theme-preview-button {
   background-color: var(--color-primary-500);
 }
 
 /* 赛博朋克主题预览 */
-.theme-preview-cyberpunk {
+.theme-preview[data-preview-theme="cyberpunk"] {
   background-color: oklch(8% 0.04 280);
 }
 
-.theme-preview-cyberpunk .theme-preview-header {
+.theme-preview[data-preview-theme="cyberpunk"] .theme-preview-header {
   background-color: oklch(6% 0.03 280);
 }
 
-.theme-preview-cyberpunk .theme-preview-sidebar {
+.theme-preview[data-preview-theme="cyberpunk"] .theme-preview-sidebar {
   background-color: oklch(10% 0.04 275);
 }
 
-.theme-preview-cyberpunk .theme-preview-card {
+.theme-preview[data-preview-theme="cyberpunk"] .theme-preview-card {
   background-color: oklch(12% 0.05 275);
   border: 1px solid oklch(60% 0.2 320);
 }
 
-.theme-preview-cyberpunk .theme-preview-button {
+.theme-preview[data-preview-theme="cyberpunk"] .theme-preview-button {
   background-color: oklch(70% 0.3 320);
 }
 
 /* 绿色主题预览 */
-.theme-preview-green {
+.theme-preview[data-preview-theme="green"] {
   background-color: oklch(92% 0.04 145);
 }
 
-.theme-preview-green .theme-preview-header {
+.theme-preview[data-preview-theme="green"] .theme-preview-header {
   background-color: oklch(97% 0.02 140);
 }
 
-.theme-preview-green .theme-preview-sidebar {
+.theme-preview[data-preview-theme="green"] .theme-preview-sidebar {
   background-color: oklch(88% 0.06 148);
 }
 
-.theme-preview-green .theme-preview-card {
+.theme-preview[data-preview-theme="green"] .theme-preview-card {
   background-color: oklch(97% 0.02 140);
   border: 1px solid oklch(80% 0.08 145);
 }
 
-.theme-preview-green .theme-preview-button {
+.theme-preview[data-preview-theme="green"] .theme-preview-button {
   background-color: oklch(45% 0.15 145);
 }
 

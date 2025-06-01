@@ -72,6 +72,7 @@ body,
 
 /* 基础主题工具类 */
 @layer utilities {
+  /* 背景色相关工具类 */
   .bg-primary {
     background-color: var(--color-bg-primary);
   }
@@ -84,6 +85,7 @@ body,
     background-color: var(--color-bg-tertiary);
   }
   
+  /* 文本颜色相关工具类 */
   .text-primary {
     color: var(--color-text-primary);
   }
@@ -92,14 +94,17 @@ body,
     color: var(--color-text-secondary);
   }
   
+  /* 边框相关工具类 */
   .border-theme {
     border-color: var(--color-border);
   }
   
+  /* 卡片和面板相关工具类 */
   .bg-card {
     background-color: var(--color-card-bg);
   }
   
+  /* 按钮相关工具类 */
   .bg-button {
     background-color: var(--color-button-bg);
   }
@@ -122,5 +127,87 @@ body,
   
   .text-button-secondary {
     color: var(--color-button-secondary-text);
+  }
+  
+  /* 新增的通用工具类 - 文本颜色 */
+  .text-heading {
+    color: var(--color-text-primary);
+  }
+  
+  .text-subheading {
+    color: var(--color-text-secondary);
+  }
+  
+  .text-body {
+    color: var(--color-text-primary);
+  }
+  
+  .text-muted {
+    color: var(--color-text-secondary);
+  }
+  
+  .text-placeholder {
+    color: var(--color-input-placeholder);
+  }
+  
+  /* 新增的通用工具类 - 背景色 */
+  .bg-surface {
+    background-color: var(--color-bg-primary);
+  }
+  
+  .bg-elevated {
+    background-color: var(--color-bg-secondary);
+  }
+  
+  .bg-card-alt {
+    background-color: var(--color-bg-tertiary);
+  }
+  
+  /* 新增的通用工具类 - 边框和分隔线 */
+  .border-subtle {
+    border-color: var(--color-border);
+  }
+  
+  .border-input {
+    border-color: var(--color-input-border);
+  }
+  
+  .border-accent {
+    border-color: var(--color-accent);
+  }
+  
+  /* 新增的通用工具类 - 输入框 */
+  .bg-input {
+    background-color: var(--color-input-bg);
+  }
+  
+  .text-input {
+    color: var(--color-input-text);
+  }
+  
+  /* 新增的通用工具类 - 阴影 */
+  .shadow-theme {
+    box-shadow: 0 2px 8px var(--color-shadow);
+  }
+  
+  .shadow-theme-lg {
+    box-shadow: 0 4px 16px var(--color-shadow);
+  }
+  
+  /* 新增的通用工具类 - 状态 */
+  .hover-bg-accent:hover {
+    background-color: var(--color-accent-hover);
+  }
+  
+  .focus-border-accent:focus {
+    border-color: var(--color-accent);
+  }
+  
+  /* 玻璃态效果工具类 */
+  .glass-morphism {
+    background-color: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
   }
 }
