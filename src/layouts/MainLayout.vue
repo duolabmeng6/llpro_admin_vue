@@ -47,21 +47,11 @@ const particleColors = computed(() => {
 watch(() => themeStore.currentTheme, (newTheme) => {
   currentTheme.value = newTheme;
   
-  // 确保HTML根元素类名正确设置
-  themeStore.updateHtmlThemeClass(newTheme);
-  
   // 主题变化时平滑过渡粒子颜色
   if (particles.value.length > 0) {
     transitionParticleColors();
   }
 }, { immediate: true });
-
-// 使用watchEffect监听主题变化并更新HTML根元素
-watchEffect(() => {
-  const theme = themeStore.currentTheme;
-  console.log('主题变化检测到:', theme);
-  themeStore.updateHtmlThemeClass(theme);
-});
 
 // 监听路由变化，自动添加标签
 watch(() => route.path, (newPath) => {
@@ -76,9 +66,6 @@ const reapplyCurrentTheme = async () => {
   try {
     const theme = themeStore.currentTheme;
     console.log('管理面板重新应用当前主题:', theme);
-    
-    // 更新HTML根元素类名
-    themeStore.updateHtmlThemeClass(theme);
     
     // 确保主题CSS文件被正确加载
     const themeConfig = themeStore.availableThemes.find(t => t.id === theme);
@@ -229,9 +216,6 @@ const toggleSidebar = () => {
 // 组件挂载时初始化
 onMounted(async () => {
   console.log('MainLayout组件挂载，初始化主题...');
-  
-  // 首先确保HTML根元素有正确的类名
-  themeStore.updateHtmlThemeClass(themeStore.currentTheme);
   
   // 重新应用当前主题
   await reapplyCurrentTheme();

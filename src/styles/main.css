@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* 导入主题文件 */
+@import "./themes/base.css";
+@import "./themes/light.css";
+@import "./themes/dark.css";
+@import "./themes/cyberpunk.css";
+@import "./themes/green.css";  /* 绿色主题 */
+
 @layer theme {
   /* 主要颜色 - Primary (蓝色系) - 使用 OKLCH 色彩空间 */
   :root {
@@ -97,11 +104,9 @@
     --spacing: 0.25rem;
     
     /* 主题过渡变量 */
-    --theme-transition-duration: 0.8s;
+    --theme-transition-duration: 0.3s;
     --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
     --theme-transition-properties: background-color, color, border-color, box-shadow, transform, opacity;
-    --theme-transition-delay-unit: 0.05s;
-    --theme-transition-stagger-count: 10;
   }
 }
 
@@ -191,7 +196,7 @@ body,
   bottom: 0;
   z-index: -1;
   background: inherit;
-  transition: background-color 0.8s ease;
+  transition: background-color 0.3s ease;
   pointer-events: none;
 }
 
@@ -201,33 +206,6 @@ body,
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
-
-/* 元素级主题过渡 */
-.theme-transition button,
-.theme-transition input,
-.theme-transition select,
-.theme-transition .card,
-.theme-transition .navbar,
-.theme-transition .sidebar,
-.theme-transition table,
-.theme-transition .modal-container,
-.theme-transition .dropdown-options {
-  transition-property: var(--theme-transition-properties);
-  transition-duration: var(--theme-transition-duration);
-  transition-timing-function: var(--theme-transition-timing);
-}
-
-/* 波浪式延迟过渡 */
-.theme-transition [data-theme-wave="1"] { transition-delay: calc(var(--theme-transition-delay-unit) * 1); }
-.theme-transition [data-theme-wave="2"] { transition-delay: calc(var(--theme-transition-delay-unit) * 2); }
-.theme-transition [data-theme-wave="3"] { transition-delay: calc(var(--theme-transition-delay-unit) * 3); }
-.theme-transition [data-theme-wave="4"] { transition-delay: calc(var(--theme-transition-delay-unit) * 4); }
-.theme-transition [data-theme-wave="5"] { transition-delay: calc(var(--theme-transition-delay-unit) * 5); }
-.theme-transition [data-theme-wave="6"] { transition-delay: calc(var(--theme-transition-delay-unit) * 6); }
-.theme-transition [data-theme-wave="7"] { transition-delay: calc(var(--theme-transition-delay-unit) * 7); }
-.theme-transition [data-theme-wave="8"] { transition-delay: calc(var(--theme-transition-delay-unit) * 8); }
-.theme-transition [data-theme-wave="9"] { transition-delay: calc(var(--theme-transition-delay-unit) * 9); }
-.theme-transition [data-theme-wave="10"] { transition-delay: calc(var(--theme-transition-delay-unit) * 10); }
 
 /* 滚动条样式 */
 ::-webkit-scrollbar {
@@ -252,103 +230,6 @@ body,
 /* 导入组件样式文件 */
 @import "./components/forms.css";
 
-/* 主题类名 */
-@layer base {
-  .dark {
-    color-scheme: dark;
-    --color-bg-primary: oklch(19.2% 0.042 255.3);
-    --color-bg-secondary: oklch(23.8% 0.044 255.2);
-    --color-bg-tertiary: oklch(33.1% 0.037 254.4);
-    --color-text-primary: color-mix(in oklab, white 95%, transparent);
-    --color-text-secondary: color-mix(in oklab, white 70%, transparent);
-    --color-border: color-mix(in oklab, white 10%, transparent);
-    --color-accent: var(--color-primary-500);
-    --color-accent-light: var(--color-primary-400);
-    --color-shadow: color-mix(in oklab, black 30%, transparent);
-    --color-scrollbar-thumb: color-mix(in oklab, white 20%, transparent);
-    --color-scrollbar-track: color-mix(in oklab, black 30%, transparent);
-  }
-
-  .light {
-    color-scheme: light;
-    --color-bg-primary: oklch(97.9% 0.005 256.8);
-    --color-bg-secondary: oklch(100% 0 0);
-    --color-bg-tertiary: oklch(96.9% 0.013 244.4);
-    --color-text-primary: oklch(23.8% 0.044 255.2);
-    --color-text-secondary: oklch(50.6% 0.023 255.5);
-    --color-border: oklch(91.3% 0.023 244.9);
-    --color-accent: var(--color-primary-600);
-    --color-accent-light: var(--color-primary-500);
-    --color-shadow: color-mix(in oklab, black 10%, transparent);
-    --color-scrollbar-thumb: color-mix(in oklab, black 20%, transparent);
-    --color-scrollbar-track: color-mix(in oklab, black 5%, transparent);
-  }
-
-  .cyberpunk {
-    color-scheme: dark;
-    --color-bg-primary: oklch(8.7% 0.092 310.0);
-    --color-bg-secondary: oklch(13.2% 0.135 304.9);
-    --color-bg-tertiary: oklch(26.5% 0.174 297.3);
-    --color-text-primary: color-mix(in oklab, white 95%, transparent);
-    --color-text-secondary: color-mix(in oklab, white 70%, transparent);
-    --color-border: color-mix(in oklab, oklch(65.1% 0.307 330.7) 30%, transparent);
-    --color-accent: oklch(65.1% 0.307 330.7); /* 霓虹粉 */
-    --color-accent-light: oklch(78.9% 0.215 330.7); /* 浅霓虹粉 */
-    --color-shadow: color-mix(in oklab, oklch(65.1% 0.307 330.7) 30%, transparent);
-    --color-neon-pink: oklch(65.1% 0.307 330.7);
-    --color-neon-blue: oklch(81.5% 0.232 203.0);
-    --color-neon-green: oklch(84.9% 0.257 159.0);
-    --color-neon-yellow: oklch(97.2% 0.219 109.8);
-    --color-scrollbar-thumb: color-mix(in oklab, var(--color-neon-pink) 50%, transparent);
-    --color-scrollbar-track: color-mix(in oklab, oklch(8.7% 0.092 310.0) 80%, transparent);
-  }
-}
-
-/* 主题特定滚动条样式 */
-.dark::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb);
-}
-
-.dark::-webkit-scrollbar-track {
-  background: var(--color-scrollbar-track);
-}
-
-.light::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb);
-}
-
-.light::-webkit-scrollbar-track {
-  background: var(--color-scrollbar-track);
-}
-
-.cyberpunk::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb);
-  box-shadow: 0 0 8px var(--color-neon-pink);
-}
-
-.cyberpunk::-webkit-scrollbar-track {
-  background: var(--color-scrollbar-track);
-}
-
-/* 全局动画类 */
-.cyberpunk .neon-text {
-  text-shadow: 0 0 5px currentColor;
-}
-
-.cyberpunk .neon-border {
-  box-shadow: 0 0 10px var(--color-neon-pink);
-}
-
-.cyberpunk .neon-pulse {
-  animation: pulse-glow 2s infinite;
-}
-
-.cyberpunk .gradient-text {
-  background: linear-gradient(90deg, var(--color-neon-pink), var(--color-neon-blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 /* 波浪效果应用 */
 .wave-anim-item {
   animation: wave-animation 3s ease infinite;
@@ -372,33 +253,6 @@ body,
 
 .wave-anim-delay-5 {
   animation-delay: 0.5s;
-}
-
-/* 主题过渡波浪动画类 */
-.theme-wave-item {
-  transition-property: var(--theme-transition-properties);
-  transition-duration: var(--theme-transition-duration);
-  transition-timing-function: var(--theme-transition-timing);
-}
-
-.theme-wave-delay-1 {
-  transition-delay: 0.05s;
-}
-
-.theme-wave-delay-2 {
-  transition-delay: 0.1s;
-}
-
-.theme-wave-delay-3 {
-  transition-delay: 0.15s;
-}
-
-.theme-wave-delay-4 {
-  transition-delay: 0.2s;
-}
-
-.theme-wave-delay-5 {
-  transition-delay: 0.25s;
 }
 
 /* 玻璃拟态效果 */
@@ -496,119 +350,6 @@ body,
 
 .animate-color-pulse {
   animation: color-pulse 3s ease-in-out infinite;
-}
-
-/* 深色主题特定样式 */
-.dark body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-}
-
-/* 深色主题卡片样式 */
-.dark .card, 
-.dark .bg-white, 
-.dark [class*="bg-white"], 
-.dark [class*="bg-gray-50"], 
-.dark [class*="bg-gray-100"] {
-  background-color: color-mix(in oklab, var(--color-bg-secondary) 50%, transparent);
-  color: var(--color-text-primary);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in oklab, white 5%, transparent);
-  box-shadow: 0 4px 20px color-mix(in oklab, black 20%, transparent);
-}
-
-/* 深色主题文本颜色 */
-.dark [class*="text-gray-900"], 
-.dark [class*="text-gray-800"], 
-.dark [class*="text-gray-700"] {
-  color: var(--color-text-primary);
-}
-
-.dark [class*="text-gray-600"], 
-.dark [class*="text-gray-500"], 
-.dark [class*="text-gray-400"] {
-  color: var(--color-text-secondary);
-}
-
-/* 深色主题表单元素样式 */
-.dark input, 
-.dark select, 
-.dark textarea {
-  background-color: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
-  color: var(--color-text-primary);
-  border-color: color-mix(in oklab, white 10%, transparent);
-}
-
-.dark input:focus, 
-.dark select:focus, 
-.dark textarea:focus {
-  border-color: var(--color-neon-blue);
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary-500) 25%, transparent);
-}
-
-/* 深色主题按钮样式 */
-.dark button:not([class*="bg-primary"]):not([class*="bg-secondary"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-blue"]) {
-  background-color: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
-  color: var(--color-text-primary);
-  border-color: color-mix(in oklab, white 10%, transparent);
-}
-
-/* 深色主题表格样式 */
-.dark table {
-  background-color: transparent;
-}
-
-.dark table th {
-  background-color: color-mix(in oklab, var(--color-bg-primary) 70%, transparent);
-  color: var(--color-text-primary);
-}
-
-.dark table td {
-  background-color: color-mix(in oklab, var(--color-bg-secondary) 30%, transparent);
-  color: var(--color-text-primary);
-  border-color: color-mix(in oklab, white 5%, transparent);
-}
-
-.dark table tr:hover td {
-  background-color: color-mix(in oklab, var(--color-primary-500) 15%, transparent);
-}
-
-/* 明亮主题特定样式 */
-.light body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-}
-
-/* 明亮主题卡片样式 */
-.light .card, 
-.light .bg-white, 
-.light [class*="bg-white"], 
-.light [class*="bg-gray-50"], 
-.light [class*="bg-gray-100"] {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  box-shadow: 0 1px 3px color-mix(in oklab, black 10%, transparent), 0 1px 2px color-mix(in oklab, black 6%, transparent);
-}
-
-/* 明亮主题文本颜色 */
-.light [class*="text-gray-900"], 
-.light [class*="text-gray-800"], 
-.light [class*="text-gray-700"] {
-  color: var(--color-text-primary);
-}
-
-.light [class*="text-gray-600"], 
-.light [class*="text-gray-500"], 
-.light [class*="text-gray-400"] {
-  color: var(--color-text-secondary);
-}
-
-/* 赛博朋克主题特定样式 */
-.cyberpunk body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
 }
 
 @layer utilities {

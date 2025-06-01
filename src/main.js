@@ -1,9 +1,20 @@
 import { createApp, ref } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
-import './styles/main.css'
 import "@fontsource/inter";
 
+// 初始化主题，防止闪烁 (FOUC)
+(function() {
+  const savedTheme = localStorage.getItem('ll_pro_admin_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  // 设置初始主题
+  const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', initialTheme);
+  console.log('初始主题设置为:', initialTheme);
+})();
+
+import './styles/main.css'
 import App from './App.vue'
 import { setupErrorHandler } from './utils/errorHandler'
 import { useThemeStore } from './stores/theme'
@@ -37,6 +48,7 @@ try {
   const themeStore = useThemeStore()
   console.log('初始化主题...')
   themeStore.initTheme()
+  themeStore.setupSystemThemeListener()
 } catch (error) {
   console.error('初始化主题失败:', error)
 }

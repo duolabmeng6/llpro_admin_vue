@@ -1,0 +1,60 @@
+/* 绿色主题配置 */
+
+html[data-theme='green'] {
+  /* 背景色 */
+  --color-bg-primary: oklch(92% 0.04 145);  /* 浅绿色背景 */
+  --color-bg-secondary: oklch(97% 0.02 140);
+  --color-bg-tertiary: oklch(88% 0.06 148);
+  
+  /* 文本颜色 */
+  --color-text-primary: oklch(20% 0.03 145);  /* 深绿色文字 */
+  --color-text-secondary: oklch(35% 0.04 145);
+  
+  /* 边框和分隔线 */
+  --color-border: oklch(80% 0.08 145);
+  
+  /* 强调色和交互元素 */
+  --color-accent: oklch(45% 0.15 145);
+  --color-accent-hover: oklch(40% 0.18 145);
+  
+  /* 阴影 */
+  --color-shadow: color-mix(in oklab, oklch(20% 0.03 145) 15%, transparent);
+  
+  /* 滚动条 */
+  --color-scrollbar-thumb: color-mix(in oklab, oklch(45% 0.15 145) 70%, transparent);
+  --color-scrollbar-track: color-mix(in oklab, oklch(20% 0.03 145) 10%, transparent);
+  
+  /* 卡片和面板 */
+  --color-card-bg: oklch(97% 0.02 140);
+  --color-card-border: var(--color-border);
+  
+  /* 输入框 */
+  --color-input-bg: white;
+  --color-input-border: var(--color-border);
+  --color-input-text: var(--color-text-primary);
+  --color-input-placeholder: var(--color-text-secondary);
+  
+  /* 按钮 - 默认 */
+  --color-button-bg: var(--color-bg-tertiary);
+  --color-button-text: var(--color-text-primary);
+  --color-button-border: var(--color-border);
+  --color-button-hover-bg: var(--color-bg-tertiary);
+  
+  /* 按钮 - 主要 */
+  --color-button-primary-bg: oklch(45% 0.15 145);
+  --color-button-primary-text: white;
+  --color-button-primary-hover-bg: oklch(40% 0.18 145);
+  
+  /* 按钮 - 次要 */
+  --color-button-secondary-bg: oklch(50% 0.13 180);
+  --color-button-secondary-text: white;
+  --color-button-secondary-hover-bg: oklch(45% 0.15 180);
+}
+
+/* 绿色主题特有样式 */
+html[data-theme='green'] .theme-emphasis {
+  background: linear-gradient(135deg, oklch(75% 0.1 145), oklch(80% 0.08 170));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 2px 6px;
+}

@@ -1,0 +1,126 @@
+/* 基础主题配置 - 定义通用的变量和结构 */
+
+@layer theme {
+  /* 默认主题变量 - 在各个主题CSS中会被覆盖 */
+  :root {
+    /* 主要背景色 */
+    --color-bg-primary: oklch(97.9% 0.005 256.8);
+    --color-bg-secondary: oklch(100% 0 0);
+    --color-bg-tertiary: oklch(96.9% 0.013 244.4);
+    
+    /* 文本颜色 */
+    --color-text-primary: oklch(23.8% 0.044 255.2);
+    --color-text-secondary: oklch(50.6% 0.023 255.5);
+    
+    /* 边框和分隔线 */
+    --color-border: oklch(91.3% 0.023 244.9);
+    
+    /* 强调色和交互元素 */
+    --color-accent: var(--color-primary-600);
+    --color-accent-hover: var(--color-primary-700);
+    
+    /* 阴影 */
+    --color-shadow: color-mix(in oklab, black 10%, transparent);
+    
+    /* 滚动条 */
+    --color-scrollbar-thumb: color-mix(in oklab, black 20%, transparent);
+    --color-scrollbar-track: color-mix(in oklab, black 5%, transparent);
+    
+    /* 卡片和面板 */
+    --color-card-bg: white;
+    --color-card-border: var(--color-border);
+    
+    /* 输入框 */
+    --color-input-bg: white;
+    --color-input-border: var(--color-gray-300);
+    --color-input-text: var(--color-text-primary);
+    --color-input-placeholder: var(--color-gray-400);
+    
+    /* 按钮 - 默认 */
+    --color-button-bg: var(--color-gray-100);
+    --color-button-text: var(--color-gray-900);
+    --color-button-border: var(--color-gray-300);
+    --color-button-hover-bg: var(--color-gray-200);
+    
+    /* 按钮 - 主要 */
+    --color-button-primary-bg: var(--color-primary-600);
+    --color-button-primary-text: white;
+    --color-button-primary-hover-bg: var(--color-primary-700);
+    
+    /* 按钮 - 次要 */
+    --color-button-secondary-bg: var(--color-secondary-600);
+    --color-button-secondary-text: white;
+    --color-button-secondary-hover-bg: var(--color-secondary-700);
+    
+    /* 主题过渡 */
+    --theme-transition-duration: 0.3s;
+    --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* 全局主题过渡 */
+html {
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-timing);
+}
+
+body,
+.theme-transition-element {
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: var(--theme-transition-duration);
+  transition-timing-function: var(--theme-transition-timing);
+}
+
+/* 基础主题工具类 */
+@layer utilities {
+  .bg-primary {
+    background-color: var(--color-bg-primary);
+  }
+  
+  .bg-secondary {
+    background-color: var(--color-bg-secondary);
+  }
+  
+  .bg-tertiary {
+    background-color: var(--color-bg-tertiary);
+  }
+  
+  .text-primary {
+    color: var(--color-text-primary);
+  }
+  
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+  
+  .border-theme {
+    border-color: var(--color-border);
+  }
+  
+  .bg-card {
+    background-color: var(--color-card-bg);
+  }
+  
+  .bg-button {
+    background-color: var(--color-button-bg);
+  }
+  
+  .bg-button-primary {
+    background-color: var(--color-button-primary-bg);
+  }
+  
+  .bg-button-secondary {
+    background-color: var(--color-button-secondary-bg);
+  }
+  
+  .text-button {
+    color: var(--color-button-text);
+  }
+  
+  .text-button-primary {
+    color: var(--color-button-primary-text);
+  }
+  
+  .text-button-secondary {
+    color: var(--color-button-secondary-text);
+  }
+}

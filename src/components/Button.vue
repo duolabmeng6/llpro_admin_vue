@@ -48,13 +48,13 @@ const buttonClasses = computed(() => {
   }
   
   const variantClasses = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
-    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500',
+    primary: 'bg-button-primary text-button-primary hover:bg-button-primary-hover focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
+    secondary: 'bg-button-secondary text-button-secondary hover:bg-button-secondary-hover focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500',
     success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
     warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500',
     info: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
-    outline: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
+    outline: 'border border-theme bg-button text-button hover:bg-button-hover focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
   }
   
   const disabledClasses = props.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'

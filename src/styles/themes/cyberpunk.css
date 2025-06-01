@@ -1,0 +1,88 @@
+/* 赛博朋克主题配置 */
+
+html[data-theme='cyberpunk'] {
+  /* 背景色 */
+  --color-bg-primary: oklch(8% 0.04 280);  /* 深紫色背景 */
+  --color-bg-secondary: oklch(12% 0.05 275);
+  --color-bg-tertiary: oklch(15% 0.06 270);
+  
+  /* 文本颜色 */
+  --color-text-primary: oklch(85% 0.2 180);  /* 青色文字 */
+  --color-text-secondary: oklch(75% 0.15 185);
+  
+  /* 边框和分隔线 */
+  --color-border: oklch(60% 0.25 320);  /* 洋红色边框 */
+  
+  /* 强调色和交互元素 */
+  --color-accent: oklch(70% 0.3 320);  /* 鲜艳的洋红色 */
+  --color-accent-hover: oklch(75% 0.35 320);
+  
+  /* 阴影 */
+  --color-shadow: color-mix(in oklab, oklch(0% 0 0) 40%, transparent);
+  
+  /* 滚动条 */
+  --color-scrollbar-thumb: oklch(60% 0.25 320);  /* 洋红色滚动条 */
+  --color-scrollbar-track: oklch(12% 0.05 275);
+  
+  /* 卡片和面板 */
+  --color-card-bg: oklch(12% 0.05 275);
+  --color-card-border: oklch(60% 0.25 320);
+  
+  /* 输入框 */
+  --color-input-bg: oklch(15% 0.04 270);
+  --color-input-border: oklch(60% 0.2 320);
+  --color-input-text: oklch(85% 0.2 180);
+  --color-input-placeholder: oklch(70% 0.1 180);
+  
+  /* 按钮 - 默认 */
+  --color-button-bg: oklch(20% 0.06 270);
+  --color-button-text: oklch(90% 0.25 180);
+  --color-button-border: oklch(60% 0.25 320);
+  --color-button-hover-bg: oklch(25% 0.08 270);
+  
+  /* 按钮 - 主要 */
+  --color-button-primary-bg: oklch(65% 0.3 320);
+  --color-button-primary-text: oklch(10% 0.04 280);
+  --color-button-primary-hover-bg: oklch(70% 0.35 320);
+  
+  /* 按钮 - 次要 */
+  --color-button-secondary-bg: oklch(60% 0.3 180);
+  --color-button-secondary-text: oklch(10% 0.04 280);
+  --color-button-secondary-hover-bg: oklch(65% 0.35 180);
+  
+  /* 霓虹效果 */
+  --neon-glow: 0 0 10px oklch(70% 0.3 320), 0 0 20px oklch(70% 0.3 320);
+  --neon-text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+}
+
+/* 赛博朋克特定效果 */
+html[data-theme='cyberpunk'] .neon-text {
+  text-shadow: var(--neon-text-shadow);
+}
+
+html[data-theme='cyberpunk'] .neon-border {
+  box-shadow: var(--neon-glow);
+}
+
+html[data-theme='cyberpunk'] .neon-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+html[data-theme='cyberpunk'] .neon-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, oklch(70% 0.3 320), oklch(60% 0.3 180));
+  opacity: 0.2;
+  z-index: -1;
+  animation: neon-pulse 3s infinite alternate;
+}
+
+@keyframes neon-pulse {
+  0% { opacity: 0.2; }
+  100% { opacity: 0.3; }
+}

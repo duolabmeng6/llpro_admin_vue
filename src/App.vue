@@ -44,8 +44,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <router-view />
-  <Notification ref="notificationRef" />
+  <div class="min-h-screen bg-primary text-primary transition-colors">
+    <router-view />
+    <Notification ref="notificationRef" />
+  </div>
 </template>
 
 <style scoped>

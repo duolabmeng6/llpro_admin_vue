@@ -35,6 +35,12 @@ const routes = [
         meta: { title: '表单组件示例', icon: 'form' }
       },
       {
+        path: 'examples/theme',
+        name: 'ThemeDemo',
+        component: () => import('../views/examples/ThemeDemo.vue'),
+        meta: { title: '主题切换演示', icon: 'palette' }
+      },
+      {
         path: 'upload-demo',
         name: 'UploadDemo',
         component: () => import('../views/UploadDemo.vue'),
