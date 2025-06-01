@@ -188,7 +188,14 @@ const handleContextMenu = (e, tab) => {
     }"
   >
     <div class="tabs-wrapper overflow-x-auto">
-      <div class="tabs-list flex h-full">
+      <TransitionGroup 
+        :name="`tab-${currentTheme}`" 
+        tag="div" 
+        class="tabs-list flex h-full relative"
+        css-mode
+        :css="true"
+        appear
+      >
         <div
           v-for="tab in tabs"
           :key="tab.path"
@@ -226,7 +233,7 @@ const handleContextMenu = (e, tab) => {
             <i class="fa-solid fa-xmark w-3 h-3 flex items-center justify-center"></i>
           </button>
         </div>
-      </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -264,6 +271,11 @@ const handleContextMenu = (e, tab) => {
   height: 100%;
   overflow-x: auto;
   scrollbar-width: thin;
+  -webkit-transform: translateZ(0); /* 启用硬件加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden; /* 防止 3D 变换的背面闪烁 */
+  perspective: 1000px; /* 提供 3D 空间 */
+  position: relative; /* 添加相对定位作为绝对定位的参考 */
 }
 
 /* 滚动条样式 - 深色主题 */
@@ -310,6 +322,13 @@ const handleContextMenu = (e, tab) => {
 
 .tabs-list {
   height: 100%;
+  position: relative;
+  display: flex;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  overflow: visible; /* 确保动画不被裁剪 */
+  min-height: 44px;
+  width: 100%; /* 确保占满容器宽度 */
 }
 
 .tab {
@@ -320,6 +339,7 @@ const handleContextMenu = (e, tab) => {
   align-items: center;
   gap: 6px;
   min-height: 44px;
+  transform-origin: center center; /* 确保缩放动画从中心开始 */
 }
 
 /* 标签底部指示线 */
@@ -530,6 +550,118 @@ const handleContextMenu = (e, tab) => {
 
 .tab-context-menu {
   animation: fadeIn 0.2s ease-out;
+}
+
+/* 标签关闭动画 - 深色主题 */
+.tab-dark-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  z-index: 1; /* 确保进入的标签位于顶层 */
+  max-width: 300px;
+  will-change: transform, opacity;
+}
+
+.tab-dark-enter-from {
+  opacity: 0;
+  transform: translateX(10px) scale(0.95);
+  transform-origin: left center;
+}
+
+.tab-dark-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  position: absolute;
+  max-width: 300px;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
+.tab-dark-leave-to {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.tab-dark-move {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  will-change: transform;
+}
+
+/* 标签关闭动画 - 明亮主题 */
+.tab-light-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  z-index: 1; /* 确保进入的标签位于顶层 */
+  max-width: 300px;
+  will-change: transform, opacity;
+}
+
+.tab-light-enter-from {
+  opacity: 0;
+  transform: translateX(10px) scale(0.95);
+  transform-origin: left center;
+}
+
+.tab-light-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  position: absolute;
+  max-width: 300px;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
+.tab-light-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
+.tab-light-move {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  will-change: transform;
+}
+
+/* 标签关闭动画 - 赛博朋克主题 */
+.tab-cyberpunk-enter-active {
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1; /* 确保进入的标签位于顶层 */
+  max-width: 300px;
+  will-change: transform, opacity, filter;
+}
+
+.tab-cyberpunk-enter-from {
+  opacity: 0;
+  transform: translateX(10px) scale(0.9);
+  transform-origin: left center;
+  filter: brightness(1.2);
+}
+
+.tab-cyberpunk-leave-active {
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: absolute;
+  max-width: 300px;
+  z-index: 0;
+  will-change: transform, opacity, filter;
+  overflow: hidden;
+}
+
+.tab-cyberpunk-leave-to {
+  opacity: 0;
+  transform: scale(0.5) rotate(3deg);
+  filter: brightness(1.5) saturate(1.5);
+}
+
+.tab-cyberpunk-move {
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+
+/* 标签关闭的闪光效果 - 赛博朋克主题 */
+@keyframes neonFlash {
+  0% { box-shadow: 0 0 5px rgba(255, 44, 240, 0.3), 0 0 8px rgba(255, 44, 240, 0.2); }
+  35% { box-shadow: 0 0 15px rgba(255, 44, 240, 0.8), 0 0 20px rgba(0, 238, 255, 0.6); }
+  70% { box-shadow: 0 0 10px rgba(255, 44, 240, 0.5), 0 0 15px rgba(0, 238, 255, 0.4); }
+  100% { box-shadow: 0 0 5px rgba(255, 44, 240, 0.3), 0 0 8px rgba(255, 44, 240, 0.2); }
+}
+
+.tab-cyberpunk-leave-active::before {
+  animation: neonFlash 0.35s ease-out;
+  width: 100%; /* 确保闪光效果覆盖整个标签 */
 }
 
 /* 图标垂直对齐修正 */
