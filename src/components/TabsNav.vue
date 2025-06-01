@@ -2,12 +2,36 @@
 import { computed } from 'vue'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
+import { menuConfig } from '../config/menu'
 
 const tabsStore = useTabsStore()
 const themeStore = useThemeStore()
 const tabs = computed(() => tabsStore.getTabs)
 const activeTab = computed(() => tabsStore.getActiveTab)
 const currentTheme = computed(() => themeStore.currentTheme)
+
+// 根据路径查找菜单图标
+const getTabIcon = (path) => {
+  // 查找一级菜单
+  let menuItem = menuConfig.find(item => item.path === path)
+  
+  // 如果未找到匹配的一级菜单，尝试在二级菜单中查找
+  if (!menuItem) {
+    for (const parent of menuConfig) {
+      if (parent.children && parent.children.length > 0) {
+        const childItem = parent.children.find(child => child.path === path)
+        if (childItem) {
+          return childItem.icon || parent.icon // 优先使用子菜单图标，如果没有则使用父菜单图标
+        }
+      }
+    }
+    // 如果在二级菜单中也未找到，返回默认图标
+    return 'fa-solid fa-file'
+  }
+  
+  // 返回一级菜单的图标
+  return menuItem.icon || 'fa-solid fa-file'
+}
 
 // 切换标签
 const switchTab = (path) => {
@@ -162,7 +186,7 @@ const handleContextMenu = (e, tab) => {
         <div
           v-for="tab in tabs"
           :key="tab.path"
-          class="tab flex items-center px-4 py-2 cursor-pointer whitespace-nowrap transition-all duration-300"
+          class="tab cursor-pointer whitespace-nowrap transition-all duration-300"
           :class="[
             activeTab === tab.path 
               ? `tab-active-${currentTheme}` 
@@ -171,6 +195,17 @@ const handleContextMenu = (e, tab) => {
           @click="switchTab(tab.path)"
           @contextmenu="handleContextMenu($event, tab)"
         >
+          <i 
+            :class="[
+              getTabIcon(tab.path),
+              {
+                'tab-icon-dark': currentTheme === 'dark',
+                'tab-icon-light': currentTheme === 'light',
+                'tab-icon-cyber': currentTheme === 'cyberpunk'
+              }
+            ]" 
+            class="tab-icon flex-shrink-0 flex items-center justify-center"
+          ></i>
           <span class="tab-title">{{ tab.title }}</span>
           <button
             v-if="tab.closable"
@@ -193,7 +228,7 @@ const handleContextMenu = (e, tab) => {
 <style scoped>
 /* 基本样式 */
 .tabs-nav {
-  height: 42px;
+  height: 44px;
   display: flex;
   align-items: center;
 }
@@ -274,6 +309,11 @@ const handleContextMenu = (e, tab) => {
 .tab {
   height: 100%;
   position: relative;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
 }
 
 /* 标签底部指示线 */
@@ -380,9 +420,55 @@ const handleContextMenu = (e, tab) => {
   box-shadow: 0 0 8px rgba(255, 44, 240, 0.5);
 }
 
+/* 标签图标样式 */
+.tab-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -0.5px; /* 微调垂直对齐 */
+}
+
+/* 深色主题图标 */
+.tab-inactive-dark .tab-icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tab-active-dark .tab-icon {
+  color: white;
+}
+
+/* 明亮主题图标 */
+.tab-inactive-light .tab-icon {
+  color: #64748b;
+}
+
+.tab-active-light .tab-icon {
+  color: #1e293b;
+}
+
+/* 赛博朋克主题图标 */
+.tab-inactive-cyberpunk .tab-icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tab-active-cyberpunk .tab-icon {
+  color: white;
+}
+
 .tab-title {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 /* 关闭按钮 */
@@ -438,5 +524,13 @@ const handleContextMenu = (e, tab) => {
 
 .tab-context-menu {
   animation: fadeIn 0.2s ease-out;
+}
+
+/* 图标垂直对齐修正 */
+.close-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 </style> 

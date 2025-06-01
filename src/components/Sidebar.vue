@@ -190,7 +190,7 @@ const sidebarWidth = computed(() => {
           ></i>
           <span 
             v-if="showMenuText" 
-            class="flex-1 truncate"
+            class="flex-1 truncate flex items-center"
           >
             {{ menuItem.title }}
           </span>
@@ -198,7 +198,7 @@ const sidebarWidth = computed(() => {
           <!-- 展开/收起箭头（仅当有子菜单时显示） -->
           <i 
             v-if="hasChildren(menuItem) && showMenuText"
-            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300"
+            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300 flex items-center justify-center"
             :class="{ 'rotate-90': isExpanded(menuItem.id) }"
           ></i>
         </div>
@@ -447,5 +447,21 @@ const sidebarWidth = computed(() => {
 .submenu-inactive-cyberpunk:hover {
   background: rgba(255, 44, 240, 0.1);
   color: white;
+}
+
+/* 图标垂直对齐修正 */
+.menu-item i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* 确保子菜单图标对齐 */
+.submenu-item i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 </style> 
