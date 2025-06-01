@@ -35,6 +35,12 @@ const routes = [
         meta: { title: '多图上传示例', icon: 'upload' }
       },
       {
+        path: 'markdown-editor',
+        name: 'MarkdownEditorDemo',
+        component: () => import('../views/MarkdownEditorDemo.vue'),
+        meta: { title: 'Markdown编辑器', icon: 'edit' }
+      },
+      {
         path: 'users',
         name: 'UserManagement',
         component: () => import('../views/UserManagement.vue'),

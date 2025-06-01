@@ -30,6 +30,13 @@ export const menuConfig = [
     children: []
   },
   {
+    id: 'markdown-editor',
+    title: 'Markdown编辑器',
+    path: '/markdown-editor',
+    icon: 'fa-solid fa-pen-to-square',
+    children: []
+  },
+  {
     id: 'user',
     title: '用户管理',
     path: '/users',
