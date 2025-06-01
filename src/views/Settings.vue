@@ -74,42 +74,45 @@ const saveSettings = (settingsType) => {
     
     <!-- Settings tabs -->
     <div class="mt-6">
-      <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8">
+      <div class="settings-tabs border-b border-gray-200">
+        <div class="tabs-container flex">
           <button
             @click="activeTab = 'general'"
+            class="settings-tab relative px-6 py-3 font-medium text-sm transition-all duration-300"
             :class="[
               activeTab === 'general'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                ? 'settings-tab-active' 
+                : 'settings-tab-inactive'
             ]"
           >
+            <i class="fa-solid fa-gear mr-2"></i>
             常规
           </button>
           <button
             @click="activeTab = 'email'"
+            class="settings-tab relative px-6 py-3 font-medium text-sm transition-all duration-300"
             :class="[
               activeTab === 'email'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                ? 'settings-tab-active' 
+                : 'settings-tab-inactive'
             ]"
           >
+            <i class="fa-solid fa-envelope mr-2"></i>
             邮件
           </button>
           <button
             @click="activeTab = 'security'"
+            class="settings-tab relative px-6 py-3 font-medium text-sm transition-all duration-300"
             :class="[
               activeTab === 'security'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                ? 'settings-tab-active' 
+                : 'settings-tab-inactive'
             ]"
           >
+            <i class="fa-solid fa-shield-halved mr-2"></i>
             安全
           </button>
-        </nav>
+        </div>
       </div>
       
       <!-- General Settings -->
@@ -368,4 +371,92 @@ const saveSettings = (settingsType) => {
       </div>
     </div>
   </div>
-</template> 
+</template>
+
+<style scoped>
+/* 设置页面选项卡 */
+.settings-tabs {
+  position: relative;
+}
+
+.tabs-container {
+  position: relative;
+  border-bottom: none;
+}
+
+.settings-tab {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.settings-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 激活状态 */
+.settings-tab-active {
+  color: var(--color-accent, #3b82f6);
+}
+
+.settings-tab-active::after {
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-accent, #3b82f6), var(--color-accent-light, #60a5fa));
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 未激活状态 */
+.settings-tab-inactive {
+  color: var(--color-text-secondary, #64748b);
+}
+
+.settings-tab-inactive:hover {
+  color: var(--color-text-primary, #1e293b);
+}
+
+.settings-tab-inactive:hover::after {
+  width: 100%;
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* 深色主题适配 */
+:global(.dark) .settings-tab-active {
+  color: white;
+}
+
+:global(.dark) .settings-tab-inactive {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:global(.dark) .settings-tab-inactive:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 赛博朋克主题适配 */
+:global(.cyberpunk) .settings-tab-active {
+  color: #ff2cf0;
+}
+
+:global(.cyberpunk) .settings-tab-active::after {
+  background: linear-gradient(90deg, #ff2cf0, #00eeff);
+  box-shadow: 0 0 10px rgba(255, 44, 240, 0.5);
+}
+
+:global(.cyberpunk) .settings-tab-inactive:hover {
+  color: white;
+  background: rgba(255, 44, 240, 0.1);
+}
+
+:global(.cyberpunk) .settings-tab-inactive:hover::after {
+  background: rgba(255, 44, 240, 0.3);
+}
+</style> 
