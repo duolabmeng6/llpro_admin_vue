@@ -47,7 +47,8 @@ const logout = async () => {
     :class="{
       'navbar-dark': currentTheme === 'dark',
       'navbar-light': currentTheme === 'light',
-      'navbar-cyber': currentTheme === 'cyberpunk'
+      'navbar-cyber': currentTheme === 'cyberpunk',
+      'navbar-green': currentTheme === 'green'
     }"
   >
     <div class="navbar-content px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center relative z-10">
@@ -59,7 +60,8 @@ const logout = async () => {
             :class="{
               'title-dark': currentTheme === 'dark',
               'title-light': currentTheme === 'light',
-              'title-cyber': currentTheme === 'cyberpunk'
+              'title-cyber': currentTheme === 'cyberpunk',
+              'title-green': currentTheme === 'green'
             }"
           >
             LL Pro <span class="navbar-subtitle">系统控制台</span>
@@ -74,7 +76,8 @@ const logout = async () => {
           :class="{
             'time-dark': currentTheme === 'dark',
             'time-light': currentTheme === 'light',
-            'time-cyber': currentTheme === 'cyberpunk'
+            'time-cyber': currentTheme === 'cyberpunk',
+            'time-green': currentTheme === 'green'
           }"
         >
           <i class="fas fa-clock mr-2"></i>
@@ -90,7 +93,8 @@ const logout = async () => {
           :class="{
             'user-dark': currentTheme === 'dark',
             'user-light': currentTheme === 'light',
-            'user-cyber': currentTheme === 'cyberpunk'
+            'user-cyber': currentTheme === 'cyberpunk',
+            'user-green': currentTheme === 'green'
           }"
         >
           <i class="fas fa-user-circle mr-2"></i>
@@ -105,7 +109,8 @@ const logout = async () => {
           :class="{
             'logout-dark': currentTheme === 'dark',
             'logout-light': currentTheme === 'light',
-            'logout-cyber': currentTheme === 'cyberpunk'
+            'logout-cyber': currentTheme === 'cyberpunk',
+            'logout-green': currentTheme === 'green'
           }"
           @click="logout"
         >
@@ -150,6 +155,14 @@ const logout = async () => {
   box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
 }
 
+/* 绿色主题导航栏 */
+.navbar-green {
+  background: rgba(240, 250, 240, 0.95);
+  border-bottom: 1px solid oklch(80% 0.08 145);
+  color: oklch(15% 0.05 145);
+  box-shadow: 0 1px 4px rgba(0, 128, 0, 0.1);
+}
+
 /* 标题样式 */
 .title-dark {
   background: linear-gradient(90deg, #60a5fa, #a78bfa);
@@ -186,6 +199,19 @@ const logout = async () => {
   color: transparent;
 }
 
+/* 绿色主题标题 */
+.title-green {
+  background: linear-gradient(90deg, oklch(40% 0.18 145), oklch(45% 0.15 170));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 5px rgba(0, 128, 0, 0.3);
+}
+
+.title-green .navbar-subtitle {
+  color: transparent;
+}
+
 /* 时间显示 */
 .time-dark {
   color: #60a5fa;
@@ -198,6 +224,11 @@ const logout = async () => {
 .time-cyber {
   color: #00eeff;
   text-shadow: 0 0 5px rgba(0, 238, 255, 0.7);
+}
+
+/* 绿色主题时间显示 */
+.time-green {
+  color: oklch(35% 0.15 145);
 }
 
 /* 用户信息 */
@@ -231,6 +262,17 @@ const logout = async () => {
 .user-cyber i {
   color: #ff2cf0;
   text-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
+}
+
+/* 绿色主题用户信息 */
+.user-green {
+  background: rgba(236, 252, 235, 0.8);
+  border: 1px solid oklch(80% 0.08 145);
+  color: oklch(15% 0.05 145);
+}
+
+.user-green i {
+  color: oklch(40% 0.18 145);
 }
 
 /* 退出按钮 */
@@ -283,10 +325,28 @@ const logout = async () => {
   transform: translateY(-2px);
 }
 
+/* 绿色主题退出按钮 */
+.logout-green {
+  background: linear-gradient(45deg, oklch(40% 0.18 145), oklch(45% 0.15 170));
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 128, 0, 0.3);
+}
+
+.logout-green span,
+.logout-green i {
+  color: white;
+}
+
+.logout-green:hover {
+  box-shadow: 0 0 15px rgba(0, 128, 0, 0.5);
+  transform: translateY(-2px);
+}
+
 /* 按钮闪光效果 */
 .logout-dark::before,
 .logout-light::before,
-.logout-cyber::before {
+.logout-cyber::before,
+.logout-green::before {
   content: '';
   position: absolute;
   top: 0;
@@ -305,7 +365,8 @@ const logout = async () => {
 
 .logout-dark:hover::before,
 .logout-light:hover::before,
-.logout-cyber:hover::before {
+.logout-cyber:hover::before,
+.logout-green:hover::before {
   left: 100%;
   transition: 0.5s;
 }

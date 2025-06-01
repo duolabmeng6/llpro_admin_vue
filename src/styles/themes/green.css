@@ -7,22 +7,22 @@ html[data-theme='green'] {
   --color-bg-tertiary: oklch(88% 0.06 148);
   
   /* 文本颜色 */
-  --color-text-primary: oklch(20% 0.03 145);  /* 深绿色文字 */
-  --color-text-secondary: oklch(35% 0.04 145);
+  --color-text-primary: oklch(15% 0.05 145);  /* 更深的绿色文字，提高对比度 */
+  --color-text-secondary: oklch(30% 0.06 145);  /* 稍深的次要文字颜色 */
   
   /* 边框和分隔线 */
   --color-border: oklch(80% 0.08 145);
   
   /* 强调色和交互元素 */
-  --color-accent: oklch(45% 0.15 145);
-  --color-accent-hover: oklch(40% 0.18 145);
+  --color-accent: oklch(40% 0.18 145);  /* 更深的强调色 */
+  --color-accent-hover: oklch(35% 0.20 145);  /* 悬停时更深 */
   
   /* 阴影 */
-  --color-shadow: color-mix(in oklab, oklch(20% 0.03 145) 15%, transparent);
+  --color-shadow: color-mix(in oklab, oklch(15% 0.05 145) 20%, transparent);
   
   /* 滚动条 */
-  --color-scrollbar-thumb: color-mix(in oklab, oklch(45% 0.15 145) 70%, transparent);
-  --color-scrollbar-track: color-mix(in oklab, oklch(20% 0.03 145) 10%, transparent);
+  --color-scrollbar-thumb: color-mix(in oklab, oklch(40% 0.18 145) 80%, transparent);
+  --color-scrollbar-track: color-mix(in oklab, oklch(15% 0.05 145) 15%, transparent);
   
   /* 卡片和面板 */
   --color-card-bg: oklch(97% 0.02 140);
@@ -41,19 +41,19 @@ html[data-theme='green'] {
   --color-button-hover-bg: var(--color-bg-tertiary);
   
   /* 按钮 - 主要 */
-  --color-button-primary-bg: oklch(45% 0.15 145);
+  --color-button-primary-bg: oklch(40% 0.18 145);
   --color-button-primary-text: white;
-  --color-button-primary-hover-bg: oklch(40% 0.18 145);
+  --color-button-primary-hover-bg: oklch(35% 0.20 145);
   
   /* 按钮 - 次要 */
-  --color-button-secondary-bg: oklch(50% 0.13 180);
+  --color-button-secondary-bg: oklch(45% 0.15 180);
   --color-button-secondary-text: white;
-  --color-button-secondary-hover-bg: oklch(45% 0.15 180);
+  --color-button-secondary-hover-bg: oklch(40% 0.18 180);
 }
 
 /* 绿色主题特有样式 */
 html[data-theme='green'] .theme-emphasis {
-  background: linear-gradient(135deg, oklch(75% 0.1 145), oklch(80% 0.08 170));
+  background: linear-gradient(135deg, oklch(70% 0.12 145), oklch(75% 0.10 170));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   padding: 2px 6px;

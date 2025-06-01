@@ -272,6 +272,12 @@ const closeThemeSelector = () => {
   border: 1px solid var(--color-border);
 }
 
+.theme-selector-green {
+  background-color: oklch(97% 0.02 140);
+  border: 1px solid oklch(80% 0.08 145);
+  box-shadow: 0 2px 10px rgba(0, 128, 0, 0.1);
+}
+
 /* 主题卡片样式 */
 .theme-card {
   border: 1px solid var(--color-border);

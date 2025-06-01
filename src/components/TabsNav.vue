@@ -60,8 +60,10 @@ const handleContextMenu = (e, tab) => {
     menu.className = 'tab-context-menu context-menu-dark'
   } else if (currentTheme.value === 'light') {
     menu.className = 'tab-context-menu context-menu-light'
-  } else {
+  } else if (currentTheme.value === 'cyberpunk') {
     menu.className = 'tab-context-menu context-menu-cyber'
+  } else {
+    menu.className = 'tab-context-menu context-menu-green'
   }
   
   menu.style.position = 'fixed'
@@ -84,12 +86,18 @@ const handleContextMenu = (e, tab) => {
     menu.style.border = '1px solid rgba(0, 0, 0, 0.1)'
     menu.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
     menu.style.color = '#1e293b'
-  } else {
+  } else if (currentTheme.value === 'cyberpunk') {
     menu.style.background = 'rgba(13, 2, 33, 0.95)'
     menu.style.backdropFilter = 'blur(12px)'
     menu.style.border = '1px solid rgba(255, 44, 240, 0.3)'
     menu.style.boxShadow = '0 0 15px rgba(255, 44, 240, 0.3)'
     menu.style.color = 'white'
+  } else {
+    menu.style.background = 'rgba(236, 252, 235, 0.8)'
+    menu.style.backdropFilter = 'blur(12px)'
+    menu.style.border = '1px solid oklch(80% 0.08 145)'
+    menu.style.boxShadow = '0 1px 5px rgba(0, 128, 0, 0.1)'
+    menu.style.color = '#1e293b'
   }
   
   const createMenuItem = (text, icon, onClick) => {
@@ -121,6 +129,8 @@ const handleContextMenu = (e, tab) => {
         item.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
       } else if (currentTheme.value === 'light') {
         item.style.backgroundColor = 'rgba(241, 245, 249, 0.8)'
+      } else if (currentTheme.value === 'cyberpunk') {
+        item.style.backgroundColor = 'rgba(255, 44, 240, 0.1)'
       } else {
         item.style.backgroundColor = 'rgba(255, 44, 240, 0.1)'
       }
@@ -184,7 +194,8 @@ const handleContextMenu = (e, tab) => {
     :class="{
       'tabs-nav-dark': currentTheme === 'dark',
       'tabs-nav-light': currentTheme === 'light',
-      'tabs-nav-cyber': currentTheme === 'cyberpunk'
+      'tabs-nav-cyber': currentTheme === 'cyberpunk',
+      'tabs-nav-green': currentTheme === 'green'
     }"
   >
     <div class="tabs-wrapper overflow-x-auto">
@@ -214,7 +225,8 @@ const handleContextMenu = (e, tab) => {
               {
                 'tab-icon-dark': currentTheme === 'dark',
                 'tab-icon-light': currentTheme === 'light',
-                'tab-icon-cyber': currentTheme === 'cyberpunk'
+                'tab-icon-cyber': currentTheme === 'cyberpunk',
+                'tab-icon-green': currentTheme === 'green'
               }
             ]" 
             class="tab-icon flex-shrink-0 flex items-center justify-center"
@@ -226,7 +238,8 @@ const handleContextMenu = (e, tab) => {
             :class="{
               'close-btn-dark': currentTheme === 'dark',
               'close-btn-light': currentTheme === 'light',
-              'close-btn-cyber': currentTheme === 'cyberpunk'
+              'close-btn-cyber': currentTheme === 'cyberpunk',
+              'close-btn-green': currentTheme === 'green'
             }"
             @click="closeTab($event, tab.path)"
           >
@@ -264,6 +277,13 @@ const handleContextMenu = (e, tab) => {
   background: rgba(13, 2, 33, 0.7);
   border-bottom: 1px solid rgba(255, 44, 240, 0.3);
   box-shadow: 0 0 10px rgba(255, 44, 240, 0.2);
+}
+
+/* 绿色主题 */
+.tabs-nav-green {
+  background: rgba(236, 252, 235, 0.8);
+  border-bottom: 1px solid oklch(80% 0.08 145);
+  box-shadow: 0 1px 5px rgba(0, 128, 0, 0.1);
 }
 
 .tabs-wrapper {
@@ -318,6 +338,20 @@ const handleContextMenu = (e, tab) => {
 
 .tabs-nav-cyber .tabs-wrapper::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 44, 240, 0.8);
+}
+
+/* 滚动条样式 - 绿色主题 */
+.tabs-nav-green .tabs-wrapper::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tabs-nav-green .tabs-wrapper::-webkit-scrollbar-thumb {
+  background-color: oklch(50% 0.15 145, 0.5);
+  border-radius: 1.5px;
+}
+
+.tabs-nav-green .tabs-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(40% 0.18 145, 0.7);
 }
 
 .tabs-list {
@@ -446,6 +480,37 @@ const handleContextMenu = (e, tab) => {
   box-shadow: 0 0 8px rgba(255, 44, 240, 0.5);
 }
 
+/* 绿色主题标签 */
+.tab-inactive-green {
+  color: oklch(30% 0.06 145);
+  border-right: 1px solid oklch(80% 0.08 145, 0.3);
+}
+
+.tab-inactive-green::before {
+  background: linear-gradient(90deg, oklch(40% 0.18 145), oklch(45% 0.15 170));
+}
+
+.tab-inactive-green:hover {
+  background: oklch(88% 0.06 148, 0.5);
+  color: oklch(15% 0.05 145);
+}
+
+.tab-inactive-green:hover::before {
+  width: 100%;
+}
+
+.tab-active-green {
+  background: oklch(88% 0.06 148, 0.7);
+  color: oklch(15% 0.05 145);
+  border-right: 1px solid oklch(80% 0.08 145, 0.3);
+}
+
+.tab-active-green::before {
+  width: 100%;
+  background: linear-gradient(90deg, oklch(40% 0.18 145), oklch(45% 0.15 170));
+  box-shadow: 0 0 8px rgba(0, 128, 0, 0.3);
+}
+
 /* 标签图标样式 */
 .tab-icon {
   width: 14px;
@@ -485,6 +550,15 @@ const handleContextMenu = (e, tab) => {
 
 .tab-active-cyberpunk .tab-icon {
   color: white;
+}
+
+/* 绿色主题图标 */
+.tab-inactive-green .tab-icon {
+  color: oklch(30% 0.06 145);
+}
+
+.tab-active-green .tab-icon {
+  color: oklch(15% 0.05 145);
 }
 
 .tab-title {
@@ -538,6 +612,18 @@ const handleContextMenu = (e, tab) => {
 .close-btn-cyber:hover {
   background: rgba(255, 44, 240, 0.3);
   color: white;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* 绿色主题关闭按钮 */
+.close-btn-green {
+  color: oklch(30% 0.06 145);
+}
+
+.close-btn-green:hover {
+  background: oklch(80% 0.08 145, 0.4);
+  color: oklch(15% 0.05 145);
   opacity: 1;
   transform: scale(1.1);
 }
@@ -662,6 +748,50 @@ const handleContextMenu = (e, tab) => {
 .tab-cyberpunk-leave-active::before {
   animation: neonFlash 0.35s ease-out;
   width: 100%; /* 确保闪光效果覆盖整个标签 */
+}
+
+/* 标签关闭动画 - 绿色主题 */
+.tab-green-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  z-index: 1;
+  max-width: 300px;
+  will-change: transform, opacity;
+}
+
+.tab-green-enter-from {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top center;
+}
+
+.tab-green-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  position: absolute;
+  max-width: 300px;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
+.tab-green-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.9);
+}
+
+.tab-green-move {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  will-change: transform;
+}
+
+/* 标签关闭的闪光效果 - 绿色主题 */
+@keyframes greenGlow {
+  0% { box-shadow: 0 0 5px rgba(0, 128, 0, 0.2), 0 0 8px rgba(0, 128, 0, 0.1); }
+  50% { box-shadow: 0 0 10px rgba(0, 128, 0, 0.4), 0 0 15px rgba(0, 128, 0, 0.2); }
+  100% { box-shadow: 0 0 5px rgba(0, 128, 0, 0.2), 0 0 8px rgba(0, 128, 0, 0.1); }
+}
+
+.tab-green-leave-active::before {
+  animation: greenGlow 0.35s ease-out;
+  width: 100%;
 }
 
 /* 图标垂直对齐修正 */

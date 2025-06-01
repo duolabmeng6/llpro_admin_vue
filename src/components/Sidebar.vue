@@ -132,7 +132,9 @@ const sidebarWidth = computed(() => {
       sidebarWidth,
       currentTheme === 'dark' ? 'sidebar-dark' :
       currentTheme === 'light' ? 'sidebar-light' :
-      'sidebar-cyber'
+      currentTheme === 'cyberpunk' ? 'sidebar-cyber' :
+      currentTheme === 'green' ? 'sidebar-green' :
+      'sidebar-light'
     ]"
     @mouseenter="handleSidebarHover(true)"
     @mouseleave="handleSidebarHover(false)"
@@ -144,7 +146,8 @@ const sidebarWidth = computed(() => {
         :class="{
           'sidebar-title-dark': currentTheme === 'dark',
           'sidebar-title-light': currentTheme === 'light',
-          'sidebar-title-cyber': currentTheme === 'cyberpunk'
+          'sidebar-title-cyber': currentTheme === 'cyberpunk',
+          'sidebar-title-green': currentTheme === 'green'
         }"
       >
         LL Pro 系统
@@ -156,7 +159,8 @@ const sidebarWidth = computed(() => {
           {
             'sidebar-toggle-dark': currentTheme === 'dark',
             'sidebar-toggle-light': currentTheme === 'light',
-            'sidebar-toggle-cyber': currentTheme === 'cyberpunk'
+            'sidebar-toggle-cyber': currentTheme === 'cyberpunk',
+            'sidebar-toggle-green': currentTheme === 'green'
           },
           'ml-auto'
         ]"
@@ -273,6 +277,16 @@ const sidebarWidth = computed(() => {
   color: var(--color-text-primary);
 }
 
+/* 绿色主题侧边栏 */
+.sidebar-green {
+  background: rgba(236, 253, 243, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(20, 83, 45, 0.1);
+  box-shadow: 0 4px 15px rgba(20, 83, 45, 0.05);
+  color: var(--color-text-primary);
+}
+
 /* 侧边栏标题样式 */
 .sidebar-title-dark {
   background: linear-gradient(90deg, #60a5fa, #a78bfa);
@@ -295,6 +309,14 @@ const sidebarWidth = computed(() => {
   background-clip: text;
   color: transparent;
   text-shadow: 0 0 10px rgba(255, 44, 240, 0.7);
+}
+
+/* 绿色主题标题 */
+.sidebar-title-green {
+  background: linear-gradient(90deg, #059669, #047857);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* 切换按钮样式 */
@@ -331,6 +353,17 @@ const sidebarWidth = computed(() => {
 .sidebar-toggle-cyber:hover {
   background-color: rgba(255, 44, 240, 0.15);
   color: #ff73f4;
+  transform: scale(1.1);
+}
+
+/* 绿色主题切换按钮 */
+.sidebar-toggle-green {
+  color: #059669;
+}
+
+.sidebar-toggle-green:hover {
+  background-color: rgba(5, 150, 105, 0.1);
+  color: #10b981;
   transform: scale(1.1);
 }
 
@@ -386,7 +419,6 @@ const sidebarWidth = computed(() => {
   background: rgba(255, 44, 240, 0.15);
   border-left: 2px solid #ff2cf0;
   color: white;
-  box-shadow: 0 0 10px rgba(255, 44, 240, 0.3);
 }
 
 .menu-active-cyberpunk i {
@@ -401,6 +433,27 @@ const sidebarWidth = computed(() => {
 .menu-inactive-cyberpunk:hover {
   background: rgba(255, 44, 240, 0.1);
   color: white;
+  transform: translateX(2px);
+}
+
+/* 菜单项样式 - 绿色主题 */
+.menu-active-green {
+  background: rgba(5, 150, 105, 0.1);
+  border-left: 2px solid #059669;
+  color: #064e3b;
+}
+
+.menu-active-green i {
+  color: #059669;
+}
+
+.menu-inactive-green {
+  color: #374151;
+}
+
+.menu-inactive-green:hover {
+  background: rgba(236, 253, 243, 0.8);
+  color: #064e3b;
   transform: translateX(2px);
 }
 
@@ -447,6 +500,21 @@ const sidebarWidth = computed(() => {
 .submenu-inactive-cyberpunk:hover {
   background: rgba(255, 44, 240, 0.1);
   color: white;
+}
+
+/* 子菜单样式 - 绿色主题 */
+.submenu-active-green {
+  background: rgba(5, 150, 105, 0.1);
+  color: #064e3b;
+}
+
+.submenu-inactive-green {
+  color: #4b5563;
+}
+
+.submenu-inactive-green:hover {
+  background: rgba(236, 253, 243, 0.8);
+  color: #064e3b;
 }
 
 /* 图标垂直对齐修正 */
