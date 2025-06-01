@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Card from '../components/Card.vue';
 import Button from '../components/Button.vue';
 import Input from '../components/Input.vue';
@@ -15,33 +15,18 @@ import LineChart from '../components/charts/LineChart.vue';
 import PieChart from '../components/charts/PieChart.vue';
 import { Form, FormGroup, Select, Checkbox, Radio, Textarea, Switch } from '../components/form';
 
-// 引入highlight.js及其样式
-import hljs from 'highlight.js/lib/core';
-import xml from 'highlight.js/lib/languages/xml';
-import javascript from 'highlight.js/lib/languages/javascript';
-import 'highlight.js/styles/atom-one-dark.css'; // 使用暗色主题
-
-// 注册语言
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('javascript', javascript);
-
 // 搜索和筛选状态
 const searchQuery = ref('');
 const selectedCategory = ref('all');
-
-// 复制成功通知状态
-const showCopyNotification = ref(false);
-const copiedComponentName = ref('');
 
 // 组件分类
 const categories = [
   { id: 'all', name: '全部组件' },
   { id: 'basic', name: '基础组件' },
   { id: 'form', name: '表单组件' },
-  { id: 'layout', name: '布局组件' },
   { id: 'data', name: '数据展示' },
-  { id: 'feedback', name: '反馈组件' },
   { id: 'navigation', name: '导航组件' },
+  { id: 'feedback', name: '反馈组件' },
   { id: 'chart', name: '图表组件' }
 ];
 
@@ -61,7 +46,7 @@ const componentsData = [
   {
     name: 'Card',
     component: Card,
-    category: 'layout',
+    category: 'basic',
     description: '卡片容器，用于展示相关内容和操作',
     props: { 
       title: '卡片标题'
@@ -363,6 +348,32 @@ const componentsData = [
 
 // 代码示例数据
 const componentExamples = {
+  Button: `<Button text="按钮文本" variant="primary" size="md" />`,
+  Card: `<Card title="卡片标题">
+  <div class="p-4">卡片内容</div>
+</Card>`,
+  Input: `<Input 
+  label="用户名" 
+  placeholder="请输入用户名" 
+  type="text" 
+/>`,
+  Alert: `<Alert 
+  type="info" 
+  title="提示信息" 
+  message="这是一条提示信息" 
+  closable 
+/>`,
+  Table: `<Table 
+  :columns="[
+    { key: 'name', label: '姓名' },
+    { key: 'age', label: '年龄' },
+    { key: 'address', label: '地址' }
+  ]"
+  :data="[
+    { name: '张三', age: 28, address: '北京市' },
+    { name: '李四', age: 32, address: '上海市' }
+  ]" 
+/>`,
   Modal: `<Modal 
   title="对话框标题" 
   :visible="visible" 
@@ -376,6 +387,22 @@ const componentExamples = {
     </div>
   </template>
 </Modal>`,
+  Dropdown: `<Dropdown 
+  label="下拉菜单" 
+  :options="[
+    { label: '选项 1', value: '1' },
+    { label: '选项 2', value: '2' },
+    { label: '选项 3', value: '3' }
+  ]" 
+/>`,
+  TabsNav: `<TabsNav 
+  :tabs="[
+    { id: 'tab1', label: '标签 1' },
+    { id: 'tab2', label: '标签 2' },
+    { id: 'tab3', label: '标签 3' }
+  ]"
+  activeTab="tab1" 
+/>`,
   ThemeSwitcher: `<ThemeSwitcher />`,
   Notification: `<Notification 
   title="操作成功" 
@@ -383,26 +410,45 @@ const componentExamples = {
   type="success" 
   :duration="3000" 
 />`,
-  Form: `<Form 
-  :model="formData" 
-  :rules="rules" 
-  layout="vertical"
-  @submit="handleSubmit"
-  @reset="handleReset"
->
-  <FormGroup label="用户名" required>
-    <Input v-model="formData.username" placeholder="请输入用户名" />
-  </FormGroup>
-  
-  <FormGroup label="密码" required>
-    <Input v-model="formData.password" type="password" placeholder="请输入密码" />
-  </FormGroup>
-  
-  <div class="flex justify-end space-x-4 mt-6">
-    <Button type="reset" variant="outline">重置</Button>
-    <Button type="submit">提交</Button>
-  </div>
-</Form>`,
+  BarChart: `<BarChart 
+  :chartData="{
+    labels: ['一月', '二月', '三月', '四月'],
+    datasets: [{
+      label: '销售额',
+      data: [12, 19, 8, 15],
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgb(75, 192, 192)',
+      borderWidth: 1
+    }]
+  }" 
+/>`,
+  LineChart: `<LineChart 
+  :chartData="{
+    labels: ['一月', '二月', '三月', '四月'],
+    datasets: [{
+      label: '用户增长',
+      data: [65, 59, 80, 81],
+      fill: false,
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  }" 
+/>`,
+  PieChart: `<PieChart 
+  :chartData="{
+    labels: ['红色', '蓝色', '黄色'],
+    datasets: [{
+      label: '颜色分布',
+      data: [300, 50, 100],
+      backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)'
+      ],
+      hoverOffset: 4
+    }]
+  }" 
+/>`
 };
 
 // 过滤后的组件列表
@@ -417,8 +463,6 @@ const filteredComponents = computed(() => {
 
 // 显示代码示例的状态
 const showCode = ref({});
-// 高亮后的代码缓存
-const highlightedCode = ref({});
 
 // 组件挂载时初始化
 onMounted(() => {
@@ -428,39 +472,15 @@ onMounted(() => {
 });
 
 // 切换代码显示状态
-const toggleCode = async (componentName) => {
+const toggleCode = (componentName) => {
   showCode.value[componentName] = !showCode.value[componentName];
-  
-  // 如果是显示代码，则在下一个tick后应用高亮
-  if (showCode.value[componentName]) {
-    await nextTick();
-    applyHighlight(componentName);
-  }
-};
-
-// 应用代码高亮
-const applyHighlight = (componentName) => {
-  const component = componentsData.find(c => c.name === componentName);
-  if (!component) return;
-  
-  // 获取或生成代码
-  const code = componentExamples[componentName] || generateComponentCode(component);
-  
-  // 高亮代码并缓存
-  highlightedCode.value[componentName] = highlightCode(code);
 };
 
 // 复制代码到剪贴板
-const copyCode = async (componentName) => {
-  const component = componentsData.find(c => c.name === componentName);
-  if (!component) return;
-  
-  // 获取或生成代码
-  const code = componentExamples[componentName] || generateComponentCode(component);
-  
+const copyCode = async (code) => {
   try {
     await navigator.clipboard.writeText(code);
-    showCopySuccess(componentName);
+    // 这里可以添加复制成功的提示
   } catch (err) {
     console.error('复制失败:', err);
   }
@@ -475,92 +495,6 @@ const setCategory = (categoryId) => {
 const clearFilters = () => {
   searchQuery.value = '';
   selectedCategory.value = 'all';
-};
-
-// 生成组件代码示例
-const generateComponentCode = (component) => {
-  // 组件名称
-  const name = component.name;
-  
-  // 如果是静态预览的组件，返回预定义的代码
-  if (component.staticPreview) {
-    return componentExamples[name] || `<${name} />`;
-  }
-  
-  // 开始标签
-  let code = `<${name} `;
-  
-  // 添加props
-  if (component.props) {
-    const propsEntries = Object.entries(component.props);
-    
-    propsEntries.forEach(([key, value]) => {
-      // 根据值的类型生成不同的代码
-      if (typeof value === 'string') {
-        // 字符串类型，使用引号
-        code += `${key}="${value}" `;
-      } else if (typeof value === 'boolean') {
-        // 布尔类型，如果为true则只添加属性名
-        if (value) {
-          code += `${key} `;
-        }
-      } else if (typeof value === 'number') {
-        // 数字类型，使用v-bind
-        code += `:${key}="${value}" `;
-      } else if (Array.isArray(value)) {
-        // 数组类型，使用v-bind和JSON.stringify
-        code += `:${key}="${JSON.stringify(value).replace(/"/g, "'")}" `;
-      } else if (typeof value === 'object' && value !== null) {
-        // 对象类型，使用v-bind和格式化的对象
-        const objStr = JSON.stringify(value, null, 2)
-          .replace(/"/g, "'")
-          .replace(/\n/g, '\n  ');
-        code += `:${key}="${objStr}" `;
-      }
-    });
-  }
-  
-  // 如果没有子内容和插槽，使用自闭合标签
-  if (!component.slots) {
-    code += '/>';
-    return code;
-  }
-  
-  // 否则添加开始和结束标签
-  code += '>\n';
-  
-  // 添加默认插槽
-  if (component.slots.default) {
-    code += `  ${component.slots.default}\n`;
-  }
-  
-  // 添加具名插槽
-  Object.entries(component.slots).forEach(([slotName, content]) => {
-    if (slotName !== 'default') {
-      code += `  <template #${slotName}>\n    ${content}\n  </template>\n`;
-    }
-  });
-  
-  // 添加结束标签
-  code += `</${name}>`;
-  
-  return code;
-};
-
-// 高亮代码
-const highlightCode = (code, language = 'xml') => {
-  return hljs.highlight(code, { language }).value;
-};
-
-// 显示复制成功通知
-const showCopySuccess = (componentName) => {
-  copiedComponentName.value = componentName;
-  showCopyNotification.value = true;
-  
-  // 3秒后自动隐藏
-  setTimeout(() => {
-    showCopyNotification.value = false;
-  }, 3000);
 };
 </script>
 
@@ -604,7 +538,6 @@ const showCopySuccess = (componentName) => {
               category.id === 'basic' ? 'fas fa-cube' :
               category.id === 'form' ? 'fas fa-edit' :
               category.id === 'data' ? 'fas fa-table' :
-              category.id === 'layout' ? 'fas fa-layer-group' :
               category.id === 'navigation' ? 'fas fa-compass' :
               category.id === 'feedback' ? 'fas fa-bell' :
               category.id === 'chart' ? 'fas fa-chart-bar' :
@@ -672,7 +605,6 @@ const showCopySuccess = (componentName) => {
                     component.category === 'basic' ? 'fas fa-cube' :
                     component.category === 'form' ? 'fas fa-edit' :
                     component.category === 'data' ? 'fas fa-table' :
-                    component.category === 'layout' ? 'fas fa-layer-group' :
                     component.category === 'navigation' ? 'fas fa-compass' :
                     component.category === 'feedback' ? 'fas fa-bell' :
                     component.category === 'chart' ? 'fas fa-chart-bar' :
@@ -710,7 +642,7 @@ const showCopySuccess = (componentName) => {
               
               <button
                 v-if="showCode[component.name]"
-                @click="copyCode(component.name)"
+                @click="copyCode(componentExamples[component.name])"
                 class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
               >
                 <i class="fas fa-copy mr-1.5"></i>
@@ -720,7 +652,7 @@ const showCopySuccess = (componentName) => {
 
             <!-- 代码示例 -->
             <div v-if="showCode[component.name]" class="code-container">
-              <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code v-html="highlightedCode[component.name] || generateComponentCode(component)"></code></pre>
+              <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ componentExamples[component.name] }}</code></pre>
             </div>
           </div>
         </Card>
@@ -736,15 +668,6 @@ const showCopySuccess = (componentName) => {
         <Button text="显示全部组件" variant="primary" @click="clearFilters" />
       </div>
     </div>
-  </div>
-  
-  <!-- 复制成功通知 -->
-  <div 
-    v-if="showCopyNotification" 
-    class="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-fade-in"
-  >
-    <i class="fas fa-check-circle"></i>
-    <span>已复制 {{ copiedComponentName }} 组件代码</span>
   </div>
 </template>
 
@@ -840,48 +763,5 @@ const showCopySuccess = (componentName) => {
 .code-container pre {
   margin: 0;
   border-radius: 0;
-}
-
-/* 代码高亮相关样式 */
-:deep(.hljs) {
-  background: transparent;
-  padding: 0;
-}
-
-:deep(.hljs-tag) {
-  color: #7ee787;
-}
-
-:deep(.hljs-name) {
-  color: #7ee787;
-  font-weight: bold;
-}
-
-:deep(.hljs-attr) {
-  color: #79c0ff;
-}
-
-:deep(.hljs-string) {
-  color: #a5d6ff;
-}
-
-/* 通知动画 */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
-</style>
-
-<style>
-/* 确保高亮样式在暗色模式下也有良好的对比度 */
-.dark .hljs-tag,
-.dark .hljs-name,
-.dark .hljs-attr,
-.dark .hljs-string {
-  filter: brightness(1.2);
 }
 </style> 
