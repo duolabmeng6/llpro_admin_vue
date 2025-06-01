@@ -50,6 +50,24 @@ html[data-theme='cyberpunk'] {
   --color-button-secondary-text: oklch(10% 0.04 280);
   --color-button-secondary-hover-bg: oklch(65% 0.35 180);
   
+  /* RGB变量，用于透明度 */
+  --color-primary-600-rgb: 236, 72, 153;
+  --color-primary-400-rgb: 244, 114, 182;
+  --color-secondary-600-rgb: 45, 212, 191;
+  --color-secondary-400-rgb: 45, 212, 191;
+  
+  /* 霓虹色彩 */
+  --color-neon-blue: oklch(70% 0.3 220);  /* 亮蓝色 */
+  --color-neon-cyan: oklch(75% 0.25 180);  /* 青色 */
+  --color-neon-purple: oklch(70% 0.3 320);  /* 紫色 */
+  --color-neon-pink: oklch(75% 0.35 350);  /* 粉色 */
+  
+  /* 霓虹背景色 */
+  --color-neon-blue-bg: rgba(var(--color-primary-600-rgb), 0.3);
+  --color-neon-cyan-bg: rgba(var(--color-primary-400-rgb), 0.3);
+  --color-neon-purple-bg: rgba(var(--color-secondary-600-rgb), 0.3);
+  --color-neon-pink-bg: rgba(var(--color-secondary-400-rgb), 0.3);
+  
   /* 霓虹效果 */
   --neon-glow: 0 0 10px oklch(70% 0.3 320), 0 0 20px oklch(70% 0.3 320);
   --neon-text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;

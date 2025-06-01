@@ -127,43 +127,21 @@ const sidebarWidth = computed(() => {
 
 <template>
   <aside
-    class="sidebar-container flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20"
-    :class="[
-      sidebarWidth,
-      currentTheme === 'dark' ? 'sidebar-dark' :
-      currentTheme === 'light' ? 'sidebar-light' :
-      currentTheme === 'cyberpunk' ? 'sidebar-cyber' :
-      currentTheme === 'green' ? 'sidebar-green' :
-      'sidebar-light'
-    ]"
+    class="sidebar-container flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20 glass-morphism"
+    :class="sidebarWidth"
     @mouseenter="handleSidebarHover(true)"
     @mouseleave="handleSidebarHover(false)"
   >
-    <div class="p-4 flex items-center justify-between sidebar-header">
+    <div class="p-4 flex items-center justify-between sidebar-header border-b border-subtle">
       <h1 
         v-if="showMenuText"
-        class="text-xl font-bold truncate sidebar-title"
-        :class="{
-          'sidebar-title-dark': currentTheme === 'dark',
-          'sidebar-title-light': currentTheme === 'light',
-          'sidebar-title-cyber': currentTheme === 'cyberpunk',
-          'sidebar-title-green': currentTheme === 'green'
-        }"
+        class="text-xl font-bold truncate sidebar-title gradient-text"
       >
         LL Pro 系统
       </h1>
       <button
         v-if="props.isOpen || menuStore.isTempExpanded"
-        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300"
-        :class="[
-          {
-            'sidebar-toggle-dark': currentTheme === 'dark',
-            'sidebar-toggle-light': currentTheme === 'light',
-            'sidebar-toggle-cyber': currentTheme === 'cyberpunk',
-            'sidebar-toggle-green': currentTheme === 'green'
-          },
-          'ml-auto'
-        ]"
+        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300 text-muted hover:bg-tertiary ml-auto"
         @click="toggleSidebar"
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
@@ -181,11 +159,7 @@ const sidebarWidth = computed(() => {
         <!-- 一级菜单 -->
         <div
           class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
-          :class="[
-            isMenuActive(menuItem) 
-              ? `menu-active-${currentTheme}` 
-              : `menu-inactive-${currentTheme}`
-          ]"
+          :class="isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive'"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
           <i 
@@ -217,11 +191,7 @@ const sidebarWidth = computed(() => {
             v-for="childItem in menuItem.children"
             :key="childItem.id"
             class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300"
-            :class="[
-              isSubmenuActive(childItem.path)
-                ? `submenu-active-${currentTheme}`
-                : `submenu-inactive-${currentTheme}`
-            ]"
+            :class="isSubmenuActive(childItem.path) ? 'submenu-active' : 'submenu-inactive'"
             @click="handleMenuClick(childItem.path, $event)"
           >
             <i 
@@ -241,295 +211,68 @@ const sidebarWidth = computed(() => {
 /* 侧边栏基础样式 */
 .sidebar-container {
   transition: all 0.3s ease;
-}
-
-/* 深色主题侧边栏 */
-.sidebar-dark {
-  background: rgba(15, 23, 42, 0.95);
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  box-shadow: 0 0 20px var(--color-shadow);
+  color: var(--color-text-primary);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  color: var(--color-text-primary);
-}
-
-.sidebar-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* 明亮主题侧边栏 */
-.sidebar-light {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  color: var(--color-text-primary);
-}
-
-/* 赛博朋克主题侧边栏 */
-.sidebar-cyber {
-  background: rgba(13, 2, 33, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 44, 240, 0.3);
-  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
-  color: var(--color-text-primary);
-}
-
-/* 绿色主题侧边栏 */
-.sidebar-green {
-  background: rgba(236, 253, 243, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(20, 83, 45, 0.1);
-  box-shadow: 0 4px 15px rgba(20, 83, 45, 0.05);
-  color: var(--color-text-primary);
 }
 
 /* 侧边栏标题样式 */
-.sidebar-title-dark {
-  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+.gradient-text {
+  background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 5px rgba(96, 165, 250, 0.5);
+  text-shadow: 0 0 5px var(--color-shadow);
 }
 
-.sidebar-title-light {
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.sidebar-title-cyber {
-  background: linear-gradient(90deg, #ff2cf0, #00eeff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 10px rgba(255, 44, 240, 0.7);
-}
-
-/* 绿色主题标题 */
-.sidebar-title-green {
-  background: linear-gradient(90deg, #059669, #047857);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* 切换按钮样式 */
-.sidebar-toggle-btn {
-  position: relative;
-  z-index: 20;
-}
-
-.sidebar-toggle-dark {
-  color: #60a5fa;
-}
-
-.sidebar-toggle-dark:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #93c5fd;
-  transform: scale(1.1);
-}
-
-.sidebar-toggle-light {
-  color: #2563eb;
-}
-
-.sidebar-toggle-light:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-  transform: scale(1.1);
-}
-
-.sidebar-toggle-cyber {
-  color: #ff2cf0;
-  text-shadow: 0 0 5px rgba(255, 44, 240, 0.5);
-}
-
-.sidebar-toggle-cyber:hover {
-  background-color: rgba(255, 44, 240, 0.15);
-  color: #ff73f4;
-  transform: scale(1.1);
-}
-
-/* 绿色主题切换按钮 */
-.sidebar-toggle-green {
-  color: #059669;
-}
-
-.sidebar-toggle-green:hover {
-  background-color: rgba(5, 150, 105, 0.1);
-  color: #10b981;
-  transform: scale(1.1);
-}
-
-/* 菜单项样式 - 深色主题 */
-.menu-item {
-  border-left: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.menu-active-dark {
-  background: rgba(59, 130, 246, 0.15);
-  border-left: 2px solid #3b82f6;
+/* 菜单项样式 */
+.menu-active {
+  background-color: var(--color-accent);
   color: white;
 }
 
-.menu-active-dark i {
-  color: #3b82f6;
+.menu-inactive {
+  color: var(--color-text-secondary);
 }
 
-.menu-inactive-dark {
-  color: rgba(255, 255, 255, 0.7);
+.menu-inactive:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
-.menu-inactive-dark:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  transform: translateX(2px);
+/* 子菜单项样式 */
+.submenu-active {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-accent);
 }
 
-/* 菜单项样式 - 明亮主题 */
-.menu-active-light {
-  background: rgba(59, 130, 246, 0.1);
-  border-left: 2px solid #2563eb;
-  color: #1e293b;
+.submenu-inactive {
+  color: var(--color-text-secondary);
 }
 
-.menu-active-light i {
-  color: #2563eb;
+.submenu-inactive:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
-.menu-inactive-light {
-  color: #64748b;
+/* 滚动条样式 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
 }
 
-.menu-inactive-light:hover {
-  background: rgba(241, 245, 249, 0.8);
-  color: #1e293b;
-  transform: translateX(2px);
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* 菜单项样式 - 赛博朋克主题 */
-.menu-active-cyberpunk {
-  background: rgba(255, 44, 240, 0.15);
-  border-left: 2px solid #ff2cf0;
-  color: white;
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 2px;
 }
 
-.menu-active-cyberpunk i {
-  color: #ff2cf0;
-  text-shadow: 0 0 5px rgba(255, 44, 240, 0.7);
-}
-
-.menu-inactive-cyberpunk {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.menu-inactive-cyberpunk:hover {
-  background: rgba(255, 44, 240, 0.1);
-  color: white;
-  transform: translateX(2px);
-}
-
-/* 菜单项样式 - 绿色主题 */
-.menu-active-green {
-  background: rgba(5, 150, 105, 0.1);
-  border-left: 2px solid #059669;
-  color: #064e3b;
-}
-
-.menu-active-green i {
-  color: #059669;
-}
-
-.menu-inactive-green {
-  color: #374151;
-}
-
-.menu-inactive-green:hover {
-  background: rgba(236, 253, 243, 0.8);
-  color: #064e3b;
-  transform: translateX(2px);
-}
-
-/* 子菜单样式 - 深色主题 */
-.submenu-active-dark {
-  background: rgba(59, 130, 246, 0.1);
-  color: white;
-}
-
-.submenu-inactive-dark {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.submenu-inactive-dark:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-}
-
-/* 子菜单样式 - 明亮主题 */
-.submenu-active-light {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1e293b;
-}
-
-.submenu-inactive-light {
-  color: #64748b;
-}
-
-.submenu-inactive-light:hover {
-  background: rgba(241, 245, 249, 0.8);
-  color: #1e293b;
-}
-
-/* 子菜单样式 - 赛博朋克主题 */
-.submenu-active-cyberpunk {
-  background: rgba(255, 44, 240, 0.15);
-  color: white;
-}
-
-.submenu-inactive-cyberpunk {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.submenu-inactive-cyberpunk:hover {
-  background: rgba(255, 44, 240, 0.1);
-  color: white;
-}
-
-/* 子菜单样式 - 绿色主题 */
-.submenu-active-green {
-  background: rgba(5, 150, 105, 0.1);
-  color: #064e3b;
-}
-
-.submenu-inactive-green {
-  color: #4b5563;
-}
-
-.submenu-inactive-green:hover {
-  background: rgba(236, 253, 243, 0.8);
-  color: #064e3b;
-}
-
-/* 图标垂直对齐修正 */
-.menu-item i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-/* 确保子菜单图标对齐 */
-.submenu-item i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb);
 }
 </style> 
