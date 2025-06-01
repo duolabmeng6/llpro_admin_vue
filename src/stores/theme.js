@@ -8,21 +8,18 @@ const themes = {
     id: 'dark',
     name: '深色科技',
     description: '深色科技风格主题',
-    file: 'themes/dark.css',
     preview: '/theme-previews/dark.png'
   },
   light: {
     id: 'light',
     name: '明亮简约',
     description: '明亮简约风格主题',
-    file: 'themes/light.css',
     preview: '/theme-previews/light.png'
   },
   cyberpunk: {
     id: 'cyberpunk',
     name: '赛博朋克',
     description: '霓虹赛博朋克风格主题',
-    file: 'themes/cyberpunk.css',
     preview: '/theme-previews/cyberpunk.png'
   }
 }
@@ -160,7 +157,7 @@ export const useThemeStore = defineStore('theme', () => {
         })
         
         // 加载主题CSS，带超时
-        await Promise.race([loadTheme(theme.file), timeoutPromise])
+        // await Promise.race([loadTheme(theme.file), timeoutPromise])
         
         // 更新当前主题
         currentTheme.value = themeId
