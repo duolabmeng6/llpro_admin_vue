@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
+import { useMenuStore } from '../stores/menu'
 import { menuConfig } from '../config/menu'
 
 const tabsStore = useTabsStore()
 const themeStore = useThemeStore()
+const menuStore = useMenuStore()
 const tabs = computed(() => tabsStore.getTabs)
 const activeTab = computed(() => tabsStore.getActiveTab)
 const currentTheme = computed(() => themeStore.currentTheme)
@@ -36,6 +38,9 @@ const getTabIcon = (path) => {
 // 切换标签
 const switchTab = (path) => {
   tabsStore.switchTab(path)
+  
+  // 自动展开对应的左侧菜单
+  menuStore.expandMenuByPath(path)
 }
 
 // 关闭标签
@@ -130,6 +135,7 @@ const handleContextMenu = (e, tab) => {
   const refreshItem = createMenuItem('刷新当前页', 'fas fa-sync-alt', () => {
     const currentPath = tab.path
     tabsStore.switchTab(currentPath)
+    menuStore.expandMenuByPath(currentPath) // 展开对应菜单
     document.body.removeChild(menu)
   })
   menu.appendChild(refreshItem)

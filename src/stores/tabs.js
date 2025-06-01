@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import router from '../router'
+import { useMenuStore } from './menu'
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
@@ -35,6 +36,10 @@ export const useTabsStore = defineStore('tabs', {
       }
       this.activeTab = route.path
       this.saveTabs()
+      
+      // 展开对应的菜单
+      const menuStore = useMenuStore()
+      menuStore.expandMenuByPath(route.path)
     },
     
     // 关闭标签
@@ -70,6 +75,10 @@ export const useTabsStore = defineStore('tabs', {
       // 使用导入的路由实例而不是useRouter()
       router.push(this.activeTab)
       this.saveTabs()
+      
+      // 展开对应的菜单
+      const menuStore = useMenuStore()
+      menuStore.expandMenuByPath(this.activeTab)
     },
     
     // 切换标签
@@ -77,6 +86,10 @@ export const useTabsStore = defineStore('tabs', {
       this.activeTab = path
       router.push(path)
       this.saveTabs()
+      
+      // 展开对应的菜单
+      const menuStore = useMenuStore()
+      menuStore.expandMenuByPath(path)
     },
     
     // 保存标签到本地存储
@@ -92,6 +105,10 @@ export const useTabsStore = defineStore('tabs', {
       this.tabs = this.tabs.filter(tab => !tab.closable || tab.path === path)
       this.activeTab = path
       this.saveTabs()
+      
+      // 展开对应的菜单
+      const menuStore = useMenuStore()
+      menuStore.expandMenuByPath(path)
     },
     
     // 关闭所有可关闭的标签
@@ -104,6 +121,12 @@ export const useTabsStore = defineStore('tabs', {
         router.push(this.activeTab)
       }
       this.saveTabs()
+      
+      // 展开对应的菜单
+      if (this.tabs.length > 0) {
+        const menuStore = useMenuStore()
+        menuStore.expandMenuByPath(this.activeTab)
+      }
     }
   }
 }) 

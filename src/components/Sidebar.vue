@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
+import { useMenuStore } from '../stores/menu'
 import { menuConfig } from '../config/menu'
 
 const props = defineProps({
@@ -17,28 +18,26 @@ const router = useRouter()
 const route = useRoute()
 const tabsStore = useTabsStore()
 const themeStore = useThemeStore()
+const menuStore = useMenuStore()
 
 // 当前主题
 const currentTheme = computed(() => themeStore.currentTheme)
 
-// 菜单展开状态
-const expandedMenus = ref({})
-// 侧边栏临时展开状态（鼠标悬停时）
-const tempExpanded = ref(false)
-
 // 监听侧边栏状态变化，当收起时关闭所有展开的子菜单
 watch(() => props.isOpen, (newValue) => {
   if (!newValue) {
-    expandedMenus.value = {}
+    menuStore.collapseAllMenus()
   } else {
     // 当展开侧边栏时，重置临时展开状态
-    tempExpanded.value = false
+    menuStore.setTempExpanded(false)
   }
 }, { immediate: true })
 
 // 添加键盘快捷键监听
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  // 同步侧边栏状态到store
+  menuStore.setSidebarExpanded(props.isOpen)
 })
 
 // 处理键盘快捷键
@@ -58,14 +57,14 @@ const toggleSubmenu = (menuId, event) => {
   }
   
   // 无论侧边栏是实际展开还是临时展开，都使用相同的切换逻辑
-  expandedMenus.value[menuId] = !expandedMenus.value[menuId];
+  menuStore.toggleMenu(menuId);
 }
 
 // 处理侧边栏鼠标悬停
 const handleSidebarHover = (isHovering) => {
   // 只有当侧边栏处于收缩状态时，才应用临时展开
   if (!props.isOpen) {
-    tempExpanded.value = isHovering;
+    menuStore.setTempExpanded(isHovering);
   }
 }
 
@@ -86,6 +85,7 @@ const isSubmenuActive = (path) => {
 
 // 切换侧边栏
 const toggleSidebar = () => {
+  menuStore.toggleSidebar()
   emit('toggle')
 }
 
@@ -110,15 +110,15 @@ const hasChildren = (menuItem) => {
 
 // 计算菜单是否展开
 const isExpanded = (menuId) => {
-  return !!expandedMenus.value[menuId]
+  return menuStore.isMenuExpanded(menuId)
 }
 
 // 计算是否显示菜单文本（在收起状态下只显示图标，除非临时展开）
-const showMenuText = computed(() => props.isOpen || tempExpanded.value)
+const showMenuText = computed(() => props.isOpen || menuStore.isTempExpanded)
 
 // 计算侧边栏宽度
 const sidebarWidth = computed(() => {
-  if (props.isOpen || tempExpanded.value) {
+  if (props.isOpen || menuStore.isTempExpanded) {
     return 'w-64';
   }
   return 'w-16';
@@ -150,7 +150,7 @@ const sidebarWidth = computed(() => {
         LL Pro 系统
       </h1>
       <button
-        v-if="props.isOpen || tempExpanded"
+        v-if="props.isOpen || menuStore.isTempExpanded"
         class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300"
         :class="[
           {
