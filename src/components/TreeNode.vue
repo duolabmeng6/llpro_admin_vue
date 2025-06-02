@@ -33,10 +33,10 @@
         <span class="tree-node-label">{{ node.title || node.label }}</span>
         
         <div class="tree-node-actions">
-          <span class="tree-node-action" title="添加" v-if="node.type !== 'lesson'">
+          <span class="tree-node-action" title="添加" v-if="node.type !== 'lesson'" @click.stop="handleNodeAdd(node)">
             <i class="fa fa-plus"></i>
           </span>
-          <span class="tree-node-action" title="编辑">
+          <span class="tree-node-action" title="编辑" @click.stop="handleNodeEdit(node)">
             <i class="fa fa-pencil"></i>
           </span>
         </div>
@@ -55,6 +55,8 @@
         @node-click="handleNodeClick"
         @node-toggle="toggleNode"
         @node-drag="(data) => emit('node-drag', data)"
+        @node-add="(node) => emit('node-add', node)"
+        @node-edit="(node) => emit('node-edit', node)"
       />
     </div>
   </div>
@@ -86,7 +88,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['node-click', 'node-toggle', 'node-drag']);
+const emit = defineEmits(['node-click', 'node-toggle', 'node-drag', 'node-add', 'node-edit']);
 
 // 计算属性
 const hasChildren = computed(() => props.node.children && props.node.children.length > 0);
@@ -130,6 +132,16 @@ const handleNodeClick = (node, event) => {
   }
   // 确保传递的是原始节点，而不是事件对象
   emit('node-click', node);
+};
+
+// 添加子节点
+const handleNodeAdd = (node) => {
+  emit('node-add', node);
+};
+
+// 编辑节点
+const handleNodeEdit = (node) => {
+  emit('node-edit', node);
 };
 
 // 开始拖拽

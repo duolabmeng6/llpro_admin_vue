@@ -16,12 +16,30 @@ const mainAreaViewMode = ref('welcome');
 const currentCourseId = ref(null);
 // 是否显示创建课程对话框
 const showCreateCourseModal = ref(false);
+// 是否显示创建章节对话框
+const showAddChapterModal = ref(false);
+// 是否显示创建小节对话框
+const showAddLessonModal = ref(false);
 // 新课程表单数据
 const newCourseData = ref({
   title: '',
   description: '',
   status: 'draft',
   cover: ''
+});
+// 新章节表单数据
+const newChapterData = ref({
+  title: '',
+  description: '',
+  order: 0
+});
+// 新小节表单数据
+const newLessonData = ref({
+  title: '',
+  content: '',
+  duration: 0,
+  type: 'video',
+  videoUrl: ''
 });
 
 // 计算属性：树形数据
@@ -115,6 +133,24 @@ const createCourse = async () => {
 
 // 树节点点击事件
 const handleNodeClick = (node) => {
+  courseStore.selectNode(node);
+};
+
+// 树节点添加事件
+const handleNodeAdd = (node) => {
+  if (node.type === 'course') {
+    // 显示添加章节对话框
+    showAddChapterModal.value = true;
+  } else if (node.type === 'chapter') {
+    // 选中该章节，然后显示添加小节对话框
+    courseStore.selectNode(node);
+    showAddLessonModal.value = true;
+  }
+};
+
+// 树节点编辑事件
+const handleNodeEdit = (node) => {
+  // 选中该节点，然后在详情面板中进入编辑模式
   courseStore.selectNode(node);
 };
 
@@ -216,6 +252,13 @@ const handleCreateChapter = async (chapterData) => {
   
   try {
     await courseStore.createChapter(currentCourseId.value, chapterData);
+    // 关闭对话框并重置表单
+    showAddChapterModal.value = false;
+    newChapterData.value = {
+      title: '',
+      description: '',
+      order: 0
+    };
   } catch (error) {
     console.error('创建章节失败:', error);
   }
@@ -227,6 +270,15 @@ const handleCreateLesson = async (lessonData) => {
   
   try {
     await courseStore.createLesson(courseStore.currentChapter.id, lessonData);
+    // 关闭对话框并重置表单
+    showAddLessonModal.value = false;
+    newLessonData.value = {
+      title: '',
+      content: '',
+      duration: 0,
+      type: 'video',
+      videoUrl: ''
+    };
   } catch (error) {
     console.error('创建小节失败:', error);
   }
@@ -362,6 +414,8 @@ const handleCreateLesson = async (lessonData) => {
                   :draggable="true"
                   @node-click="handleNodeClick"
                   @node-drag="handleNodeDrag"
+                  @node-add="handleNodeAdd"
+                  @node-edit="handleNodeEdit"
                 />
               </div>
             </Card>
@@ -423,6 +477,95 @@ const handleCreateLesson = async (lessonData) => {
             <option value="draft">草稿</option>
             <option value="published">已发布</option>
           </select>
+        </div>
+      </div>
+    </Modal>
+    
+    <!-- 创建章节对话框 -->
+    <Modal
+      v-model:show="showAddChapterModal"
+      title="创建章节"
+      @confirm="handleCreateChapter(newChapterData)"
+    >
+      <div class="create-chapter-form">
+        <div class="form-group">
+          <label for="chapter-title" class="form-label">章节标题</label>
+          <input
+            id="chapter-title"
+            v-model="newChapterData.title"
+            type="text"
+            class="form-input"
+            placeholder="请输入章节标题"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="chapter-description" class="form-label">章节描述</label>
+          <textarea
+            id="chapter-description"
+            v-model="newChapterData.description"
+            class="form-textarea"
+            placeholder="请输入章节描述"
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+    </Modal>
+    
+    <!-- 创建小节对话框 -->
+    <Modal
+      v-model:show="showAddLessonModal"
+      title="创建小节"
+      @confirm="handleCreateLesson(newLessonData)"
+    >
+      <div class="create-lesson-form">
+        <div class="form-group">
+          <label for="lesson-title" class="form-label">小节标题</label>
+          <input
+            id="lesson-title"
+            v-model="newLessonData.title"
+            type="text"
+            class="form-input"
+            placeholder="请输入小节标题"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="lesson-type" class="form-label">小节类型</label>
+          <select
+            id="lesson-type"
+            v-model="newLessonData.type"
+            class="form-select"
+          >
+            <option value="video">视频</option>
+            <option value="text">文本</option>
+            <option value="quiz">测验</option>
+          </select>
+        </div>
+        
+        <div v-if="newLessonData.type === 'video'" class="form-group">
+          <label for="lesson-video-url" class="form-label">视频URL</label>
+          <input
+            id="lesson-video-url"
+            v-model="newLessonData.videoUrl"
+            type="text"
+            class="form-input"
+            placeholder="请输入视频URL"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="lesson-duration" class="form-label">时长(分钟)</label>
+          <input
+            id="lesson-duration"
+            v-model.number="newLessonData.duration"
+            type="number"
+            min="0"
+            class="form-input"
+            placeholder="请输入小节时长"
+          />
         </div>
       </div>
     </Modal>
@@ -567,7 +710,9 @@ const handleCreateLesson = async (lessonData) => {
   overflow: auto;
 }
 
-.create-course-form {
+.create-course-form,
+.create-chapter-form,
+.create-lesson-form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

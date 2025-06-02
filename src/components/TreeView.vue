@@ -20,7 +20,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['node-click', 'node-toggle', 'node-drag', 'expand-all', 'collapse-all']);
+const emit = defineEmits(['node-click', 'node-toggle', 'node-drag', 'expand-all', 'collapse-all', 'node-add', 'node-edit']);
 
 // 展开的节点ID集合
 const expandedNodes = ref(new Set());
@@ -82,6 +82,16 @@ const handleNodeClick = (node, event) => {
     event.stopPropagation();
   }
   emit('node-click', node);
+};
+
+// 添加子节点
+const handleNodeAdd = (node) => {
+  emit('node-add', node);
+};
+
+// 编辑节点
+const handleNodeEdit = (node) => {
+  emit('node-edit', node);
 };
 
 // 开始拖拽
@@ -245,6 +255,8 @@ defineExpose({
         @node-click="handleNodeClick"
         @node-toggle="toggleNode"
         @node-drag="(data) => emit('node-drag', data)"
+        @node-add="handleNodeAdd"
+        @node-edit="handleNodeEdit"
       />
     </div>
   </div>
