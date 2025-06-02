@@ -466,4 +466,29 @@ html[data-theme="green"] .glass-morphism {
   
   /* 环偏移 */
   .focus\:ring-offset-2:focus { box-shadow: 0 0 0 2px white; }
+}
+
+/* 标题渐变样式 - 移除不需要的渐变样式 */
+.gradient-text {
+  color: var(--color-primary-600);
+  font-weight: 600;
+  text-shadow: none;
+}
+
+/* 不同主题下的标题颜色 */
+html[data-theme="light"] .gradient-text {
+  color: var(--color-primary-700);
+}
+
+html[data-theme="dark"] .gradient-text {
+  color: var(--color-primary-400);
+}
+
+html[data-theme="cyberpunk"] .gradient-text {
+  color: #ff2cf0;
+  text-shadow: 0 0 10px #ff2cf0, 0 0 20px #00eeff;
+}
+
+html[data-theme="green"] .gradient-text {
+  color: var(--color-green-600);
 } 
