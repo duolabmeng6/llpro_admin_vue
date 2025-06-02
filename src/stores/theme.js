@@ -7,25 +7,21 @@ const themes = {
     id: 'dark',
     name: '深色科技',
     description: '深色科技风格主题',
-    preview: '/theme-previews/dark.png'
   },
   light: {
     id: 'light',
     name: '明亮简约',
     description: '明亮简约风格主题',
-    preview: '/theme-previews/light.png'
   },
   cyberpunk: {
     id: 'cyberpunk',
     name: '赛博朋克',
     description: '霓虹赛博朋克风格主题',
-    preview: '/theme-previews/cyberpunk.png'
   },
   green: {
     id: 'green',
     name: '自然绿',
     description: '清新自然的绿色主题',
-    preview: '/theme-previews/green.png'
   }
 }
 
@@ -57,8 +53,6 @@ export const useThemeStore = defineStore('theme', () => {
   // 初始化主题
   const initTheme = () => {
     try {
-      console.log('开始初始化主题...')
-      
       // 从本地存储获取主题
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
       
@@ -66,22 +60,18 @@ export const useThemeStore = defineStore('theme', () => {
       if (!savedTheme) {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
         const systemTheme = prefersDark ? 'dark' : 'light'
-        console.log('使用系统偏好主题:', systemTheme)
         setTheme(systemTheme)
         return
       }
       
       // 如果有保存的主题且该主题存在，则使用保存的主题
       if (themes[savedTheme]) {
-        console.log('使用保存的主题:', savedTheme)
         setTheme(savedTheme)
       } else {
         // 否则使用默认主题
-        console.log('使用默认主题:', DEFAULT_THEME)
         setTheme(DEFAULT_THEME)
       }
     } catch (error) {
-      console.error('初始化主题失败:', error)
       hasError.value = true
       errorMessage.value = '初始化主题失败'
       
@@ -97,9 +87,7 @@ export const useThemeStore = defineStore('theme', () => {
   const applyTheme = (themeId) => {
     try {
       document.documentElement.setAttribute('data-theme', themeId)
-      console.log(`已设置 HTML data-theme 属性为: ${themeId}`)
     } catch (error) {
-      console.error('应用主题到 HTML 失败:', error)
       throw error
     }
   }
@@ -123,7 +111,6 @@ export const useThemeStore = defineStore('theme', () => {
       
       // 设置加载状态
       isLoading.value = true
-      console.log('正在设置主题:', themeId)
       
       // 应用主题到 HTML
       applyTheme(themeId)
@@ -133,11 +120,7 @@ export const useThemeStore = defineStore('theme', () => {
       
       // 保存到本地存储
       localStorage.setItem(THEME_STORAGE_KEY, themeId)
-      console.log(`主题已保存到本地存储: ${themeId}`)
-      
-      console.log(`已切换到主题: ${themes[themeId].name}`)
     } catch (error) {
-      console.error('设置主题失败:', error)
       hasError.value = true
       errorMessage.value = `设置主题失败: ${error.message || '未知错误'}`
     } finally {
@@ -156,7 +139,6 @@ export const useThemeStore = defineStore('theme', () => {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
       if (!savedTheme) {
         const newTheme = event.matches ? 'dark' : 'light'
-        console.log('系统主题已变更，更新主题为:', newTheme)
         setTheme(newTheme)
       }
     }
@@ -167,7 +149,6 @@ export const useThemeStore = defineStore('theme', () => {
   
   // 监听主题变化
   watch(currentTheme, (newTheme) => {
-    console.log('主题变更为:', newTheme)
     applyTheme(newTheme)
   })
   

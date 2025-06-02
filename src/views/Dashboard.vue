@@ -404,7 +404,7 @@ const systemNotices = [
 
 // 组件加载完成后的初始化
 onMounted(() => {
-  console.log('Dashboard组件已加载，当前主题:', currentTheme.value)
+  // 删除日志
 })
 </script>
 

@@ -137,7 +137,7 @@ watch(() => themeStore.errorMessage, (message) => {
 
 // 组件挂载时，确保主题已初始化
 onMounted(() => {
-  console.log('ThemeSwitcher组件已挂载, 当前主题:', currentTheme.value)
+  // 删除日志
 })
 
 // 切换主题
@@ -147,7 +147,6 @@ const changeTheme = (themeId) => {
   }
   
   errorMessage.value = ''
-  console.log('切换主题:', themeId)
   
   try {
     themeStore.setTheme(themeId)
@@ -157,7 +156,6 @@ const changeTheme = (themeId) => {
       isOpen.value = false
     }
   } catch (error) {
-    console.error('切换主题失败:', error)
     errorMessage.value = '切换主题失败，请稍后重试'
     
     // 3秒后清除错误消息

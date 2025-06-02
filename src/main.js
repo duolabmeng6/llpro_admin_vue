@@ -11,7 +11,6 @@ import "@fontsource/inter";
   // 设置初始主题
   const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', initialTheme);
-  console.log('初始主题设置为:', initialTheme);
 })();
 
 import './styles/main.css'
@@ -46,7 +45,6 @@ app.mount('#app')
 // 初始化主题
 try {
   const themeStore = useThemeStore()
-  console.log('初始化主题...')
   themeStore.initTheme()
   themeStore.setupSystemThemeListener()
 } catch (error) {

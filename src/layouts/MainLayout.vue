@@ -187,8 +187,6 @@ const toggleSidebar = () => {
 
 // 组件挂载时初始化
 onMounted(async () => {
-  console.log('MainLayout组件挂载，初始化主题...');
-  
   // 初始化背景动画
   initBgAnimation();
   
@@ -196,7 +194,6 @@ onMounted(async () => {
   const themeCheckInterval = setInterval(() => {
     const currentThemeAttr = document.documentElement.getAttribute('data-theme');
     if (currentThemeAttr !== themeStore.currentTheme) {
-      console.warn('检测到主题不一致，重新应用主题');
       themeStore.applyTheme(themeStore.currentTheme);
     }
   }, 5000);
