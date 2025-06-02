@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
 import { useSettingsStore } from '../stores/settings'
+import { useMenuStore } from '../stores/menu'
 import Sidebar from '../components/Sidebar.vue'
 import Navbar from '../components/Navbar.vue'
 import TabsNav from '../components/TabsNav.vue'
@@ -14,6 +15,7 @@ const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const themeStore = useThemeStore()
 const settingsStore = useSettingsStore()
+const menuStore = useMenuStore()
 const route = useRoute()
 const isSidebarOpen = ref(true)
 const currentTheme = ref(themeStore.currentTheme)
@@ -186,6 +188,9 @@ const transitionParticleColors = () => {
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
   localStorage.setItem('sidebarOpen', isSidebarOpen.value)
+  
+  // 同步侧边栏状态到菜单store
+  menuStore.setSidebarExpanded(isSidebarOpen.value)
 }
 
 // 组件挂载时初始化
@@ -206,6 +211,12 @@ onMounted(async () => {
     localStorage.setItem('sidebarOpen', isSidebarOpen.value)
   }
   
+  // 同步侧边栏状态到菜单store
+  menuStore.setSidebarExpanded(isSidebarOpen.value)
+  
+  // 添加storage事件监听，实时响应设置变化
+  window.addEventListener('storage', handleStorageChange)
+  
   // 初始化背景动画
   initBgAnimation();
   
@@ -220,8 +231,21 @@ onMounted(async () => {
   // 组件卸载时清除定时器
   onBeforeUnmount(() => {
     clearInterval(themeCheckInterval);
+    window.removeEventListener('storage', handleStorageChange)
   });
 });
+
+// 处理storage事件，实时响应设置变化
+const handleStorageChange = (event) => {
+  // 如果是侧边栏设置变化
+  if (event.key === 'sidebarOpen') {
+    const newValue = event.newValue !== 'false'
+    if (isSidebarOpen.value !== newValue) {
+      isSidebarOpen.value = newValue
+      menuStore.setSidebarExpanded(newValue)
+    }
+  }
+}
 
 // 背景动画
 const initBgAnimation = () => {

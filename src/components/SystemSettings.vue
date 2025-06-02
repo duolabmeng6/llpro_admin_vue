@@ -113,10 +113,12 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useThemeStore } from '../stores/theme'
 import { useSettingsStore } from '../stores/settings'
+import { useMenuStore } from '../stores/menu'
 
 // 获取主题store
 const themeStore = useThemeStore()
 const settingsStore = useSettingsStore()
+const menuStore = useMenuStore()
 
 // 设置面板可见性
 const isVisible = computed(() => settingsStore.isSettingsPanelVisible)
@@ -182,7 +184,19 @@ const changeTheme = (themeId) => {
 
 // 更新侧边栏默认状态
 const updateSidebarDefault = () => {
+  // 更新设置存储中的默认值
   settingsStore.setSidebarDefaultExpanded(sidebarExpanded.value)
+  
+  // 立即更新侧边栏状态
+  localStorage.setItem('sidebarOpen', sidebarExpanded.value)
+  
+  // 触发storage事件，通知其他组件更新
+  const storageEvent = new StorageEvent('storage', {
+    key: 'sidebarOpen',
+    newValue: String(sidebarExpanded.value),
+    url: window.location.href
+  })
+  window.dispatchEvent(storageEvent)
 }
 
 // 关闭设置面板

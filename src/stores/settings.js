@@ -82,12 +82,25 @@ export const useSettingsStore = defineStore('settings', () => {
     
     sidebarDefaultExpanded.value = status
     saveSettings()
+    
+    // 同时更新当前会话的侧边栏状态
+    localStorage.setItem('sidebarOpen', status)
+    
+    // 如果用户希望立即应用新设置，可以发出一个事件
+    // 这里我们直接更新localStorage，让其他组件可以检测到变化
+    window.dispatchEvent(new Event('storage'))
   }
   
   // 切换侧边栏默认状态
   const toggleSidebarDefaultExpanded = () => {
     sidebarDefaultExpanded.value = !sidebarDefaultExpanded.value
     saveSettings()
+    
+    // 同时更新当前会话的侧边栏状态
+    localStorage.setItem('sidebarOpen', sidebarDefaultExpanded.value)
+    
+    // 如果用户希望立即应用新设置，可以发出一个事件
+    window.dispatchEvent(new Event('storage'))
   }
   
   // 监听设置面板可见性变化
