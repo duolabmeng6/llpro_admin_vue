@@ -141,24 +141,46 @@ const isExpanded = (menuId) => {
 // 计算是否显示菜单文本（在收起状态下只显示图标，除非临时展开）
 const showMenuText = computed(() => props.isOpen || menuStore.isTempExpanded)
 
-// 计算侧边栏宽度
+// 计算侧边栏宽度，不再使用过渡动画依赖于这个值的变化
 const sidebarWidth = computed(() => {
   if (props.isOpen || menuStore.isTempExpanded) {
     return 'w-64';
   }
   return 'w-16';
 })
+
+// 计算内容区域样式
+const contentStyle = computed(() => {
+  return props.isOpen || menuStore.isTempExpanded 
+    ? { width: '16rem' } 
+    : { width: '4rem' };
+})
+
+// 计算菜单项样式
+const getMenuItemStyle = (isCollapsed) => {
+  if (isCollapsed) {
+    return {
+      padding: '0.625rem 0',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    };
+  }
+  return {
+    padding: '0.625rem 0.75rem'
+  };
+}
 </script>
 
 <template>
   <aside
-    class="sidebar-container flex-shrink-0 transition-all duration-300 ease-in-out flex flex-col fixed h-full z-20 glass-morphism"
-    :class="sidebarWidth"
+    class="sidebar-container flex-shrink-0 fixed h-full z-20 glass-morphism overflow-hidden"
+    :style="contentStyle"
     @mouseenter="handleSidebarHover(true)"
     @mouseleave="handleSidebarHover(false)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header border-b border-subtle">
-      <div class="flex-1 flex justify-center">
+      <div class="flex-1 flex justify-center overflow-hidden">
         <transition name="fade" mode="out-in">
           <h1 
             v-if="showMenuText"
@@ -174,16 +196,16 @@ const sidebarWidth = computed(() => {
         </transition>
       </div>
       <button
-        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300 text-muted hover:bg-tertiary"
+        class="p-2 rounded-md sidebar-toggle-btn text-muted hover:bg-tertiary flex-shrink-0"
         @click="toggleSidebar"
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
-        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-5 h-5 flex items-center justify-center transition-transform duration-300"></i>
+        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-5 h-5 flex items-center justify-center"></i>
       </button>
     </div>
     
-    <nav class="mt-5 px-2 flex-1 overflow-y-auto scrollbar-thin">
+    <nav class="mt-5 px-2 flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
       <div 
         v-for="menuItem in menuConfig" 
         :key="menuItem.id" 
@@ -191,49 +213,49 @@ const sidebarWidth = computed(() => {
       >
         <!-- 一级菜单 -->
         <div
-          class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300 ease-in-out"
-          :class="[isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive', {'justify-center': !showMenuText}]"
+          class="group flex items-center text-base font-medium rounded-lg cursor-pointer menu-item"
+          :class="[isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive']"
+          :style="getMenuItemStyle(!showMenuText)"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem, $event)"
         >
-          <div class="flex items-center w-full" :class="{'justify-center': !showMenuText}">
-            <!-- 修改图标容器，确保图标始终居中对齐 -->
-            <div class="icon-container flex items-center justify-center" :class="{'w-full': !showMenuText}">
+          <div 
+            class="flex items-center"
+            :class="{'w-full justify-center': !showMenuText, 'w-full': showMenuText}"
+          >
+            <!-- 图标容器，确保图标始终垂直居中对齐 -->
+            <div class="icon-container">
               <i 
                 :class="menuItem.icon" 
-                class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-all duration-300 ease-in-out"
+                class="icon-inner"
               ></i>
             </div>
             
-            <transition name="fade-x" mode="out-in">
-              <span 
-                v-if="showMenuText" 
-                class="flex-1 truncate ml-3"
-              >
-                {{ menuItem.title }}
-              </span>
-            </transition>
+            <span 
+              v-if="showMenuText" 
+              class="flex-1 truncate ml-3 menu-text"
+            >
+              {{ menuItem.title }}
+            </span>
             
             <!-- 展开/收起箭头（仅当有子菜单时显示） -->
-            <transition name="fade" mode="out-in">
-              <i 
-                v-if="hasChildren(menuItem) && showMenuText"
-                class="fa-solid fa-chevron-right ml-auto transform transition-all duration-300 ease-in-out h-5 w-5 flex items-center justify-center"
-                :class="{ 'rotate-90': isExpanded(menuItem.id) }"
-              ></i>
-            </transition>
+            <i 
+              v-if="hasChildren(menuItem) && showMenuText"
+              class="fa-solid fa-chevron-right ml-auto h-5 w-5 flex items-center justify-center chevron-icon"
+              :class="{ 'rotate-90': isExpanded(menuItem.id) }"
+            ></i>
           </div>
         </div>
         
         <!-- 二级菜单 -->
         <div
           v-if="hasChildren(menuItem) && showMenuText"
-          class="mt-1 space-y-1 overflow-hidden transition-all duration-500 ease-in-out"
+          class="mt-1 space-y-1 overflow-hidden submenu-container"
           :class="[isExpanded(menuItem.id) ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0']"
         >
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 ease-in-out h-9"
+            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item h-9"
             :class="isSubmenuActive(childItem.path, childItem) ? 'submenu-active' : 'submenu-inactive'"
             @click="handleMenuClick(childItem, $event)"
           >
@@ -243,7 +265,7 @@ const sidebarWidth = computed(() => {
                 <i 
                   v-if="childItem.icon" 
                   :class="childItem.icon" 
-                  class="w-4 h-4 flex-shrink-0 flex items-center justify-center transition-all duration-300 ease-in-out"
+                  class="flex-shrink-0 flex items-center justify-center submenu-icon"
                 ></i>
               </div>
               <span class="truncate ml-2">{{ childItem.title }}</span>
@@ -258,7 +280,7 @@ const sidebarWidth = computed(() => {
 <style scoped>
 /* 侧边栏基础样式 */
 .sidebar-container {
-  transition: all 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: var(--color-bg-secondary);
   border-right: 1px solid var(--color-border);
   box-shadow: 0 0 20px var(--color-shadow);
@@ -276,18 +298,46 @@ const sidebarWidth = computed(() => {
   text-shadow: 0 0 5px var(--color-shadow);
 }
 
+/* Logo容器 */
+.logo-container {
+  border-radius: 50%;
+  background: var(--color-bg-tertiary);
+  box-shadow: 0 0 10px var(--color-shadow);
+}
+
 /* 图标容器样式 */
 .icon-container {
   width: 24px;
   height: 24px;
   position: relative;
-  transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-inner {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+/* 菜单文本 */
+.menu-text {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 子菜单展开箭头 */
+.chevron-icon {
+  transition: transform 0.3s ease;
 }
 
 /* 菜单项样式 */
 .menu-item {
-  display: flex;
-  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .menu-active {
@@ -304,18 +354,27 @@ const sidebarWidth = computed(() => {
   color: var(--color-text-primary);
 }
 
+/* 子菜单容器 */
+.submenu-container {
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
 /* 子菜单图标容器 */
 .submenu-icon-container {
   width: 16px;
   height: 16px;
   position: relative;
-  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.submenu-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* 子菜单项样式 */
 .submenu-item {
-  display: flex;
-  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .submenu-active {
@@ -330,6 +389,17 @@ const sidebarWidth = computed(() => {
 .submenu-inactive:hover {
   background-color: var(--color-bg-tertiary);
   color: var(--color-text-primary);
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 /* 滚动条样式 */
@@ -348,36 +418,5 @@ const sidebarWidth = computed(() => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: var(--color-scrollbar-thumb);
-}
-
-/* Logo容器 */
-.logo-container {
-  border-radius: 50%;
-  background: var(--color-bg-tertiary);
-  box-shadow: 0 0 10px var(--color-shadow);
-}
-
-/* 过渡动画 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-.fade-x-enter-active,
-.fade-x-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-x-enter-from {
-  opacity: 0;
-  transform: translateX(-10px);
-}
-.fade-x-leave-to {
-  opacity: 0;
-  transform: translateX(10px);
 }
 </style> 

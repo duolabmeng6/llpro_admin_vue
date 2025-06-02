@@ -433,8 +433,9 @@ const initBgAnimation = () => {
     
     <!-- Main content -->
     <div 
-      class="flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out"
-      :class="[isSidebarOpen ? 'ml-64' : 'ml-16']"
+      class="flex-1 flex flex-col overflow-hidden"
+      :style="{ marginLeft: isSidebarOpen ? '16rem' : '4rem' }"
+      style="transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
     >
       <!-- Top navbar -->
       <Navbar 
