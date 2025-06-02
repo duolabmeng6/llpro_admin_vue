@@ -13,6 +13,17 @@
 - Express - 模拟数据服务
 - font-awesome 6.7
 
+## 主题系统
+
+系统使用Tailwind CSS 4的原生主题功能，通过HTML的`data-theme`属性实现主题切换：
+
+- 明亮主题 (light) - 默认主题
+- 深色主题 (dark)
+- 赛博朋克主题 (cyberpunk)
+- 自然绿主题 (green)
+
+主题定义在`src/styles/themes/`目录下，并通过CSS变量实现不同主题的样式切换。系统会记住用户的主题选择，也支持根据系统偏好自动切换亮/暗模式。
+
 ## 开发
 
 ```bash

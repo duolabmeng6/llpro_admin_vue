@@ -175,36 +175,10 @@
 }
 
 /* 全局主题过渡效果 */
-body,
-.theme-transition {
+body {
   transition-property: var(--theme-transition-properties);
   transition-duration: var(--theme-transition-duration);
   transition-timing-function: var(--theme-transition-timing);
-}
-
-/* 主题过渡背景 */
-.theme-transition-bg {
-  position: relative;
-}
-
-.theme-transition-bg::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  background: inherit;
-  transition: background-color 0.3s ease;
-  pointer-events: none;
-}
-
-/* 主题过渡遮罩样式 */
-.theme-transition-overlay {
-  background-color: color-mix(in oklab, black 5%, transparent);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 /* 滚动条样式 */
