@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { menuConfig } from '../config/menu'
 import SearchInput from './SearchInput.vue'
 import { useMenuStore } from '../stores/menu'
+import pinyin from 'pinyin'
 
 const menuStore = useMenuStore()
 const router = useRouter()
@@ -18,12 +19,26 @@ const flattenedMenu = computed(() => {
   // 递归函数处理嵌套菜单
   const processMenu = (items, parentTitle = '') => {
     items.forEach(item => {
+      // 生成拼音数据
+      const titlePinyin = pinyin(item.title, {
+        style: pinyin.STYLE_NORMAL, // 全拼
+        heteronym: false // 禁用多音字模式
+      }).flat().join('')
+      
+      // 生成拼音首字母
+      const titleFirstLetter = pinyin(item.title, {
+        style: pinyin.STYLE_FIRST_LETTER, // 首字母
+        heteronym: false
+      }).flat().join('')
+      
       const menuItem = {
         id: item.id,
         title: item.title,
         path: item.path,
         icon: item.icon,
-        fullTitle: parentTitle ? `${parentTitle} > ${item.title}` : item.title
+        fullTitle: parentTitle ? `${parentTitle} > ${item.title}` : item.title,
+        pinyin: titlePinyin,
+        firstLetter: titleFirstLetter
       }
       
       flattened.push(menuItem)
@@ -50,8 +65,13 @@ const searchMenu = (query) => {
   
   // 过滤匹配菜单项
   searchResults.value = flattenedMenu.value.filter(item => 
+    // 原标题匹配
     item.title.toLowerCase().includes(normalizedQuery) || 
-    (item.fullTitle && item.fullTitle.toLowerCase().includes(normalizedQuery))
+    (item.fullTitle && item.fullTitle.toLowerCase().includes(normalizedQuery)) ||
+    // 拼音全拼匹配
+    item.pinyin.toLowerCase().includes(normalizedQuery) ||
+    // 拼音首字母匹配
+    item.firstLetter.toLowerCase().includes(normalizedQuery)
   )
   
   showResults.value = true
@@ -109,7 +129,7 @@ onUnmounted(() => {
   <div class="menu-search-container relative">
     <SearchInput 
       v-model="searchQuery" 
-      placeholder="输入内容 搜索菜单名称" 
+      placeholder="输入内容、拼音或首字母搜索菜单" 
       @search="handleSearch"
       @clear="handleClear"
     />
