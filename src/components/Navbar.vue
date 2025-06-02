@@ -1,10 +1,12 @@
 <script setup>
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import { useThemeStore } from '../stores/theme'
 import ThemeSwitcher from './ThemeSwitcher.vue'
 import MenuSearch from './MenuSearch.vue'
+import DateTime from './DateTime.vue'
+import UserMenu from './UserMenu.vue'
 
 const props = defineProps({
   username: {
@@ -19,27 +21,7 @@ const emit = defineEmits([])
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const router = useRouter()
-const currentTime = ref('00:00:00')
 const currentTheme = computed(() => themeStore.currentTheme)
-
-// 更新时间
-const updateTime = () => {
-  const now = new Date()
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
-  const seconds = String(now.getSeconds()).padStart(2, '0')
-  currentTime.value = `${hours}:${minutes}:${seconds}`
-}
-
-onMounted(() => {
-  updateTime()
-  setInterval(updateTime, 1000)
-})
-
-const logout = async () => {
-  await authStore.logout()
-  router.push('/login')
-}
 </script>
 
 <template>
@@ -51,33 +33,16 @@ const logout = async () => {
       </div>
       
       <div class="flex items-center space-x-6">
-        <!-- 时间显示 -->
-        <div class="hidden md:flex items-center navbar-time text-accent">
-          <i class="fas fa-clock mr-2"></i>
-          <span class="text-sm font-mono">{{ currentTime }}</span>
+        <!-- 日期时间组件 -->
+        <div class="hidden md:block">
+          <DateTime />
         </div>
         
         <!-- 主题切换器 -->
         <ThemeSwitcher />
         
-        <!-- 用户信息 -->
-        <div class="flex items-center navbar-user rounded-full px-3 py-1.5 bg-tertiary border border-subtle">
-          <i class="fas fa-user-circle mr-2"></i>
-          <span class="text-sm">
-            {{ username }}
-          </span>
-        </div>
-        
-        <!-- 退出按钮 -->
-        <button
-          class="navbar-logout relative overflow-hidden px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-300 bg-button-primary text-button-primary hover:bg-button-primary-hover"
-          @click="logout"
-        >
-          <span class="relative z-10 flex items-center">
-            <i class="fas fa-sign-out-alt mr-2"></i>
-            退出登录
-          </span>
-        </button>
+        <!-- 用户菜单组件 -->
+        <UserMenu />
       </div>
     </div>
   </header>
@@ -93,25 +58,5 @@ const logout = async () => {
   background-color: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-primary);
-}
-
-/* 用户信息 */
-.navbar-user {
-  transition: all 0.2s ease;
-}
-
-.navbar-user:hover {
-  background-color: var(--color-bg-tertiary);
-}
-
-/* 退出按钮悬停效果 */
-.navbar-logout:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px var(--color-shadow);
-}
-
-/* 时间显示 */
-.navbar-time {
-  transition: all 0.2s ease;
 }
 </style> 
