@@ -571,228 +571,219 @@ const getComponentCode = (component) => {
 </script>
 
 <template>
-  <div class="components-gallery flex h-full">
-    <!-- 左侧菜单和搜索 -->
-    <div class="w-64 sidebar-container pr-2 py-4 px-4 flex flex-col">
-      <h1 class="text-xl font-bold mb-2 text-blue-600 dark:text-blue-400">组件画廊</h1>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-tight">探索和了解项目中的UI组件库</p>
-      
-      <!-- 搜索 -->
-      <div class="mb-6">
-        <Input
-          label="搜索组件"
-          placeholder="输入组件名称或描述"
-          v-model="searchQuery"
-          type="text"
-        />
-      </div>
+  <div class="components-gallery">
+    <div class="gallery-container">
+      <!-- 左侧菜单和搜索 -->
+      <div class="sidebar-container">
+        <h1 class="text-xl font-bold mb-2 text-blue-600 dark:text-blue-400">组件画廊</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-tight">探索和了解项目中的UI组件库</p>
+        
+        <!-- 搜索 -->
+        <div class="mb-6">
+          <Input
+            label="搜索组件"
+            placeholder="输入组件名称或描述"
+            v-model="searchQuery"
+            type="text"
+          />
+        </div>
 
-      <!-- 分类菜单 -->
-      <h2 class="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300 flex items-center">
-        <i class="fas fa-layer-group mr-2"></i>组件分类
-      </h2>
-      
-      <div class="category-menu flex-1 overflow-y-auto mb-4">
-        <button
-          v-for="category in categories"
-          :key="category.id"
-          @click="setCategory(category.id)"
-          class="w-full px-3 py-2 mb-1 rounded-md text-sm font-medium text-left transition-colors flex items-center"
-          :class="[
-            selectedCategory === category.id
-              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-          ]"
-        >
-          <i 
-            :class="[
-              category.id === 'all' ? 'fas fa-th-large' :
-              category.id === 'basic' ? 'fas fa-cube' :
-              category.id === 'form' ? 'fas fa-edit' :
-              category.id === 'data' ? 'fas fa-table' :
-              category.id === 'navigation' ? 'fas fa-compass' :
-              category.id === 'feedback' ? 'fas fa-bell' :
-              category.id === 'chart' ? 'fas fa-chart-bar' :
-              'fas fa-box',
-              'mr-2 w-5 text-center'
-            ]"
-          ></i>
-          {{ category.name }}
-          <span v-if="category.id === 'all'" class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-            {{ componentsData.length }}
-          </span>
-          <span v-else class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-            {{ componentsData.filter(c => c.category === category.id).length }}
-          </span>
-        </button>
-      </div>
-      
-      <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-        <p class="text-xs text-center text-gray-500 dark:text-gray-400">
-          展示 {{ filteredComponents.length }} 个组件 / 共 {{ componentsData.length }} 个
-        </p>
-      </div>
-    </div>
-
-    <!-- 右侧组件展示区域 -->
-    <div class="flex-1 main-container py-4 px-6 overflow-y-auto">
-      <!-- 筛选结果提示 -->
-      <div class="mb-6 flex justify-between items-center">
-        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-          <span v-if="selectedCategory !== 'all'">
-            {{ categories.find(c => c.id === selectedCategory)?.name }} - 
-          </span>
-          <span>组件列表</span>
-          <span v-if="searchQuery" class="ml-2 text-sm font-normal text-gray-500">
-            (搜索: "{{ searchQuery }}")
-          </span>
+        <!-- 分类菜单 -->
+        <h2 class="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300 flex items-center">
+          <i class="fas fa-layer-group mr-2"></i>组件分类
         </h2>
         
-        <Button 
-          v-if="searchQuery || selectedCategory !== 'all'" 
-          variant="secondary" 
-          size="sm" 
-          @click="clearFilters"
-        >
-          清除筛选
-        </Button>
+        <div class="category-menu">
+          <button
+            v-for="category in categories"
+            :key="category.id"
+            @click="setCategory(category.id)"
+            class="w-full px-3 py-2 mb-1 rounded-md text-sm font-medium text-left transition-colors flex items-center"
+            :class="[
+              selectedCategory === category.id
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            ]"
+          >
+            <i 
+              :class="[
+                category.id === 'all' ? 'fas fa-th-large' :
+                category.id === 'basic' ? 'fas fa-cube' :
+                category.id === 'form' ? 'fas fa-edit' :
+                category.id === 'data' ? 'fas fa-table' :
+                category.id === 'navigation' ? 'fas fa-compass' :
+                category.id === 'feedback' ? 'fas fa-bell' :
+                category.id === 'chart' ? 'fas fa-chart-bar' :
+                'fas fa-box',
+                'mr-2 w-5 text-center'
+              ]"
+            ></i>
+            {{ category.name }}
+            <span v-if="category.id === 'all'" class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              {{ componentsData.length }}
+            </span>
+            <span v-else class="ml-auto text-xs px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              {{ componentsData.filter(c => c.category === category.id).length }}
+            </span>
+          </button>
+        </div>
+        
+        <div class="sidebar-footer">
+          <p class="text-xs text-center text-gray-500 dark:text-gray-400 mb-3">
+            展示 {{ filteredComponents.length }} 个组件 / 共 {{ componentsData.length }} 个
+          </p>
+          
+          <Button 
+            v-if="searchQuery || selectedCategory !== 'all'" 
+            variant="outline" 
+            size="sm" 
+            @click="clearFilters"
+            class="w-full flex items-center justify-center"
+          >
+            <i class="fas fa-times-circle mr-1.5"></i>
+            清除筛选
+          </Button>
+        </div>
       </div>
-      
-      <!-- 组件展示区域 -->
-      <div v-if="filteredComponents.length > 0" class="space-y-8">
-        <Card
-          v-for="component in filteredComponents"
-          :key="component.name"
-          :title="component.name"
-          class="component-card"
-        >
-          <div class="p-4 space-y-4">
-            <!-- 组件描述和分类标签 -->
-            <div class="flex flex-wrap items-center justify-between mb-2">
-              <p class="text-sm text-gray-600 dark:text-gray-400 mr-4 flex-1">
-                {{ component.description }}
-              </p>
-              <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
-                <i 
-                  :class="[
-                    component.category === 'basic' ? 'fas fa-cube' :
-                    component.category === 'form' ? 'fas fa-edit' :
-                    component.category === 'data' ? 'fas fa-table' :
-                    component.category === 'navigation' ? 'fas fa-compass' :
-                    component.category === 'feedback' ? 'fas fa-bell' :
-                    component.category === 'chart' ? 'fas fa-chart-bar' :
-                    'fas fa-box',
-                    'mr-1'
-                  ]"
-                ></i>
-                {{ categories.find(c => c.id === component.category)?.name || component.category }}
-              </span>
-            </div>
 
-            <!-- 组件预览 -->
-            <div class="component-preview p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 flex items-center justify-center overflow-hidden">
-              <!-- Button组件特殊渲染 -->
-              <div v-if="component.name === 'Button'" class="button-variants-preview flex flex-col gap-6 w-full">
-                <!-- 不同变体按钮 -->
-                <div class="variants">
-                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮变体</h4>
-                  <div class="flex flex-wrap gap-3">
-                    <Button variant="primary">Primary</Button>
-                    <Button variant="secondary">Secondary</Button>
-                    <Button variant="success">Success</Button>
-                    <Button variant="danger">Danger</Button>
-                    <Button variant="warning">Warning</Button>
-                    <Button variant="info">Info</Button>
-                    <Button variant="outline">Outline</Button>
-                  </div>
-                </div>
-                
-                <!-- 不同大小按钮 -->
-                <div class="sizes">
-                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮大小</h4>
-                  <div class="flex items-center gap-3">
-                    <Button size="sm" variant="primary">小按钮</Button>
-                    <Button size="md" variant="primary">中按钮</Button>
-                    <Button size="lg" variant="primary">大按钮</Button>
-                  </div>
-                </div>
-                
-                <!-- 按钮状态 -->
-                <div class="states">
-                  <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮状态</h4>
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-3">
-                      <Button variant="primary">
-                        <i class="fas fa-check mr-1"></i>
-                        带图标按钮
-                      </Button>
-                      <Button disabled variant="primary">禁用按钮</Button>
-                    </div>
-                    <Button fullWidth variant="primary">全宽按钮</Button>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- 其他组件渲染 -->
-              <component
-                v-else
-                :is="component.component"
-                v-bind="component.props"
-              >
-                <template v-if="component.slots?.default" v-html="component.slots.default"></template>
-                <template v-if="component.slots?.footer" #footer v-html="component.slots.footer"></template>
-              </component>
-              <div v-if="component.staticPreview" v-html="component.previewContent" class="w-full"></div>
-            </div>
-
-            <!-- 代码示例控制区 -->
-            <div class="flex justify-between items-center border-t pt-3 mt-3 border-gray-100 dark:border-gray-700">
-              <button
-                @click="toggleCode(component.name)"
-                class="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center"
-              >
-                <i :class="[showCode[component.name] ? 'fas fa-code-branch' : 'fas fa-code', 'mr-1.5']"></i>
-                <span v-if="showCode[component.name]">隐藏代码</span>
-                <span v-else>查看代码</span>
-              </button>
-              
-              <button
-                v-if="showCode[component.name]"
-                @click="copyCode(getComponentCode(component), component.name)"
-                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center relative"
-              >
-                <i class="fas fa-copy mr-1.5"></i>
-                复制代码
-                <span 
-                  v-if="copiedComponent === component.name" 
-                  class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded text-xs whitespace-nowrap"
-                >
-                  复制成功!
+      <!-- 右侧组件展示区域 -->
+      <div class="main-container">
+        <!-- 组件展示区域 -->
+        <div v-if="filteredComponents.length > 0" class="space-y-8">
+          <Card
+            v-for="component in filteredComponents"
+            :key="component.name"
+            :title="component.name"
+            class="component-card"
+          >
+            <div class="p-4 space-y-4">
+              <!-- 组件描述和分类标签 -->
+              <div class="flex flex-wrap items-center justify-between mb-2">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mr-4 flex-1">
+                  {{ component.description }}
+                </p>
+                <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                  <i 
+                    :class="[
+                      component.category === 'basic' ? 'fas fa-cube' :
+                      component.category === 'form' ? 'fas fa-edit' :
+                      component.category === 'data' ? 'fas fa-table' :
+                      component.category === 'navigation' ? 'fas fa-compass' :
+                      component.category === 'feedback' ? 'fas fa-bell' :
+                      component.category === 'chart' ? 'fas fa-chart-bar' :
+                      'fas fa-box',
+                      'mr-1'
+                    ]"
+                  ></i>
+                  {{ categories.find(c => c.id === component.category)?.name || component.category }}
                 </span>
-              </button>
-            </div>
+              </div>
 
-            <!-- 代码示例 -->
-            <div v-if="showCode[component.name]" class="code-container">
-              <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm font-mono"><code>{{ getComponentCode(component) }}</code></pre>
-            </div>
-          </div>
-        </Card>
-      </div>
+              <!-- 组件预览 -->
+              <div class="component-preview p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 flex items-center justify-center overflow-hidden">
+                <!-- Button组件特殊渲染 -->
+                <div v-if="component.name === 'Button'" class="button-variants-preview flex flex-col gap-6 w-full">
+                  <!-- 不同变体按钮 -->
+                  <div class="variants">
+                    <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮变体</h4>
+                    <div class="flex flex-wrap gap-3">
+                      <Button variant="primary">Primary</Button>
+                      <Button variant="secondary">Secondary</Button>
+                      <Button variant="success">Success</Button>
+                      <Button variant="danger">Danger</Button>
+                      <Button variant="warning">Warning</Button>
+                      <Button variant="info">Info</Button>
+                      <Button variant="outline">Outline</Button>
+                    </div>
+                  </div>
+                  
+                  <!-- 不同大小按钮 -->
+                  <div class="sizes">
+                    <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮大小</h4>
+                    <div class="flex items-center gap-3">
+                      <Button size="sm" variant="primary">小按钮</Button>
+                      <Button size="md" variant="primary">中按钮</Button>
+                      <Button size="lg" variant="primary">大按钮</Button>
+                    </div>
+                  </div>
+                  
+                  <!-- 按钮状态 -->
+                  <div class="states">
+                    <h4 class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">按钮状态</h4>
+                    <div class="flex flex-col gap-3">
+                      <div class="flex items-center gap-3">
+                        <Button variant="primary">
+                          <i class="fas fa-check mr-1"></i>
+                          带图标按钮
+                        </Button>
+                        <Button disabled variant="primary">禁用按钮</Button>
+                      </div>
+                      <Button fullWidth variant="primary">全宽按钮</Button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 其他组件渲染 -->
+                <component
+                  v-else
+                  :is="component.component"
+                  v-bind="component.props"
+                >
+                  <template v-if="component.slots?.default" v-html="component.slots.default"></template>
+                  <template v-if="component.slots?.footer" #footer v-html="component.slots.footer"></template>
+                </component>
+                <div v-if="component.staticPreview" v-html="component.previewContent" class="w-full"></div>
+              </div>
 
-      <!-- 没有匹配结果时显示 -->
-      <div v-else class="empty-state text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-3">未找到匹配的组件</p>
-        <p class="text-sm text-gray-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
-          没有找到符合当前筛选条件的组件。请尝试调整搜索关键词或选择不同的分类。
-        </p>
-        <Button 
-          variant="primary" 
-          @click="clearFilters"
-        >
-          显示全部组件
-        </Button>
+              <!-- 代码示例控制区 -->
+              <div class="flex justify-between items-center border-t pt-3 mt-3 border-gray-100 dark:border-gray-700">
+                <button
+                  @click="toggleCode(component.name)"
+                  class="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center"
+                >
+                  <i :class="[showCode[component.name] ? 'fas fa-code-branch' : 'fas fa-code', 'mr-1.5']"></i>
+                  <span v-if="showCode[component.name]">隐藏代码</span>
+                  <span v-else>查看代码</span>
+                </button>
+                
+                <button
+                  v-if="showCode[component.name]"
+                  @click="copyCode(getComponentCode(component), component.name)"
+                  class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center relative"
+                >
+                  <i class="fas fa-copy mr-1.5"></i>
+                  复制代码
+                  <span 
+                    v-if="copiedComponent === component.name" 
+                    class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded text-xs whitespace-nowrap"
+                  >
+                    复制成功!
+                  </span>
+                </button>
+              </div>
+
+              <!-- 代码示例 -->
+              <div v-if="showCode[component.name]" class="code-container">
+                <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm font-mono"><code>{{ getComponentCode(component) }}</code></pre>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <!-- 没有匹配结果时显示 -->
+        <div v-else class="empty-state text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+          <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+          <p class="text-xl text-gray-600 dark:text-gray-400 mb-3">未找到匹配的组件</p>
+          <p class="text-sm text-gray-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
+            没有找到符合当前筛选条件的组件。请尝试调整搜索关键词或选择不同的分类。
+          </p>
+          <Button 
+            variant="primary" 
+            @click="clearFilters"
+          >
+            显示全部组件
+          </Button>
+        </div>
       </div>
     </div>
   </div>
@@ -801,11 +792,43 @@ const getComponentCode = (component) => {
 <style scoped>
 .components-gallery {
   height: calc(100vh - 130px); /* 减去导航栏和标签栏的高度 */
+  overflow: hidden;
+}
+
+.gallery-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
 }
 
 .sidebar-container {
+  padding: 1rem;
   border-right: 1px solid rgba(229, 231, 235, 0.5);
   background-color: rgba(249, 250, 251, 0.7);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.category-menu {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.sidebar-footer {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.main-container {
+  padding: 1rem 1.5rem;
+  background-color: rgba(249, 250, 251, 0.3);
+  overflow-y: auto;
+  height: 100%;
 }
 
 :deep(.dark) .sidebar-container {
@@ -813,8 +836,8 @@ const getComponentCode = (component) => {
   background-color: rgba(31, 41, 55, 0.3);
 }
 
-.main-container {
-  background-color: rgba(249, 250, 251, 0.3);
+:deep(.dark) .sidebar-footer {
+  border-top-color: rgba(55, 65, 81, 0.5);
 }
 
 :deep(.dark) .main-container {
@@ -862,11 +885,6 @@ const getComponentCode = (component) => {
   max-height: 200px;
 }
 
-.category-menu {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
-}
-
 .category-menu::-webkit-scrollbar {
   width: 4px;
 }
@@ -899,5 +917,39 @@ const getComponentCode = (component) => {
 
 .code-container code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .gallery-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  
+  .sidebar-container {
+    border-right: none;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    padding-bottom: 1rem;
+    max-height: 300px;
+  }
+  
+  :deep(.dark) .sidebar-container {
+    border-bottom-color: rgba(55, 65, 81, 0.5);
+  }
+  
+  .category-menu {
+    max-height: 150px;
+  }
+  
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .sidebar-footer button {
+    max-width: 200px;
+    margin-top: 0.5rem;
+  }
 }
 </style> 
