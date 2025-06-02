@@ -93,7 +93,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="user-menu-container">
     <!-- 用户头像按钮 -->
-    <button 
+    <div 
       ref="avatarRef"
       class="avatar-button" 
       @click.stop="toggleMenu"
@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
           <i class="fas fa-user"></i>
         </div>
       </div>
-    </button>
+    </div>
 
     <!-- 下拉菜单 -->
     <div 
@@ -176,15 +176,21 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   cursor: pointer;
   background-color: var(--color-bg-tertiary);
-  border: 2px solid var(--color-border);
+  border: 2px solid transparent;
   transition: all 0.2s ease;
   overflow: hidden;
+  padding: 0;
 }
 
-.avatar-button:hover, .avatar-button.active {
+.avatar-button:hover {
   border-color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 2px 5px var(--color-shadow);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.avatar-button.active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.3);
 }
 
 .avatar-wrapper {
