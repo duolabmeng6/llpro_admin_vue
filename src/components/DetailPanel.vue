@@ -45,14 +45,18 @@ const showAddLessonModal = ref(false);
 // 新章节表单数据
 const newChapterData = ref({
   title: '',
-  description: ''
+  description: '',
+  videoUrl: '',
+  content: '',
+  type: 'video'
 });
 // 新小节表单数据
 const newLessonData = ref({
   title: '',
   content: '',
   duration: 0,
-  type: 'video'
+  type: 'video',
+  videoUrl: ''
 });
 // 当前激活的选项卡
 const activeTab = ref('info');
@@ -122,7 +126,10 @@ const addChapter = () => {
   showAddChapterModal.value = false;
   newChapterData.value = {
     title: '',
-    description: ''
+    description: '',
+    videoUrl: '',
+    content: '',
+    type: 'video'
   };
 };
 
@@ -134,7 +141,8 @@ const addLesson = () => {
     title: '',
     content: '',
     duration: 0,
-    type: 'video'
+    type: 'video',
+    videoUrl: ''
   };
 };
 </script>
@@ -348,6 +356,33 @@ const addLesson = () => {
                       rows="4"
                     />
                   </FormGroup>
+                  
+                  <FormGroup label="章节类型">
+                    <Select
+                      v-model="formData.type"
+                      :options="[
+                        { value: 'video', label: '视频' },
+                        { value: 'text', label: '文本' }
+                      ]"
+                    />
+                  </FormGroup>
+                  
+                  <FormGroup label="视频地址" v-if="formData.type === 'video'">
+                    <input
+                      v-model="formData.videoUrl"
+                      type="text"
+                      class="form-input"
+                      placeholder="请输入视频URL地址"
+                    />
+                  </FormGroup>
+                  
+                  <FormGroup label="章节内容" v-if="formData.type === 'text'">
+                    <Textarea
+                      v-model="formData.content"
+                      placeholder="请输入章节内容"
+                      rows="6"
+                    />
+                  </FormGroup>
                 </Form>
               </div>
               
@@ -362,6 +397,27 @@ const addLesson = () => {
                   <div class="detail-item">
                     <div class="detail-label">章节描述</div>
                     <div class="detail-value description">{{ nodeData.description }}</div>
+                  </div>
+                  
+                  <div class="detail-item" v-if="nodeData.type">
+                    <div class="detail-label">章节类型</div>
+                    <div class="detail-value">
+                      <span class="lesson-type-badge" :class="`type-${nodeData.type}`">
+                        {{ nodeData.type === 'video' ? '视频' : nodeData.type === 'text' ? '文本' : '未知' }}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div class="detail-item" v-if="nodeData.type === 'video' && nodeData.videoUrl">
+                    <div class="detail-label">视频地址</div>
+                    <div class="detail-value">
+                      <a :href="nodeData.videoUrl" target="_blank" class="video-url">{{ nodeData.videoUrl }}</a>
+                    </div>
+                  </div>
+                  
+                  <div class="detail-item" v-if="nodeData.type === 'text' && nodeData.content">
+                    <div class="detail-label">章节内容</div>
+                    <div class="detail-value description">{{ nodeData.content }}</div>
                   </div>
                   
                   <div class="detail-item">
@@ -414,6 +470,15 @@ const addLesson = () => {
                       min="0"
                       class="form-input"
                       placeholder="请输入视频时长"
+                    />
+                  </FormGroup>
+                  
+                  <FormGroup label="视频地址" v-if="formData.type === 'video'">
+                    <input
+                      v-model="formData.videoUrl"
+                      type="text"
+                      class="form-input"
+                      placeholder="请输入视频URL地址"
                     />
                   </FormGroup>
                 </Form>
@@ -561,6 +626,40 @@ const addLesson = () => {
             rows="4"
           ></textarea>
         </div>
+        
+        <div class="form-group">
+          <label for="chapter-type" class="form-label">章节类型</label>
+          <select
+            id="chapter-type"
+            v-model="newChapterData.type"
+            class="form-select"
+          >
+            <option value="video">视频</option>
+            <option value="text">文本</option>
+          </select>
+        </div>
+        
+        <div class="form-group" v-if="newChapterData.type === 'video'">
+          <label for="chapter-video-url" class="form-label">视频地址</label>
+          <input
+            id="chapter-video-url"
+            v-model="newChapterData.videoUrl"
+            type="text"
+            class="form-input"
+            placeholder="请输入视频URL地址"
+          />
+        </div>
+        
+        <div class="form-group" v-if="newChapterData.type === 'text'">
+          <label for="chapter-content" class="form-label">章节内容</label>
+          <textarea
+            id="chapter-content"
+            v-model="newChapterData.content"
+            class="form-textarea"
+            placeholder="请输入章节内容"
+            rows="6"
+          ></textarea>
+        </div>
       </div>
     </Modal>
     
@@ -604,6 +703,17 @@ const addLesson = () => {
             min="0"
             class="form-input"
             placeholder="请输入视频时长"
+          />
+        </div>
+        
+        <div class="form-group" v-if="newLessonData.type === 'video'">
+          <label for="lesson-video-url" class="form-label">视频地址</label>
+          <input
+            id="lesson-video-url"
+            v-model="newLessonData.videoUrl"
+            type="text"
+            class="form-input"
+            placeholder="请输入视频URL地址"
           />
         </div>
       </div>
@@ -729,6 +839,16 @@ const addLesson = () => {
 .type-quiz {
   background-color: var(--color-success-bg, rgba(5, 150, 105, 0.1));
   color: var(--color-success, #059669);
+}
+
+.video-url {
+  color: var(--color-primary, #4f46e5);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.video-url:hover {
+  color: var(--color-primary-600, #4338ca);
 }
 
 .delete-button {

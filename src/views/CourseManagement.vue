@@ -235,48 +235,70 @@ const handleCreateLesson = async (lessonData) => {
 
 <template>
   <div class="course-management">
-    <div class="course-management-header">
-      <h1 class="page-title">课程管理</h1>
-      <Button @click="showCreateCourseModal = true" variant="primary">
-        <i class="fa fa-plus mr-2"></i>创建课程
-      </Button>
-    </div>
-    
+
     <div class="course-management-content">
       <!-- 左侧：课程列表 -->
-      <div class="course-sidebar">
-        <Card title="课程列表" shadow="sm">
-          <div class="course-sidebar-header">
-            <div class="search-box">
-              <i class="fa fa-search search-icon"></i>
-              <input type="text" placeholder="搜索课程..." class="search-input" />
+      <div class="flex flex-col h-full overflow-hidden border-r border-gray-200 dark:border-gray-700 w-1/5 min-w-[250px]">
+        <Card shadow="sm">
+          <div class="flex flex-col gap-3 p-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="w-full">
+              <Button @click="showCreateCourseModal = true" variant="primary" size="sm" class="w-full flex items-center justify-center">
+                <i class="fa fa-plus mr-2"></i>创建课程
+              </Button>
+            </div>
+            <div class="relative">
+              <input 
+                type="text" 
+                placeholder="搜索课程..." 
+                class="w-full py-2 pl-3 pr-8 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <i class="fa fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
           </div>
           
-          <div v-if="loading && !currentCourseId && courseStore.courses.length > 0" class="loading-container"> 
-            <i class="fa fa-spinner fa-spin"></i>
-            <span class="ml-2">加载中...</span>
+          <div v-if="loading && !currentCourseId && courseStore.courses.length > 0" class="flex flex-col items-center justify-center p-8 h-full text-gray-500"> 
+            <i class="fa fa-spinner fa-spin text-xl mb-2"></i>
+            <span>加载中...</span>
           </div>
           
-          <div v-else-if="courseStore.courses.length === 0" class="empty-container">
-            <i class="fa fa-graduation-cap empty-icon"></i>
-            <p>暂无课程</p>
-            <Button @click="showCreateCourseModal = true" size="sm" variant="outline" class="mt-4">
+          <div v-else-if="courseStore.courses.length === 0" class="flex flex-col items-center justify-center p-8 h-full text-gray-500">
+            <i class="fa fa-graduation-cap text-5xl mb-4 opacity-50"></i>
+            <p class="mb-4">暂无课程</p>
+            <Button @click="showCreateCourseModal = true" size="sm" variant="outline" class="mt-2">
               创建新课程
             </Button>
           </div>
           
-          <div v-else class="course-list-items">
+          <div v-else class="flex flex-col p-3 gap-3 overflow-auto">
             <div
               v-for="course in courseStore.courses"
               :key="course.id"
-              :class="['course-list-item', currentCourseId === course.id ? 'course-list-item-active' : '']"
+              :class="[
+                'flex items-start p-4 rounded-lg cursor-pointer transition-all duration-200 border',
+                currentCourseId === course.id 
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm' 
+                  : 'bg-white dark:bg-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-gray-750 hover:border-gray-200 dark:hover:border-gray-700 hover:-translate-y-0.5 hover:shadow-sm'
+              ]"
               @click="selectCourse(course.id)"
             >
-              <div class="course-list-item-content">
-                <div class="course-list-item-title">{{ course.title }}</div>
-                <div class="course-list-item-status">
-                  <span :class="['status-badge', course.status === 'published' ? 'status-published' : 'status-draft']">
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center mb-1.5">
+                  <h3 class="font-semibold text-gray-900 dark:text-gray-100 truncate">{{ course.title }}</h3>
+                </div>
+                <p v-if="course.description" class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-1.5">
+                  {{ course.description.length > 50 ? course.description.substring(0, 50) + '...' : course.description }}
+                </p>
+                <div class="flex items-center text-xs text-gray-400 dark:text-gray-500">
+                  <i class="fa fa-clock mr-1"></i>
+                  {{ course.updatedAt ? new Date(course.updatedAt).toLocaleDateString() : '最近更新' }}
+                  <span 
+                    :class="[
+                      'ml-2 px-2 py-0.5 text-xs font-medium rounded-full',
+                      course.status === 'published' 
+                        ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    ]"
+                  >
                     {{ course.status === 'published' ? '已发布' : '草稿' }}
                   </span>
                 </div>
@@ -290,16 +312,7 @@ const handleCreateLesson = async (lessonData) => {
       <div class="main-workspace">
         <!-- 欢迎视图 -->
         <div v-if="mainAreaViewMode === 'welcome'" class="welcome-view">
-          <Card title="欢迎使用课程管理系统" shadow="sm">
-            <div class="empty-container">
-              <i class="fa fa-book-open empty-icon"></i>
-              <p v-if="courseStore.courses.length > 0">请从左侧选择一个课程开始编辑，或</p>
-              <p v-else>当前没有课程，您可以</p>
-              <Button @click="showCreateCourseModal = true" size="large" variant="primary" class="mt-4">
-                <i class="fa fa-plus mr-2"></i>创建新课程
-              </Button>
-            </div>
-          </Card>
+          <!-- 欢迎内容已移除 -->
         </div>
 
         <!-- 内容视图：课程结构与详情 -->
@@ -423,10 +436,6 @@ const handleCreateLesson = async (lessonData) => {
   --modern-accent-color: oklch(65% 0.15 240);
   --modern-accent-text-color: oklch(100% 0 0); /* 白色 */
 
-  /* 列表项选中背景 */
-  --course-list-item-active-bg: var(--modern-accent-color);
-  --course-list-item-active-text: var(--modern-accent-text-color);
-
   /* 更清晰的次要文本颜色 */
   --enhanced-text-secondary: oklch(45% 0.02 255);
 }
@@ -466,66 +475,6 @@ const handleCreateLesson = async (lessonData) => {
   overflow: hidden;
 }
 
-/* 左侧课程列表 */
-.course-sidebar {
-  width: 20%;
-  min-width: 250px;
-  border-right: 1px solid var(--color-border);
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.course-sidebar :deep(.card) {
-  height: 100%;
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
-  display: flex;
-  flex-direction: column;
-}
-
-.course-sidebar :deep(.card-header) {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
-}
-
-.course-sidebar :deep(.card) > div:not(.card-header) {
-  flex: 1;
-  overflow: auto;
-  padding: 0;
-}
-
-.course-sidebar-header {
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.search-box {
-  position: relative;
-  width: 100%;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem 0.5rem 2rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  font-size: 0.875rem;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-secondary);
-}
-
 /* 主工作区 */
 .main-workspace {
   flex: 1;
@@ -540,11 +489,6 @@ const handleCreateLesson = async (lessonData) => {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-}
-
-.welcome-view .card {
-  width: 100%;
-  max-width: 600px;
 }
 
 /* 课程结构面板 */
@@ -610,78 +554,11 @@ const handleCreateLesson = async (lessonData) => {
 }
 
 /* 通用样式 */
-.loading-container,
-.empty-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  color: var(--enhanced-text-secondary);
-  height: 100%;
-  text-align: center;
-}
-
 .empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   color: var(--color-text-secondary);
   opacity: 0.5;
-}
-
-.course-list-items {
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem;
-}
-
-.course-list-item {
-  padding: 0.85rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 0.25rem;
-}
-
-.course-list-item:hover {
-  background-color: var(--color-bg-tertiary);
-}
-
-.course-list-item-active {
-  background-color: var(--course-list-item-active-bg);
-  color: var(--course-list-item-active-text);
-}
-
-.course-list-item-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.course-list-item-title {
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  width: fit-content;
-}
-
-.status-published {
-  background-color: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-.status-draft {
-  background-color: var(--color-warning-bg);
-  color: var(--color-warning);
 }
 
 .tree-container {
