@@ -162,23 +162,25 @@ const sidebarWidth = computed(() => {
           :class="isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive'"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
         >
-          <i 
-            :class="[menuItem.icon, { 'mr-3': showMenuText }]" 
-            class="h-6 w-6 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
-          ></i>
-          <span 
-            v-if="showMenuText" 
-            class="flex-1 truncate flex items-center"
-          >
-            {{ menuItem.title }}
-          </span>
-          
-          <!-- 展开/收起箭头（仅当有子菜单时显示） -->
-          <i 
-            v-if="hasChildren(menuItem) && showMenuText"
-            class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300 flex items-center justify-center"
-            :class="{ 'rotate-90': isExpanded(menuItem.id) }"
-          ></i>
+          <div class="flex items-center w-full">
+            <i 
+              :class="[menuItem.icon, { 'mr-3': showMenuText }]" 
+              class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
+            ></i>
+            <span 
+              v-if="showMenuText" 
+              class="flex-1 truncate"
+            >
+              {{ menuItem.title }}
+            </span>
+            
+            <!-- 展开/收起箭头（仅当有子菜单时显示） -->
+            <i 
+              v-if="hasChildren(menuItem) && showMenuText"
+              class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300 h-5 w-5 flex items-center justify-center"
+              :class="{ 'rotate-90': isExpanded(menuItem.id) }"
+            ></i>
+          </div>
         </div>
         
         <!-- 二级菜单 -->
@@ -190,16 +192,18 @@ const sidebarWidth = computed(() => {
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300"
+            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 h-9"
             :class="isSubmenuActive(childItem.path) ? 'submenu-active' : 'submenu-inactive'"
             @click="handleMenuClick(childItem.path, $event)"
           >
-            <i 
-              v-if="childItem.icon" 
-              :class="childItem.icon" 
-              class="mr-2 w-4 h-4 flex items-center justify-center"
-            ></i>
-            <span class="truncate">{{ childItem.title }}</span>
+            <div class="flex items-center w-full">
+              <i 
+                v-if="childItem.icon" 
+                :class="childItem.icon" 
+                class="mr-2 w-4 h-4 flex-shrink-0 flex items-center justify-center"
+              ></i>
+              <span class="truncate">{{ childItem.title }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -229,6 +233,11 @@ const sidebarWidth = computed(() => {
 }
 
 /* 菜单项样式 */
+.menu-item {
+  display: flex;
+  align-items: center;
+}
+
 .menu-active {
   background-color: var(--color-accent);
   color: white;
@@ -244,6 +253,11 @@ const sidebarWidth = computed(() => {
 }
 
 /* 子菜单项样式 */
+.submenu-item {
+  display: flex;
+  align-items: center;
+}
+
 .submenu-active {
   background-color: var(--color-bg-tertiary);
   color: var(--color-accent);
