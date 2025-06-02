@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
@@ -61,12 +61,45 @@ const toggleSubmenu = (menuId, event) => {
 }
 
 // 处理侧边栏鼠标悬停
-const handleSidebarHover = (isHovering) => {
+const expandTimer = ref(null); // 用于存储定时器ID
+
+const handleSidebarHover = (isHovering, event) => {
   // 只有当侧边栏处于收缩状态时，才应用临时展开
   if (!props.isOpen) {
-    menuStore.setTempExpanded(isHovering);
+    if (isHovering) {
+      // 设置200ms延迟再展开，避免鼠标快速经过时的闪烁
+      clearTimeout(expandTimer.value);
+      expandTimer.value = setTimeout(() => {
+        menuStore.setTempExpanded(true);
+      }, 200);
+    } else {
+      // 鼠标移出时立即清除定时器，防止延迟展开
+      clearTimeout(expandTimer.value);
+      // 添加小延迟关闭，防止鼠标在菜单项之间移动时的闪烁
+      setTimeout(() => {
+        menuStore.setTempExpanded(false);
+      }, 100);
+    }
   }
 }
+
+// 阻止按钮引起的鼠标悬停扩展
+const preventExpand = () => {
+  // 清除展开定时器
+  clearTimeout(expandTimer.value);
+  
+  // 如果侧边栏当前已经临时展开，立即关闭它
+  if (!props.isOpen && menuStore.isTempExpanded) {
+    menuStore.setTempExpanded(false);
+  }
+}
+
+// 在组件卸载时清除定时器
+onBeforeUnmount(() => {
+  clearTimeout(expandTimer.value);
+  // 清除所有菜单定时器
+  menuStore.clearAllMenuTimers();
+});
 
 // 判断子菜单是否激活
 const isSubmenuActive = (path, childItem) => {
@@ -170,14 +203,27 @@ const getMenuItemStyle = (isCollapsed) => {
     padding: '0.625rem 0.75rem'
   };
 }
+
+// 计算图标容器样式
+const getIconContainerStyle = (isCollapsed) => {
+  if (isCollapsed) {
+    return {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%'
+    };
+  }
+  return {};
+}
 </script>
 
 <template>
   <aside
     class="sidebar-container flex-shrink-0 fixed h-full z-20 glass-morphism overflow-hidden"
     :style="contentStyle"
-    @mouseenter="handleSidebarHover(true)"
-    @mouseleave="handleSidebarHover(false)"
+    @mouseenter="handleSidebarHover(true, $event)"
+    @mouseleave="handleSidebarHover(false, $event)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header border-b border-subtle">
       <div class="flex-1 flex justify-center overflow-hidden">
@@ -198,6 +244,7 @@ const getMenuItemStyle = (isCollapsed) => {
       <button
         class="p-2 rounded-md sidebar-toggle-btn text-muted hover:bg-tertiary flex-shrink-0"
         @click="toggleSidebar"
+        @mouseenter="preventExpand"
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
@@ -213,63 +260,45 @@ const getMenuItemStyle = (isCollapsed) => {
       >
         <!-- 一级菜单 -->
         <div
-          class="group flex items-center text-base font-medium rounded-lg cursor-pointer menu-item"
-          :class="[isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive']"
-          :style="getMenuItemStyle(!showMenuText)"
+          class="menu-item-wrapper"
+          :class="[isMenuActive(menuItem) ? 'active' : 'inactive']"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem, $event)"
         >
-          <div 
-            class="flex items-center"
-            :class="{'w-full justify-center': !showMenuText, 'w-full': showMenuText}"
-          >
-            <!-- 图标容器，确保图标始终垂直居中对齐 -->
-            <div class="icon-container">
-              <i 
-                :class="menuItem.icon" 
-                class="icon-inner"
-              ></i>
+          <div class="menu-item-expanded" v-if="showMenuText">
+            <div class="icon-wrapper">
+              <i :class="menuItem.icon"></i>
             </div>
-            
-            <span 
-              v-if="showMenuText" 
-              class="flex-1 truncate ml-3 menu-text"
-            >
-              {{ menuItem.title }}
-            </span>
-            
-            <!-- 展开/收起箭头（仅当有子菜单时显示） -->
+            <span class="menu-title">{{ menuItem.title }}</span>
             <i 
-              v-if="hasChildren(menuItem) && showMenuText"
-              class="fa-solid fa-chevron-right ml-auto h-5 w-5 flex items-center justify-center chevron-icon"
-              :class="{ 'rotate-90': isExpanded(menuItem.id) }"
+              v-if="hasChildren(menuItem)"
+              class="fa-solid fa-chevron-right expand-icon"
+              :class="{ 'expanded': isExpanded(menuItem.id) }"
             ></i>
+          </div>
+          <div class="menu-item-collapsed" v-else>
+            <div class="icon-wrapper">
+              <i :class="menuItem.icon"></i>
+            </div>
           </div>
         </div>
         
         <!-- 二级菜单 -->
         <div
           v-if="hasChildren(menuItem) && showMenuText"
-          class="mt-1 space-y-1 overflow-hidden submenu-container"
-          :class="[isExpanded(menuItem.id) ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0']"
+          class="submenu-container"
+          :class="[isExpanded(menuItem.id) ? 'expanded' : 'collapsed']"
         >
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item h-9"
-            :class="isSubmenuActive(childItem.path, childItem) ? 'submenu-active' : 'submenu-inactive'"
+            class="submenu-item"
+            :class="[isSubmenuActive(childItem.path, childItem) ? 'active' : 'inactive']"
             @click="handleMenuClick(childItem, $event)"
           >
-            <div class="flex items-center w-full">
-              <!-- 二级菜单图标容器 -->
-              <div class="submenu-icon-container flex items-center justify-center">
-                <i 
-                  v-if="childItem.icon" 
-                  :class="childItem.icon" 
-                  class="flex-shrink-0 flex items-center justify-center submenu-icon"
-                ></i>
-              </div>
-              <span class="truncate ml-2">{{ childItem.title }}</span>
+            <div class="submenu-icon-wrapper" v-if="childItem.icon">
+              <i :class="childItem.icon"></i>
             </div>
+            <span class="submenu-title">{{ childItem.title }}</span>
           </div>
         </div>
       </div>
@@ -305,90 +334,128 @@ const getMenuItemStyle = (isCollapsed) => {
   box-shadow: 0 0 10px var(--color-shadow);
 }
 
-/* 图标容器样式 */
-.icon-container {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-inner {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-/* 菜单文本 */
-.menu-text {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* 子菜单展开箭头 */
-.chevron-icon {
-  transition: transform 0.3s ease;
-}
-
-/* 菜单项样式 */
-.menu-item {
+/* 菜单项容器 */
+.menu-item-wrapper {
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.menu-active {
+.menu-item-wrapper.active {
   background-color: var(--color-accent);
   color: white;
 }
 
-.menu-inactive {
+.menu-item-wrapper.inactive {
   color: var(--color-text-secondary);
 }
 
-.menu-inactive:hover {
+.menu-item-wrapper.inactive:hover {
   background-color: var(--color-bg-tertiary);
   color: var(--color-text-primary);
+}
+
+/* 展开状态的菜单项 */
+.menu-item-expanded {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 0.75rem;
+}
+
+/* 收缩状态的菜单项 */
+.menu-item-collapsed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.625rem 0;
+}
+
+/* 图标容器 */
+.icon-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 菜单标题 */
+.menu-title {
+  flex: 1;
+  margin-left: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 展开箭头 */
+.expand-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(90deg);
 }
 
 /* 子菜单容器 */
 .submenu-container {
-  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* 子菜单图标容器 */
-.submenu-icon-container {
-  width: 16px;
-  height: 16px;
-  position: relative;
-  flex-shrink: 0;
+.submenu-container.expanded {
+  max-height: 15rem;
+  opacity: 1;
 }
 
-.submenu-icon {
-  width: 16px;
-  height: 16px;
+.submenu-container.collapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
-/* 子菜单项样式 */
+/* 子菜单项 */
 .submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top: 0.25rem;
 }
 
-.submenu-active {
+.submenu-item.active {
   background-color: var(--color-bg-tertiary);
   color: var(--color-accent);
 }
 
-.submenu-inactive {
+.submenu-item.inactive {
   color: var(--color-text-secondary);
 }
 
-.submenu-inactive:hover {
+.submenu-item.inactive:hover {
   background-color: var(--color-bg-tertiary);
   color: var(--color-text-primary);
+}
+
+/* 子菜单图标 */
+.submenu-icon-wrapper {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+
+/* 子菜单标题 */
+.submenu-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 过渡动画 */
