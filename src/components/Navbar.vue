@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { ref, onMounted, computed } from 'vue'
 import { useThemeStore } from '../stores/theme'
 import ThemeSwitcher from './ThemeSwitcher.vue'
-import SearchInput from './SearchInput.vue'
+import MenuSearch from './MenuSearch.vue'
 
 const props = defineProps({
   username: {
@@ -21,7 +21,6 @@ const themeStore = useThemeStore()
 const router = useRouter()
 const currentTime = ref('00:00:00')
 const currentTheme = computed(() => themeStore.currentTheme)
-const searchQuery = ref('')
 
 // 更新时间
 const updateTime = () => {
@@ -30,12 +29,6 @@ const updateTime = () => {
   const minutes = String(now.getMinutes()).padStart(2, '0')
   const seconds = String(now.getSeconds()).padStart(2, '0')
   currentTime.value = `${hours}:${minutes}:${seconds}`
-}
-
-// 处理搜索
-const handleSearch = (query) => {
-  console.log('搜索:', query)
-  // 这里可以实现搜索逻辑
 }
 
 onMounted(() => {
@@ -52,13 +45,9 @@ const logout = async () => {
 <template>
   <header class="navbar relative z-10 glass-morphism">
     <div class="navbar-content px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center relative z-10">
-      <!-- 搜索栏 -->
+      <!-- 菜单搜索组件 -->
       <div class="w-64 md:w-96">
-        <SearchInput 
-          v-model="searchQuery" 
-          placeholder="搜索菜单、功能..." 
-          @search="handleSearch" 
-        />
+        <MenuSearch />
       </div>
       
       <div class="flex items-center space-x-6">
