@@ -53,25 +53,25 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('../views/Dashboard.vue'),
-        meta: { title: '仪表盘', icon: 'dashboard' }
+        meta: { title: '仪表盘', icon: 'fa-tachometer-alt' }
       },
       {
         path: 'profile',
         name: 'UserProfile',
         component: () => import('../views/UserProfile.vue'),
-        meta: { title: '个人资料', icon: 'user' }
+        meta: { title: '个人资料', icon: 'fa-user-circle' }
       },
       {
         path: 'notifications',
         name: 'Notifications',
         component: () => import('../views/Notifications.vue'),
-        meta: { title: '通知中心', icon: 'bell' }
+        meta: { title: '通知中心', icon: 'fa-bell' }
       },
       {
         path: 'components',
         name: 'ComponentsGallery',
         component: () => import('../views/ComponentsGallery.vue'),
-        meta: { title: '组件画廊', icon: 'components' }
+        meta: { title: '组件库', icon: 'fa-puzzle-piece' }
       },
       {
         path: 'examples/form',
@@ -89,19 +89,19 @@ const routes = [
         path: 'upload-demo',
         name: 'UploadDemo',
         component: () => import('../views/UploadDemo.vue'),
-        meta: { title: '多图上传示例', icon: 'upload' }
+        meta: { title: '文件上传', icon: 'fa-upload' }
       },
       {
         path: 'markdown-editor',
         name: 'MarkdownEditorDemo',
         component: () => import('../views/MarkdownEditorDemo.vue'),
-        meta: { title: 'Markdown编辑器', icon: 'edit' }
+        meta: { title: 'Markdown编辑器', icon: 'fa-edit' }
       },
       {
         path: 'users',
         name: 'UserManagement',
         component: () => import('../views/UserManagement.vue'),
-        meta: { title: '用户管理', icon: 'users' }
+        meta: { title: '用户管理', icon: 'fa-users' }
       },
       {
         path: 'users/profile',
@@ -113,25 +113,31 @@ const routes = [
         path: 'roles',
         name: 'RoleManagement',
         component: () => import('../views/RoleManagement.vue'),
-        meta: { title: '角色管理', icon: 'roles' }
+        meta: { title: '角色管理', icon: 'fa-user-tag' }
       },
       {
         path: 'roles/permissions',
         name: 'RolePermissions',
         component: () => import('../views/RolePermissions.vue'),
-        meta: { title: '权限设置', icon: 'roles' }
+        meta: { title: '权限设置', icon: 'fa-lock' }
+      },
+      {
+        path: 'courses',
+        name: 'CourseManagement',
+        component: () => import('../views/CourseManagement.vue'),
+        meta: { title: '课程管理', icon: 'fa-book' }
       },
       {
         path: 'settings',
         name: 'Settings',
         component: () => import('../views/Settings.vue'),
-        meta: { title: '系统设置', icon: 'settings' }
+        meta: { title: '系统设置', icon: 'fa-cog' }
       },
       {
         path: 'settings/backup',
         name: 'Backup',
         component: () => import('../views/Backup.vue'),
-        meta: { title: '备份恢复', icon: 'settings' }
+        meta: { title: '备份恢复', icon: 'fa-database' }
       },
       {
         path: 'iframe',

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@9.6.0",
   "scripts": {
     "dev": "nodemon mock-server/index.js & vite",
     "build": "vite build",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vitejs/plugin-vue-jsx": "^4.2.0",
     "@vue/eslint-config-prettier": "^10.2.0",
     "eslint": "^9.28.0",
     "eslint-plugin-vue": "^10.1.0",

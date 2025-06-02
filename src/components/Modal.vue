@@ -60,15 +60,6 @@ const visible = ref(props.show)
 // 是否正在动画中
 const animating = ref(false)
 
-// 监听show属性变化
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    open()
-  } else {
-    close()
-  }
-}, { immediate: true })
-
 // 打开模态框
 const open = () => {
   visible.value = true
@@ -112,6 +103,15 @@ const close = () => {
     document.body.style.overflow = ''
   }, 300)
 }
+
+// 监听show属性变化
+watch(() => props.show, (newVal) => {
+  if (newVal) {
+    open()
+  } else if (visible.value) { // 只有当visible为true时才调用close
+    close()
+  }
+}, { immediate: true })
 
 // 点击遮罩层关闭
 const onMaskClick = () => {
