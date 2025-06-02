@@ -158,20 +158,25 @@ const sidebarWidth = computed(() => {
     @mouseleave="handleSidebarHover(false)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header border-b border-subtle">
-      <h1 
-        v-if="showMenuText"
-        class="text-xl font-bold truncate sidebar-title gradient-text"
-      >
-        LL Pro 系统
-      </h1>
+      <div class="flex-1 flex justify-center">
+        <h1 
+          v-if="showMenuText"
+          class="text-xl font-bold truncate sidebar-title gradient-text"
+        >
+          LL Pro 系统
+        </h1>
+        <!-- 收缩状态显示的Logo -->
+        <div v-else class="logo-container w-8 h-8 flex items-center justify-center">
+          <span class="text-xl font-bold gradient-text">L</span>
+        </div>
+      </div>
       <button
-        v-if="props.isOpen || menuStore.isTempExpanded"
-        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300 text-muted hover:bg-tertiary ml-auto"
+        class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300 text-muted hover:bg-tertiary"
         @click="toggleSidebar"
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
-        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-6 h-6 flex items-center justify-center"></i>
+        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-5 h-5 flex items-center justify-center"></i>
       </button>
     </div>
     
@@ -184,17 +189,21 @@ const sidebarWidth = computed(() => {
         <!-- 一级菜单 -->
         <div
           class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
-          :class="isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive'"
+          :class="[isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive', {'justify-center': !showMenuText}]"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem, $event)"
         >
-          <div class="flex items-center w-full">
-            <i 
-              :class="[menuItem.icon, { 'mr-3': showMenuText }]" 
-              class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
-            ></i>
+          <div class="flex items-center w-full" :class="{'justify-center': !showMenuText}">
+            <!-- 修改图标容器，确保图标始终居中对齐 -->
+            <div class="icon-container flex items-center justify-center" :class="{'w-full': !showMenuText}">
+              <i 
+                :class="menuItem.icon" 
+                class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
+              ></i>
+            </div>
+            
             <span 
               v-if="showMenuText" 
-              class="flex-1 truncate"
+              class="flex-1 truncate ml-3"
             >
               {{ menuItem.title }}
             </span>
@@ -222,12 +231,15 @@ const sidebarWidth = computed(() => {
             @click="handleMenuClick(childItem, $event)"
           >
             <div class="flex items-center w-full">
-              <i 
-                v-if="childItem.icon" 
-                :class="childItem.icon" 
-                class="mr-2 w-4 h-4 flex-shrink-0 flex items-center justify-center"
-              ></i>
-              <span class="truncate">{{ childItem.title }}</span>
+              <!-- 二级菜单图标容器 -->
+              <div class="submenu-icon-container flex items-center justify-center">
+                <i 
+                  v-if="childItem.icon" 
+                  :class="childItem.icon" 
+                  class="w-4 h-4 flex-shrink-0 flex items-center justify-center"
+                ></i>
+              </div>
+              <span class="truncate ml-2">{{ childItem.title }}</span>
             </div>
           </div>
         </div>
@@ -257,6 +269,14 @@ const sidebarWidth = computed(() => {
   text-shadow: 0 0 5px var(--color-shadow);
 }
 
+/* 图标容器样式 */
+.icon-container {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
 /* 菜单项样式 */
 .menu-item {
   display: flex;
@@ -275,6 +295,14 @@ const sidebarWidth = computed(() => {
 .menu-inactive:hover {
   background-color: var(--color-bg-tertiary);
   color: var(--color-text-primary);
+}
+
+/* 子菜单图标容器 */
+.submenu-icon-container {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
 /* 子菜单项样式 */
@@ -313,5 +341,12 @@ const sidebarWidth = computed(() => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: var(--color-scrollbar-thumb);
+}
+
+/* Logo容器 */
+.logo-container {
+  border-radius: 50%;
+  background: var(--color-bg-tertiary);
+  box-shadow: 0 0 10px var(--color-shadow);
 }
 </style> 
