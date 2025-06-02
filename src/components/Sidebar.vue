@@ -68,19 +68,30 @@ const handleSidebarHover = (isHovering) => {
   }
 }
 
+// 判断子菜单是否激活
+const isSubmenuActive = (path, childItem) => {
+  // 特殊处理外部链接 - 检查URL路径是否是/external/开头，如果是，比较ID
+  if (route.path.startsWith('/external/')) {
+    const linkId = route.path.split('/')[2]
+    return childItem.id === linkId
+  }
+  // 否则使用常规路径匹配
+  return route.path === path
+}
+
 // 判断菜单项是否激活
 const isMenuActive = (menuItem) => {
   // 如果是一级菜单且有子菜单，检查任何子菜单是否匹配当前路由
   if (menuItem.children && menuItem.children.length > 0) {
+    // 特殊处理外部链接
+    if (route.path.startsWith('/external/')) {
+      const linkId = route.path.split('/')[2]
+      return menuItem.children.some(child => child.id === linkId)
+    }
     return menuItem.children.some(child => route.path === child.path)
   }
   // 否则直接检查路径是否匹配
   return route.path === menuItem.path
-}
-
-// 判断子菜单是否激活
-const isSubmenuActive = (path) => {
-  return route.path === path
 }
 
 // 切换侧边栏
@@ -207,7 +218,7 @@ const sidebarWidth = computed(() => {
             v-for="childItem in menuItem.children"
             :key="childItem.id"
             class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 h-9"
-            :class="isSubmenuActive(childItem.path) ? 'submenu-active' : 'submenu-inactive'"
+            :class="isSubmenuActive(childItem.path, childItem) ? 'submenu-active' : 'submenu-inactive'"
             @click="handleMenuClick(childItem, $event)"
           >
             <div class="flex items-center w-full">
