@@ -152,23 +152,26 @@ const sidebarWidth = computed(() => {
 
 <template>
   <aside
-    class="sidebar-container flex-shrink-0 transition-all duration-300 flex flex-col fixed h-full z-20 glass-morphism"
+    class="sidebar-container flex-shrink-0 transition-all duration-300 ease-in-out flex flex-col fixed h-full z-20 glass-morphism"
     :class="sidebarWidth"
     @mouseenter="handleSidebarHover(true)"
     @mouseleave="handleSidebarHover(false)"
   >
     <div class="p-4 flex items-center justify-between sidebar-header border-b border-subtle">
       <div class="flex-1 flex justify-center">
-        <h1 
-          v-if="showMenuText"
-          class="text-xl font-bold truncate sidebar-title gradient-text"
-        >
-          LL Pro 系统
-        </h1>
-        <!-- 收缩状态显示的Logo -->
-        <div v-else class="logo-container w-8 h-8 flex items-center justify-center">
-          <span class="text-xl font-bold gradient-text">L</span>
-        </div>
+        <transition name="fade" mode="out-in">
+          <h1 
+            v-if="showMenuText"
+            key="full-title"
+            class="text-xl font-bold truncate sidebar-title gradient-text"
+          >
+            LL Pro 系统
+          </h1>
+          <!-- 收缩状态显示的Logo -->
+          <div v-else key="logo" class="logo-container w-8 h-8 flex items-center justify-center">
+            <span class="text-xl font-bold gradient-text">L</span>
+          </div>
+        </transition>
       </div>
       <button
         class="p-2 rounded-md sidebar-toggle-btn transition-all duration-300 text-muted hover:bg-tertiary"
@@ -176,7 +179,7 @@ const sidebarWidth = computed(() => {
         :title="isOpen ? '收起侧边栏 (Alt+S)' : '展开侧边栏 (Alt+S)'"
       >
         <span class="sr-only">{{ isOpen ? '收起侧边栏' : '展开侧边栏' }}</span>
-        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-5 h-5 flex items-center justify-center"></i>
+        <i :class="[isOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right']" class="w-5 h-5 flex items-center justify-center transition-transform duration-300"></i>
       </button>
     </div>
     
@@ -188,7 +191,7 @@ const sidebarWidth = computed(() => {
       >
         <!-- 一级菜单 -->
         <div
-          class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
+          class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300 ease-in-out"
           :class="[isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive', {'justify-center': !showMenuText}]"
           @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem, $event)"
         >
@@ -197,36 +200,40 @@ const sidebarWidth = computed(() => {
             <div class="icon-container flex items-center justify-center" :class="{'w-full': !showMenuText}">
               <i 
                 :class="menuItem.icon" 
-                class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-transform duration-300"
+                class="h-5 w-5 flex-shrink-0 flex items-center justify-center transition-all duration-300 ease-in-out"
               ></i>
             </div>
             
-            <span 
-              v-if="showMenuText" 
-              class="flex-1 truncate ml-3"
-            >
-              {{ menuItem.title }}
-            </span>
+            <transition name="fade-x" mode="out-in">
+              <span 
+                v-if="showMenuText" 
+                class="flex-1 truncate ml-3"
+              >
+                {{ menuItem.title }}
+              </span>
+            </transition>
             
             <!-- 展开/收起箭头（仅当有子菜单时显示） -->
-            <i 
-              v-if="hasChildren(menuItem) && showMenuText"
-              class="fa-solid fa-chevron-right ml-auto transform transition-transform duration-300 h-5 w-5 flex items-center justify-center"
-              :class="{ 'rotate-90': isExpanded(menuItem.id) }"
-            ></i>
+            <transition name="fade" mode="out-in">
+              <i 
+                v-if="hasChildren(menuItem) && showMenuText"
+                class="fa-solid fa-chevron-right ml-auto transform transition-all duration-300 ease-in-out h-5 w-5 flex items-center justify-center"
+                :class="{ 'rotate-90': isExpanded(menuItem.id) }"
+              ></i>
+            </transition>
           </div>
         </div>
         
         <!-- 二级菜单 -->
         <div
           v-if="hasChildren(menuItem) && showMenuText"
-          class="mt-1 space-y-1 overflow-hidden transition-all duration-300"
+          class="mt-1 space-y-1 overflow-hidden transition-all duration-500 ease-in-out"
           :class="[isExpanded(menuItem.id) ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0']"
         >
           <div
             v-for="childItem in menuItem.children"
             :key="childItem.id"
-            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 h-9"
+            class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 ease-in-out h-9"
             :class="isSubmenuActive(childItem.path, childItem) ? 'submenu-active' : 'submenu-inactive'"
             @click="handleMenuClick(childItem, $event)"
           >
@@ -236,7 +243,7 @@ const sidebarWidth = computed(() => {
                 <i 
                   v-if="childItem.icon" 
                   :class="childItem.icon" 
-                  class="w-4 h-4 flex-shrink-0 flex items-center justify-center"
+                  class="w-4 h-4 flex-shrink-0 flex items-center justify-center transition-all duration-300 ease-in-out"
                 ></i>
               </div>
               <span class="truncate ml-2">{{ childItem.title }}</span>
@@ -348,5 +355,29 @@ const sidebarWidth = computed(() => {
   border-radius: 50%;
   background: var(--color-bg-tertiary);
   box-shadow: 0 0 10px var(--color-shadow);
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.fade-x-enter-active,
+.fade-x-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-x-enter-from {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+.fade-x-leave-to {
+  opacity: 0;
+  transform: translateX(10px);
 }
 </style> 
