@@ -496,4 +496,39 @@ html, body {
   opacity: 0;
   transform: translateY(10px);
 }
+
+/* 全局滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover, var(--color-scrollbar-thumb));
+}
+
+/* 隐藏特定组件的滚动条 */
+.tabs-nav::-webkit-scrollbar {
+  height: 0;
+  display: none;
+}
+
+.tabs-wrapper::-webkit-scrollbar {
+  height: 0;
+  display: none;
+}
+
+/* Firefox 滚动条隐藏 */
+.tabs-nav, .tabs-wrapper {
+  scrollbar-width: none;
+}
 </style> 

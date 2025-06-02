@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
 import { useMenuStore } from '../stores/menu'
@@ -11,6 +11,128 @@ const menuStore = useMenuStore()
 const tabs = computed(() => tabsStore.getTabs)
 const activeTab = computed(() => tabsStore.getActiveTab)
 const currentTheme = computed(() => themeStore.currentTheme)
+
+// 添加滚动相关的ref
+const tabsWrapperRef = ref(null)
+const showLeftArrow = ref(false)
+const showRightArrow = ref(false)
+const isScrolling = ref(false)
+
+// 检查滚动状态
+const checkScrollPosition = () => {
+  if (!tabsWrapperRef.value) return
+  
+  const { scrollLeft, scrollWidth, clientWidth } = tabsWrapperRef.value
+  
+  // 显示左箭头条件：已经滚动了一定距离
+  showLeftArrow.value = scrollLeft > 0
+  
+  // 显示右箭头条件：还有内容可以向右滚动
+  showRightArrow.value = scrollLeft + clientWidth < scrollWidth - 10 // 添加一点余量
+}
+
+// 向左滚动
+const scrollLeft = () => {
+  if (!tabsWrapperRef.value) return
+  
+  isScrolling.value = true
+  const scrollAmount = tabsWrapperRef.value.clientWidth / 2
+  
+  tabsWrapperRef.value.scrollBy({
+    left: -scrollAmount,
+    behavior: 'smooth'
+  })
+  
+  // 滚动完成后更新箭头状态
+  setTimeout(() => {
+    isScrolling.value = false
+    checkScrollPosition()
+  }, 300)
+}
+
+// 向右滚动
+const scrollRight = () => {
+  if (!tabsWrapperRef.value) return
+  
+  isScrolling.value = true
+  const scrollAmount = tabsWrapperRef.value.clientWidth / 2
+  
+  tabsWrapperRef.value.scrollBy({
+    left: scrollAmount,
+    behavior: 'smooth'
+  })
+  
+  // 滚动完成后更新箭头状态
+  setTimeout(() => {
+    isScrolling.value = false
+    checkScrollPosition()
+  }, 300)
+}
+
+// 滚动到激活的标签
+const scrollToActiveTab = () => {
+  if (!tabsWrapperRef.value) return
+  
+  const activeTabElement = tabsWrapperRef.value.querySelector('.tab-active')
+  if (!activeTabElement) return
+  
+  // 计算需要滚动的位置
+  const tabRect = activeTabElement.getBoundingClientRect()
+  const wrapperRect = tabsWrapperRef.value.getBoundingClientRect()
+  
+  // 检查标签是否在可视区域内
+  const isVisible = (
+    tabRect.left >= wrapperRect.left &&
+    tabRect.right <= wrapperRect.right
+  )
+  
+  if (!isVisible) {
+    // 计算滚动位置，使激活标签居中
+    const scrollCenter = activeTabElement.offsetLeft - (wrapperRect.width / 2) + (tabRect.width / 2)
+    
+    tabsWrapperRef.value.scrollTo({
+      left: Math.max(0, scrollCenter),
+      behavior: 'smooth'
+    })
+    
+    // 滚动后更新箭头状态
+    setTimeout(checkScrollPosition, 300)
+  }
+}
+
+// 监听标签变化和窗口大小变化
+onMounted(() => {
+  // 初始检查
+  setTimeout(checkScrollPosition, 100)
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', checkScrollPosition)
+  
+  // 监听滚动事件
+  if (tabsWrapperRef.value) {
+    tabsWrapperRef.value.addEventListener('scroll', checkScrollPosition)
+  }
+})
+
+// 监听activeTab变化，滚动到活动标签
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkScrollPosition)
+  
+  if (tabsWrapperRef.value) {
+    tabsWrapperRef.value.removeEventListener('scroll', checkScrollPosition)
+  }
+})
+
+// 切换标签时滚动到激活的标签
+const switchTab = (path) => {
+  tabsStore.switchTab(path)
+  
+  // 自动展开对应的左侧菜单
+  menuStore.expandMenuByPath(path)
+  
+  // 滚动到激活的标签
+  setTimeout(scrollToActiveTab, 10)
+}
 
 // 根据路径查找菜单图标
 const getTabIcon = (path) => {
@@ -33,14 +155,6 @@ const getTabIcon = (path) => {
   
   // 返回一级菜单的图标
   return menuItem.icon || 'fa-solid fa-file'
-}
-
-// 切换标签
-const switchTab = (path) => {
-  tabsStore.switchTab(path)
-  
-  // 自动展开对应的左侧菜单
-  menuStore.expandMenuByPath(path)
 }
 
 // 关闭标签
@@ -152,8 +266,22 @@ const handleContextMenu = (e, tab) => {
 </script>
 
 <template>
-  <div class="tabs-nav glass-morphism">
-    <div class="tabs-wrapper overflow-x-auto">
+  <div class="tabs-nav glass-morphism relative">
+    <!-- 左侧导航箭头 -->
+    <button 
+      v-show="showLeftArrow"
+      class="tab-scroll-button tab-scroll-left glass-morphism"
+      @click="scrollLeft"
+      :disabled="isScrolling"
+    >
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    
+    <div 
+      ref="tabsWrapperRef"
+      class="tabs-wrapper overflow-x-auto"
+      @scroll="checkScrollPosition"
+    >
       <TransitionGroup 
         name="tab-transition" 
         tag="div" 
@@ -189,6 +317,16 @@ const handleContextMenu = (e, tab) => {
         </div>
       </TransitionGroup>
     </div>
+    
+    <!-- 右侧导航箭头 -->
+    <button 
+      v-show="showRightArrow"
+      class="tab-scroll-button tab-scroll-right glass-morphism"
+      @click="scrollRight"
+      :disabled="isScrolling"
+    >
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
 </template>
 
@@ -202,21 +340,21 @@ const handleContextMenu = (e, tab) => {
   transition: all 0.3s ease;
   position: relative;
   display: flex;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-}
-
-.tabs-nav::-webkit-scrollbar {
-  height: 0;
-  width: 0;
-  background: transparent;
+  overflow: visible;
 }
 
 .tabs-wrapper {
   width: 100%;
   height: 100%;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.tabs-wrapper::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  background: transparent;
 }
 
 .tabs-list {
@@ -296,5 +434,44 @@ const handleContextMenu = (e, tab) => {
   transform: translateY(-10px);
 }
 
-/* 上下文菜单样式通过JS设置，确保在不同主题下使用CSS变量 */
+/* 导航按钮样式 */
+.tab-scroll-button {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-secondary);
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  opacity: 0.9;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.tab-scroll-button:hover {
+  opacity: 1;
+  background-color: var(--color-bg-tertiary);
+}
+
+.tab-scroll-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab-scroll-left {
+  left: 0;
+  border-right: 1px solid var(--color-border);
+  box-shadow: 2px 0 5px var(--color-shadow);
+}
+
+.tab-scroll-right {
+  right: 0;
+  border-left: 1px solid var(--color-border);
+  box-shadow: -2px 0 5px var(--color-shadow);
+}
 </style> 
