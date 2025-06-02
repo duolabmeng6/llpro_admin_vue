@@ -147,21 +147,14 @@ const updateOptionsPosition = () => {
   }
 }
 
-// 应用主题特定的动画效果
-const applyThemeEffect = (optionEl) => {
+// 应用选项悬停效果
+const applyOptionHoverEffect = (optionEl) => {
   if (!optionEl) return
   
-  if (currentTheme.value === 'cyberpunk') {
-    optionEl.classList.add('dropdown-option-cyber-effect')
-    setTimeout(() => {
-      optionEl.classList.remove('dropdown-option-cyber-effect')
-    }, 600)
-  } else if (currentTheme.value === 'dark') {
-    optionEl.classList.add('dropdown-option-dark-effect')
-    setTimeout(() => {
-      optionEl.classList.remove('dropdown-option-dark-effect')
-    }, 300)
-  }
+  optionEl.classList.add('dropdown-option-hover-effect')
+  setTimeout(() => {
+    optionEl.classList.remove('dropdown-option-hover-effect')
+  }, 300)
 }
 </script>
 
@@ -169,7 +162,6 @@ const applyThemeEffect = (optionEl) => {
   <div 
     ref="dropdownRef" 
     class="dropdown" 
-    :class="`dropdown-${currentTheme}`"
     :style="{ width: width }"
   >
     <!-- 自定义触发器 -->
@@ -187,9 +179,8 @@ const applyThemeEffect = (optionEl) => {
     <!-- 默认触发器 -->
     <div 
       v-else
-      class="dropdown-trigger"
+      class="dropdown-trigger bg-elevated border border-subtle text-body"
       :class="{
-        [`dropdown-trigger-${currentTheme}`]: true,
         'dropdown-trigger-active': isOpen,
         'dropdown-trigger-disabled': disabled
       }"
@@ -209,7 +200,7 @@ const applyThemeEffect = (optionEl) => {
       
       <!-- 下拉箭头 -->
       <i 
-        class="fa-solid fa-chevron-down dropdown-arrow"
+        class="fa-solid fa-chevron-down dropdown-arrow text-secondary"
         :class="{ 'dropdown-arrow-open': isOpen }"
       ></i>
     </div>
@@ -218,9 +209,8 @@ const applyThemeEffect = (optionEl) => {
     <transition :name="`dropdown-${placement}`">
       <div
         v-if="isOpen"
-        class="dropdown-options"
+        class="dropdown-options bg-card border border-subtle shadow-theme-lg"
         :class="{
-          [`dropdown-options-${currentTheme}`]: true,
           'dropdown-options-top': placement === 'top',
           'dropdown-options-bottom': placement === 'bottom'
         }"
@@ -230,13 +220,12 @@ const applyThemeEffect = (optionEl) => {
           <div
             v-for="(option, index) in options"
             :key="option.value"
-            class="dropdown-option"
+            class="dropdown-option text-body"
             :class="{
-              [`dropdown-option-${currentTheme}`]: true,
               'dropdown-option-selected': option.value === modelValue
             }"
             @click="selectOption(option)"
-            @mouseenter="applyThemeEffect($event.target)"
+            @mouseenter="applyOptionHoverEffect($event.target)"
           >
             <i 
               v-if="showIcon && option.icon" 
@@ -246,7 +235,7 @@ const applyThemeEffect = (optionEl) => {
             <span class="dropdown-option-label">{{ option.label }}</span>
           </div>
         </template>
-        <div v-else class="dropdown-empty">
+        <div v-else class="dropdown-empty text-secondary">
           无可用选项
         </div>
       </div>
@@ -273,61 +262,15 @@ const applyThemeEffect = (optionEl) => {
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 2.5rem;
-  border: 1px solid transparent;
 }
 
-/* 黑暗主题触发器 */
-.dropdown-trigger-dark {
-  background-color: rgba(15, 23, 42, 0.6);
-  color: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.1);
+.dropdown-trigger:hover:not(.dropdown-trigger-disabled) {
+  border-color: var(--color-accent);
 }
 
-.dropdown-trigger-dark:hover:not(.dropdown-trigger-disabled) {
-  background-color: rgba(30, 41, 59, 0.8);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.dropdown-trigger-dark.dropdown-trigger-active {
-  border-color: rgba(59, 130, 246, 0.7);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
-
-/* 明亮主题触发器 */
-.dropdown-trigger-light {
-  background-color: #ffffff;
-  color: #1e293b;
-  border-color: rgba(203, 213, 225, 0.8);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.dropdown-trigger-light:hover:not(.dropdown-trigger-disabled) {
-  border-color: #94a3b8;
-}
-
-.dropdown-trigger-light.dropdown-trigger-active {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-}
-
-/* 赛博朋克主题触发器 */
-.dropdown-trigger-cyberpunk {
-  background-color: rgba(13, 2, 33, 0.7);
-  color: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 44, 240, 0.3);
-  box-shadow: 0 0 5px rgba(255, 44, 240, 0.2);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-.dropdown-trigger-cyberpunk:hover:not(.dropdown-trigger-disabled) {
-  border-color: rgba(255, 44, 240, 0.5);
-  box-shadow: 0 0 8px rgba(255, 44, 240, 0.3);
-}
-
-.dropdown-trigger-cyberpunk.dropdown-trigger-active {
-  border-color: rgba(255, 44, 240, 0.8);
-  box-shadow: 0 0 10px rgba(255, 44, 240, 0.4);
+.dropdown-trigger-active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 25%, transparent);
 }
 
 /* 禁用状态 */
@@ -381,7 +324,8 @@ const applyThemeEffect = (optionEl) => {
   border-radius: 0.375rem;
   z-index: 10;
   transition: transform 0.2s ease, opacity 0.2s ease;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .dropdown-options-bottom {
@@ -390,32 +334,6 @@ const applyThemeEffect = (optionEl) => {
 
 .dropdown-options-top {
   bottom: calc(100% + 0.25rem);
-}
-
-/* 深色主题选项列表 */
-.dropdown-options-dark {
-  background-color: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* 明亮主题选项列表 */
-.dropdown-options-light {
-  background-color: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  color: #1e293b;
-}
-
-/* 赛博朋克主题选项列表 */
-.dropdown-options-cyberpunk {
-  background-color: rgba(28, 6, 54, 0.95);
-  border: 1px solid rgba(255, 44, 240, 0.3);
-  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
-  color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 /* 选项样式 */
@@ -430,6 +348,15 @@ const applyThemeEffect = (optionEl) => {
   transform: translateY(5px);
 }
 
+.dropdown-option:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.dropdown-option-selected {
+  background-color: color-mix(in oklab, var(--color-accent) 15%, transparent);
+  color: var(--color-accent);
+}
+
 /* 选项动画 */
 @keyframes dropdown-option-in {
   to {
@@ -438,84 +365,14 @@ const applyThemeEffect = (optionEl) => {
   }
 }
 
-/* 深色主题选项 */
-.dropdown-option-dark {
-  color: rgba(255, 255, 255, 0.9);
+/* 选项悬停效果 */
+.dropdown-option-hover-effect {
+  animation: dropdown-option-pulse 0.3s ease-out;
 }
 
-.dropdown-option-dark:hover {
-  background-color: rgba(59, 130, 246, 0.15);
-}
-
-.dropdown-option-dark.dropdown-option-selected {
-  background-color: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-}
-
-/* 明亮主题选项 */
-.dropdown-option-light {
-  color: #1e293b;
-}
-
-.dropdown-option-light:hover {
-  background-color: #f1f5f9;
-}
-
-.dropdown-option-light.dropdown-option-selected {
-  background-color: #ebf5ff;
-  color: #2563eb;
-}
-
-/* 赛博朋克主题选项 */
-.dropdown-option-cyberpunk {
-  color: rgba(255, 255, 255, 0.9);
-  position: relative;
-  overflow: hidden;
-}
-
-.dropdown-option-cyberpunk:hover {
-  background-color: rgba(255, 44, 240, 0.15);
-  text-shadow: 0 0 2px rgba(255, 44, 240, 0.5);
-}
-
-.dropdown-option-cyberpunk.dropdown-option-selected {
-  background-color: rgba(255, 44, 240, 0.2);
-  color: #ff2cf0;
-  text-shadow: 0 0 3px rgba(255, 44, 240, 0.6);
-}
-
-/* 赛博朋克特效 */
-.dropdown-option-cyber-effect::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 44, 240, 0.2), 
-    rgba(255, 44, 240, 0.3), 
-    transparent
-  );
-  z-index: 1;
-  animation: dropdown-cyber-sweep 0.5s ease-out forwards;
-}
-
-@keyframes dropdown-cyber-sweep {
-  to {
-    left: 100%;
-  }
-}
-
-/* 深色主题特效 */
-.dropdown-option-dark-effect {
-  animation: dropdown-dark-pulse 0.3s ease-out;
-}
-
-@keyframes dropdown-dark-pulse {
+@keyframes dropdown-option-pulse {
   0% { background-color: transparent; }
-  50% { background-color: rgba(59, 130, 246, 0.15); }
+  50% { background-color: var(--color-bg-tertiary); }
   100% { background-color: transparent; }
 }
 
@@ -529,7 +386,6 @@ const applyThemeEffect = (optionEl) => {
 .dropdown-empty {
   padding: 0.75rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
   font-style: italic;
 }
 

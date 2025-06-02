@@ -1,6 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
-import { useThemeStore } from '../stores/theme'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   // 是否显示模态框
@@ -56,10 +55,6 @@ const emit = defineEmits([
   'cancel'
 ])
 
-// 获取主题store
-const themeStore = useThemeStore()
-const currentTheme = computed(() => themeStore.currentTheme)
-
 // 是否显示模态框
 const visible = ref(props.show)
 // 是否正在动画中
@@ -87,19 +82,11 @@ const open = () => {
     const modalElement = document.querySelector('.modal-container');
     if (!modalElement) return;
     
-    if (currentTheme.value === 'cyberpunk') {
-      // 赛博朋克主题特效 - 添加霓虹闪光
-      modalElement.classList.add('modal-cyberpunk-effect');
-      setTimeout(() => {
-        modalElement.classList.remove('modal-cyberpunk-effect');
-      }, 800);
-    } else if (currentTheme.value === 'dark') {
-      // 深色主题特效 - 添加轻微发光
-      modalElement.classList.add('modal-dark-effect');
-      setTimeout(() => {
-        modalElement.classList.remove('modal-dark-effect');
-      }, 600);
-    }
+    // 使用CSS变量控制的动画效果
+    modalElement.classList.add('modal-open-effect');
+    setTimeout(() => {
+      modalElement.classList.remove('modal-open-effect');
+    }, 800);
   };
   
   // 动画结束后设置animating为false
@@ -168,28 +155,23 @@ onBeforeUnmount(() => {
   <transition name="modal-fade">
     <div
       v-if="visible"
-      class="modal-mask"
-      :class="[
-        `modal-mask-${currentTheme}`,
-        { 'modal-animating': animating }
-      ]"
+      class="modal-mask glass-morphism"
+      :class="{ 'modal-animating': animating }"
       @click="onMaskClick"
     >
       <div class="modal-wrapper">
         <transition name="modal-scale">
           <div
-            class="modal-container"
-            :class="`modal-container-${currentTheme}`"
+            class="modal-container bg-card shadow-theme-lg"
             :style="{ width: width, marginTop: top }"
             @click.stop
           >
             <!-- 头部 -->
-            <div class="modal-header" :class="`modal-header-${currentTheme}`">
-              <h3 class="modal-title">{{ title }}</h3>
+            <div class="modal-header bg-elevated border-b border-subtle">
+              <h3 class="modal-title text-heading">{{ title }}</h3>
               <button
                 v-if="showClose"
-                class="modal-close"
-                :class="`modal-close-${currentTheme}`"
+                class="modal-close text-secondary hover:bg-tertiary"
                 @click="close"
               >
                 <i class="fa-solid fa-times"></i>
@@ -197,26 +179,23 @@ onBeforeUnmount(() => {
             </div>
             
             <!-- 内容 -->
-            <div class="modal-body" :class="`modal-body-${currentTheme}`">
+            <div class="modal-body text-body">
               <slot></slot>
             </div>
             
             <!-- 底部 -->
             <div
               v-if="showFooter"
-              class="modal-footer"
-              :class="`modal-footer-${currentTheme}`"
+              class="modal-footer bg-elevated border-t border-subtle"
             >
               <button
-                class="modal-btn modal-btn-cancel"
-                :class="`modal-btn-cancel-${currentTheme}`"
+                class="modal-btn modal-btn-cancel bg-tertiary text-secondary border border-subtle hover:bg-button-hover"
                 @click="cancel"
               >
                 {{ cancelText }}
               </button>
               <button
-                class="modal-btn modal-btn-confirm"
-                :class="`modal-btn-confirm-${currentTheme}`"
+                class="modal-btn modal-btn-confirm bg-button-primary-bg text-button-primary-text hover:bg-button-primary-hover-bg"
                 @click="confirm"
               >
                 {{ confirmText }}
@@ -244,28 +223,9 @@ onBeforeUnmount(() => {
   transition: background-color 0.3s ease;
   overflow-y: auto;
   padding: 20px 0;
-}
-
-/* 遮罩主题样式 */
-.modal-mask-dark {
-  background-color: rgba(15, 23, 42, 0.75);
+  background-color: color-mix(in oklab, var(--color-bg-primary) 70%, transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-}
-
-.modal-mask-light {
-  background-color: rgba(241, 245, 249, 0.75);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.modal-mask-cyberpunk {
-  background-color: rgba(13, 2, 33, 0.7);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  background-image: 
-    radial-gradient(circle at 20% 30%, rgba(255, 44, 240, 0.1), transparent 20%),
-    radial-gradient(circle at 80% 70%, rgba(0, 238, 255, 0.1), transparent 20%);
 }
 
 /* 模态框容器 */
@@ -280,7 +240,6 @@ onBeforeUnmount(() => {
 .modal-container {
   max-width: 90%;
   border-radius: 0.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   transition: all 0.3s ease;
   overflow: hidden;
   max-height: calc(100vh - 40px);
@@ -288,26 +247,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   margin-bottom: 20px;
   position: relative;
-}
-
-/* 主题特定容器样式 */
-.modal-container-dark {
-  background-color: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.modal-container-light {
-  background-color: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  color: #1e293b;
-}
-
-.modal-container-cyberpunk {
-  background-color: rgba(28, 6, 54, 0.95);
-  border: 1px solid rgba(255, 44, 240, 0.3);
-  color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 15px rgba(255, 44, 240, 0.3);
+  border: 1px solid var(--color-border);
 }
 
 /* 模态框头部 */
@@ -316,36 +256,6 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom-width: 1px;
-}
-
-.modal-header-dark {
-  background-color: rgba(15, 23, 42, 0.5);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-}
-
-.modal-header-light {
-  background-color: #f8fafc;
-  border-bottom-color: #e2e8f0;
-}
-
-.modal-header-cyberpunk {
-  background-color: rgba(13, 2, 33, 0.8);
-  border-bottom: 1px solid rgba(255, 44, 240, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.modal-header-cyberpunk::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 44, 240, 0.8), rgba(0, 238, 255, 0.8), transparent);
-  animation: flow-border 3s linear infinite;
-  background-size: 200% 100%;
 }
 
 /* 模态框标题 */
@@ -369,34 +279,6 @@ onBeforeUnmount(() => {
   transition: all 0.2s ease;
 }
 
-.modal-close-dark {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.modal-close-dark:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.modal-close-light {
-  color: #64748b;
-}
-
-.modal-close-light:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #1e293b;
-}
-
-.modal-close-cyberpunk {
-  color: rgba(255, 44, 240, 0.7);
-}
-
-.modal-close-cyberpunk:hover {
-  background-color: rgba(255, 44, 240, 0.2);
-  color: rgba(255, 44, 240, 1);
-  text-shadow: 0 0 5px rgba(255, 44, 240, 0.8);
-}
-
 /* 模态框内容 */
 .modal-body {
   padding: 1.5rem;
@@ -411,36 +293,6 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  border-top-width: 1px;
-}
-
-.modal-footer-dark {
-  background-color: rgba(15, 23, 42, 0.5);
-  border-top-color: rgba(255, 255, 255, 0.1);
-}
-
-.modal-footer-light {
-  background-color: #f8fafc;
-  border-top-color: #e2e8f0;
-}
-
-.modal-footer-cyberpunk {
-  background-color: rgba(13, 2, 33, 0.8);
-  border-top: 1px solid rgba(255, 44, 240, 0.4);
-  position: relative;
-  overflow: hidden;
-}
-
-.modal-footer-cyberpunk::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 238, 255, 0.8), rgba(255, 44, 240, 0.8), transparent);
-  animation: flow-border 3s linear infinite reverse;
-  background-size: 200% 100%;
 }
 
 /* 按钮样式 */
@@ -451,97 +303,17 @@ onBeforeUnmount(() => {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-/* 取消按钮 */
-.modal-btn-cancel-dark {
-  background-color: rgba(30, 41, 59, 0.7);
-  color: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.modal-btn-cancel-dark:hover {
-  background-color: rgba(30, 41, 59, 0.9);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.modal-btn-cancel-light {
-  background-color: #f1f5f9;
-  color: #64748b;
-  border-color: #e2e8f0;
-}
-
-.modal-btn-cancel-light:hover {
-  background-color: #e2e8f0;
-  color: #1e293b;
-}
-
-.modal-btn-cancel-cyberpunk {
-  background-color: rgba(54, 9, 109, 0.7);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 238, 255, 0.4);
-  box-shadow: 0 0 5px rgba(0, 238, 255, 0.2);
-}
-
-.modal-btn-cancel-cyberpunk:hover {
-  background-color: rgba(54, 9, 109, 0.9);
-  border-color: rgba(0, 238, 255, 0.6);
-  box-shadow: 0 0 8px rgba(0, 238, 255, 0.4);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
-}
-
-/* 确认按钮 */
-.modal-btn-confirm-dark {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.modal-btn-confirm-dark:hover {
-  background-color: #2563eb;
-}
-
-.modal-btn-confirm-light {
-  background-color: #2563eb;
-  color: white;
-}
-
-.modal-btn-confirm-light:hover {
-  background-color: #1d4ed8;
-}
-
-.modal-btn-confirm-cyberpunk {
-  background-color: rgba(255, 44, 240, 0.8);
-  color: white;
-  border: 1px solid rgba(255, 44, 240, 0.6);
-  box-shadow: 0 0 8px rgba(255, 44, 240, 0.4);
-}
-
-.modal-btn-confirm-cyberpunk:hover {
-  background-color: rgba(255, 44, 240, 1);
-  box-shadow: 0 0 12px rgba(255, 44, 240, 0.6);
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
 }
 
 /* 主题特定特效 */
-@keyframes modal-cyberpunk-glow {
-  0% { box-shadow: 0 0 10px rgba(255, 44, 240, 0.5), 0 0 20px rgba(255, 44, 240, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(255, 44, 240, 0.7), 0 0 30px rgba(255, 44, 240, 0.5); }
-  100% { box-shadow: 0 0 10px rgba(255, 44, 240, 0.5), 0 0 20px rgba(255, 44, 240, 0.3); }
+@keyframes modal-open-glow {
+  0% { box-shadow: 0 0 10px var(--color-shadow); }
+  50% { box-shadow: 0 0 20px var(--color-accent); }
+  100% { box-shadow: 0 0 10px var(--color-shadow); }
 }
 
-@keyframes modal-dark-glow {
-  0% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
-  100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
-}
-
-.modal-cyberpunk-effect {
-  animation: modal-cyberpunk-glow 1s ease-in-out;
-}
-
-.modal-dark-effect {
-  animation: modal-dark-glow 0.8s ease-in-out;
+.modal-open-effect {
+  animation: modal-open-glow 0.8s ease-in-out;
 }
 
 /* 过渡动画 */
