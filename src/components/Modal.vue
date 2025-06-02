@@ -155,47 +155,48 @@ onBeforeUnmount(() => {
   <transition name="modal-fade">
     <div
       v-if="visible"
-      class="modal-mask glass-morphism"
+      class="modal-mask"
       :class="{ 'modal-animating': animating }"
       @click="onMaskClick"
     >
       <div class="modal-wrapper">
         <transition name="modal-scale">
           <div
-            class="modal-container bg-card shadow-theme-lg"
+            class="modal-container"
             :style="{ width: width, marginTop: top }"
             @click.stop
           >
             <!-- 头部 -->
-            <div class="modal-header bg-elevated border-b border-subtle">
-              <h3 class="modal-title text-heading">{{ title }}</h3>
+            <div class="modal-header">
+              <h3 class="modal-title">{{ title }}</h3>
               <button
                 v-if="showClose"
-                class="modal-close text-secondary hover:bg-tertiary"
+                class="modal-close"
                 @click="close"
+                title="关闭"
               >
-                <i class="fa-solid fa-times"></i>
+                <i class="fa fa-times"></i>
               </button>
             </div>
             
             <!-- 内容 -->
-            <div class="modal-body text-body">
+            <div class="modal-body">
               <slot></slot>
             </div>
             
             <!-- 底部 -->
             <div
               v-if="showFooter"
-              class="modal-footer bg-elevated border-t border-subtle"
+              class="modal-footer"
             >
               <button
-                class="modal-btn modal-btn-cancel bg-tertiary text-secondary border border-subtle hover:bg-button-hover"
+                class="modal-btn modal-btn-cancel"
                 @click="cancel"
               >
                 {{ cancelText }}
               </button>
               <button
-                class="modal-btn modal-btn-confirm bg-button-primary-bg text-button-primary-text hover:bg-button-primary-hover-bg"
+                class="modal-btn modal-btn-confirm"
                 @click="confirm"
               >
                 {{ confirmText }}
@@ -220,12 +221,12 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   overflow-y: auto;
   padding: 20px 0;
-  background-color: color-mix(in oklab, var(--color-bg-primary) 70%, transparent);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 /* 模态框容器 */
@@ -233,13 +234,14 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   min-height: 100%;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 /* 模态框 */
 .modal-container {
   max-width: 90%;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   transition: all 0.3s ease;
   overflow: hidden;
   max-height: calc(100vh - 40px);
@@ -248,6 +250,8 @@ onBeforeUnmount(() => {
   margin-bottom: 20px;
   position: relative;
   border: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* 模态框头部 */
@@ -256,6 +260,8 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
 }
 
 /* 模态框标题 */
@@ -263,6 +269,7 @@ onBeforeUnmount(() => {
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
+  color: var(--color-text-primary);
 }
 
 /* 关闭按钮 */
@@ -270,13 +277,20 @@ onBeforeUnmount(() => {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
+  width: 32px;
+  height: 32px;
   font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 6px;
   transition: all 0.2s ease;
+  color: var(--color-text-secondary);
+}
+
+.modal-close:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 /* 模态框内容 */
@@ -284,6 +298,7 @@ onBeforeUnmount(() => {
   padding: 1.5rem;
   overflow-y: auto;
   flex-grow: 1;
+  color: var(--color-text-primary);
 }
 
 /* 模态框底部 */
@@ -291,25 +306,47 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
 }
 
 /* 按钮样式 */
 .modal-btn {
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+}
+
+.modal-btn-cancel {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.modal-btn-cancel:hover {
+  background-color: var(--color-bg-primary);
+}
+
+.modal-btn-confirm {
+  background-color: var(--modern-accent-color, var(--color-accent));
+  color: var(--modern-accent-text-color, white);
+}
+
+.modal-btn-confirm:hover {
+  filter: brightness(1.1);
 }
 
 /* 主题特定特效 */
 @keyframes modal-open-glow {
-  0% { box-shadow: 0 0 10px var(--color-shadow); }
-  50% { box-shadow: 0 0 20px var(--color-accent); }
-  100% { box-shadow: 0 0 10px var(--color-shadow); }
+  0% { box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+  50% { box-shadow: 0 10px 40px var(--modern-accent-color, rgba(0, 120, 215, 0.3)); }
+  100% { box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
 }
 
 .modal-open-effect {
@@ -329,33 +366,12 @@ onBeforeUnmount(() => {
 
 .modal-scale-enter-active,
 .modal-scale-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .modal-scale-enter-from,
 .modal-scale-leave-to {
   opacity: 0;
   transform: scale(0.95);
-}
-
-/* 主题过渡延迟应用 */
-.theme-transition .modal-container {
-  transition-delay: calc(var(--theme-transition-delay-unit) * 3);
-}
-
-.theme-transition .modal-header {
-  transition-delay: calc(var(--theme-transition-delay-unit) * 4);
-}
-
-.theme-transition .modal-body {
-  transition-delay: calc(var(--theme-transition-delay-unit) * 5);
-}
-
-.theme-transition .modal-footer {
-  transition-delay: calc(var(--theme-transition-delay-unit) * 6);
-}
-
-.theme-transition .modal-btn {
-  transition-delay: calc(var(--theme-transition-delay-unit) * 7);
 }
 </style> 

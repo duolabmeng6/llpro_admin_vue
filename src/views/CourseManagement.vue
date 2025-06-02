@@ -9,6 +9,9 @@ import Modal from '../components/Modal.vue';
 
 const courseStore = useCourseStore();
 
+// 控制主工作区显示模式：'welcome', 'content'
+const mainAreaViewMode = ref('welcome'); 
+
 // 当前选中的课程ID
 const currentCourseId = ref(null);
 // 是否显示创建课程对话框
@@ -47,20 +50,42 @@ const selectedNodeId = computed(() => {
   }
 });
 
+// 添加树形结构组件引用
+const treeViewRef = ref(null);
+
+// 展开全部节点
+const expandAllNodes = () => {
+  if (treeViewRef.value) {
+    treeViewRef.value.expandAllNodes();
+  }
+};
+
+// 折叠全部节点
+const collapseAllNodes = () => {
+  if (treeViewRef.value) {
+    treeViewRef.value.collapseAllNodes();
+  }
+};
+
 // 初始化：获取课程列表
 onMounted(async () => {
   try {
     await courseStore.fetchCourses();
+    if (!courseStore.courses.length) {
+      mainAreaViewMode.value = 'welcome';
+    }
   } catch (error) {
     console.error('获取课程列表失败:', error);
+    mainAreaViewMode.value = 'welcome'; // 出错时也显示欢迎页
   }
 });
 
 // 选择课程
 const selectCourse = async (courseId) => {
-  if (currentCourseId.value === courseId) return;
+  if (currentCourseId.value === courseId && mainAreaViewMode.value === 'content') return;
   
   currentCourseId.value = courseId;
+  mainAreaViewMode.value = 'content'; // 选中课程后，切换到内容显示模式
   
   try {
     await courseStore.fetchCourseStructure(courseId);
@@ -169,6 +194,9 @@ const handleDelete = async (nodeType, nodeId) => {
       case 'course':
         await courseStore.deleteCourse(nodeId);
         currentCourseId.value = null;
+        mainAreaViewMode.value = 'welcome'; // 删除课程后回到欢迎页
+        // 清理可能残留的选中节点状态
+        courseStore.selectNode(null); 
         break;
       case 'chapter':
         await courseStore.deleteChapter(nodeId);
@@ -209,20 +237,33 @@ const handleCreateLesson = async (lessonData) => {
   <div class="course-management">
     <div class="course-management-header">
       <h1 class="page-title">课程管理</h1>
-      <Button @click="showCreateCourseModal = true">创建课程</Button>
+      <Button @click="showCreateCourseModal = true" variant="primary">
+        <i class="fa fa-plus mr-2"></i>创建课程
+      </Button>
     </div>
     
     <div class="course-management-content">
       <!-- 左侧：课程列表 -->
-      <div class="course-list">
+      <div class="course-sidebar">
         <Card title="课程列表" shadow="sm">
-          <div v-if="loading && !currentCourseId" class="loading-container">
+          <div class="course-sidebar-header">
+            <div class="search-box">
+              <i class="fa fa-search search-icon"></i>
+              <input type="text" placeholder="搜索课程..." class="search-input" />
+            </div>
+          </div>
+          
+          <div v-if="loading && !currentCourseId && courseStore.courses.length > 0" class="loading-container"> 
             <i class="fa fa-spinner fa-spin"></i>
             <span class="ml-2">加载中...</span>
           </div>
           
           <div v-else-if="courseStore.courses.length === 0" class="empty-container">
-            <p>暂无课程，请创建新课程</p>
+            <i class="fa fa-graduation-cap empty-icon"></i>
+            <p>暂无课程</p>
+            <Button @click="showCreateCourseModal = true" size="sm" variant="outline" class="mt-4">
+              创建新课程
+            </Button>
           </div>
           
           <div v-else class="course-list-items">
@@ -245,45 +286,87 @@ const handleCreateLesson = async (lessonData) => {
         </Card>
       </div>
       
-      <!-- 中间：课程结构 -->
-      <div class="course-structure">
-        <Card title="课程结构" shadow="sm">
-          <div v-if="!currentCourseId" class="empty-container">
-            <p>请选择一个课程</p>
+      <!-- 主工作区 -->
+      <div class="main-workspace">
+        <!-- 欢迎视图 -->
+        <div v-if="mainAreaViewMode === 'welcome'" class="welcome-view">
+          <Card title="欢迎使用课程管理系统" shadow="sm">
+            <div class="empty-container">
+              <i class="fa fa-book-open empty-icon"></i>
+              <p v-if="courseStore.courses.length > 0">请从左侧选择一个课程开始编辑，或</p>
+              <p v-else>当前没有课程，您可以</p>
+              <Button @click="showCreateCourseModal = true" size="large" variant="primary" class="mt-4">
+                <i class="fa fa-plus mr-2"></i>创建新课程
+              </Button>
+            </div>
+          </Card>
+        </div>
+
+        <!-- 内容视图：课程结构与详情 -->
+        <template v-else-if="mainAreaViewMode === 'content'">
+          <!-- 中间：课程结构 -->
+          <div class="course-structure-panel">
+            <Card title="课程结构" shadow="sm">
+              <div class="course-structure-header">
+                <div class="course-structure-actions">
+                  <Button size="sm" variant="outline" title="展开全部" @click="expandAllNodes">
+                    <i class="fa fa-expand"></i>
+                  </Button>
+                  <Button size="sm" variant="outline" title="折叠全部" @click="collapseAllNodes">
+                    <i class="fa fa-compress"></i>
+                  </Button>
+                </div>
+              </div>
+              
+              <div v-if="!currentCourseId" class="empty-container">
+                <p>请选择一个课程</p>
+              </div>
+              
+              <div v-else-if="loading && currentCourseId" class="loading-container">
+                <i class="fa fa-spinner fa-spin"></i>
+                <span class="ml-2">加载中...</span>
+              </div>
+              
+              <div v-else-if="treeData.length === 0" class="empty-container">
+                <i class="fa fa-sitemap empty-icon"></i>
+                <p>课程结构为空</p>
+                <Button 
+                  v-if="currentCourseId" 
+                  @click="showAddChapterModal = true" 
+                  size="sm" 
+                  variant="outline" 
+                  class="mt-4"
+                >
+                  添加章节
+                </Button>
+              </div>
+              
+              <div v-else class="tree-container">
+                <TreeView
+                  ref="treeViewRef"
+                  :data="treeData"
+                  :selected-id="selectedNodeId"
+                  :draggable="true"
+                  @node-click="handleNodeClick"
+                  @node-drag="handleNodeDrag"
+                />
+              </div>
+            </Card>
           </div>
           
-          <div v-else-if="loading && currentCourseId" class="loading-container">
-            <i class="fa fa-spinner fa-spin"></i>
-            <span class="ml-2">加载中...</span>
-          </div>
-          
-          <div v-else-if="treeData.length === 0" class="empty-container">
-            <p>课程结构为空</p>
-          </div>
-          
-          <div v-else class="tree-container">
-            <TreeView
-              :data="treeData"
-              :selected-id="selectedNodeId"
-              :draggable="true"
-              @node-click="handleNodeClick"
-              @node-drag="handleNodeDrag"
+          <!-- 右侧：详情面板 -->
+          <div class="detail-panel">
+            <DetailPanel
+              :node-type="selectedNodeType"
+              :node-data="selectedNodeData"
+              :loading="loading"
+              @save="handleSave"
+              @delete="handleDelete"
+              @create-chapter="handleCreateChapter"
+              @create-lesson="handleCreateLesson"
             />
           </div>
-        </Card>
-      </div>
-      
-      <!-- 右侧：详情面板 -->
-      <div class="detail-panel">
-        <DetailPanel
-          :node-type="selectedNodeType"
-          :node-data="selectedNodeData"
-          :loading="loading"
-          @save="handleSave"
-          @delete="handleDelete"
-          @create-chapter="handleCreateChapter"
-          @create-lesson="handleCreateLesson"
-        />
+        </template>
       </div>
     </div>
     
@@ -334,59 +417,199 @@ const handleCreateLesson = async (lessonData) => {
 </template>
 
 <style scoped>
+/* 在这里定义一些局部的、实验性的颜色变量 */
+:root {
+  /* 一个更现代的强调色示例 (亮蓝色) */
+  --modern-accent-color: oklch(65% 0.15 240);
+  --modern-accent-text-color: oklch(100% 0 0); /* 白色 */
+
+  /* 列表项选中背景 */
+  --course-list-item-active-bg: var(--modern-accent-color);
+  --course-list-item-active-text: var(--modern-accent-text-color);
+
+  /* 更清晰的次要文本颜色 */
+  --enhanced-text-secondary: oklch(45% 0.02 255);
+}
+
 .course-management {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 .course-management-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  height: 64px;
 }
 
 .page-title {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
+  color: var(--color-text-primary);
+  background-image: var(--title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .course-management-content {
-  display: grid;
-  grid-template-columns: 250px 1fr 1.5fr;
-  gap: 1rem;
-  height: calc(100vh - 150px);
-  overflow: auto;
-}
-
-.course-list,
-.course-structure,
-.detail-panel {
   display: flex;
-  flex-direction: column;
-  overflow: visible;
-  max-height: 100%;
+  height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
-.course-list :deep(.card),
-.course-structure :deep(.card),
-.detail-panel :deep(.card) {
+/* 左侧课程列表 */
+.course-sidebar {
+  width: 20%;
+  min-width: 250px;
+  border-right: 1px solid var(--color-border);
   height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: visible;
 }
 
-.course-list :deep(.card) > div:not(.card-header),
-.course-structure :deep(.card) > div:not(.card-header),
-.detail-panel :deep(.card) > div:not(.card-header) {
+.course-sidebar :deep(.card) {
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-sidebar :deep(.card-header) {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+}
+
+.course-sidebar :deep(.card) > div:not(.card-header) {
   flex: 1;
   overflow: auto;
-  max-height: calc(100vh - 220px);
+  padding: 0;
 }
 
+.course-sidebar-header {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+/* 主工作区 */
+.main-workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 欢迎视图 */
+.welcome-view {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.welcome-view .card {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* 课程结构面板 */
+.course-structure-panel {
+  width: 35%;
+  border-right: 1px solid var(--color-border);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-structure-panel :deep(.card) {
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-structure-panel :deep(.card-header) {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-structure-panel :deep(.card) > div:not(.card-header) {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.course-structure-header {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.course-structure-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* 详情面板 */
+.detail-panel {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-panel :deep(.card) {
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* 通用样式 */
 .loading-container,
 .empty-container {
   display: flex;
@@ -394,22 +617,30 @@ const handleCreateLesson = async (lessonData) => {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  color: var(--color-text-secondary);
+  color: var(--enhanced-text-secondary);
   height: 100%;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-secondary);
+  opacity: 0.5;
 }
 
 .course-list-items {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   padding: 0.5rem;
 }
 
 .course-list-item {
-  padding: 0.75rem;
-  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
 }
 
 .course-list-item:hover {
@@ -417,14 +648,14 @@ const handleCreateLesson = async (lessonData) => {
 }
 
 .course-list-item-active {
-  background-color: var(--color-bg-selected);
-  color: var(--color-text-selected);
+  background-color: var(--course-list-item-active-bg);
+  color: var(--course-list-item-active-text);
 }
 
 .course-list-item-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .course-list-item-title {
@@ -440,6 +671,7 @@ const handleCreateLesson = async (lessonData) => {
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+  width: fit-content;
 }
 
 .status-published {
@@ -461,30 +693,39 @@ const handleCreateLesson = async (lessonData) => {
 .create-course-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .form-label {
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .form-input,
 .form-textarea,
 .form-select {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-bg-input);
+  border-radius: 6px;
+  background-color: var(--color-input-bg);
   color: var(--color-text-primary);
 }
 
 .form-textarea {
   resize: vertical;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
 }
 </style> 

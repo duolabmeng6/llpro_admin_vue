@@ -4,7 +4,8 @@
       :class="[
         'tree-node',
         node.id === selectedId ? 'tree-node-selected' : '',
-        draggable ? 'tree-node-draggable' : ''
+        draggable ? 'tree-node-draggable' : '',
+        hasChildren ? 'tree-node-has-children' : ''
       ]"
       :draggable="draggable"
       @click="(event) => handleNodeClick(node, event)"
@@ -21,15 +22,24 @@
           class="tree-node-expand-icon"
           @click.stop="toggleNode(node)"
         >
-          <i :class="`fa ${isExpanded ? 'fa-caret-down' : 'fa-caret-right'}`"></i>
+          <i :class="`fa ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'}`"></i>
         </span>
         <span v-else class="tree-node-expand-placeholder"></span>
         
-        <span class="tree-node-icon">
+        <span class="tree-node-icon" :class="`node-type-${node.type}`">
           <i :class="`fa ${getNodeTypeIcon(node)}`"></i>
         </span>
         
         <span class="tree-node-label">{{ node.title || node.label }}</span>
+        
+        <div class="tree-node-actions">
+          <span class="tree-node-action" title="添加" v-if="node.type !== 'lesson'">
+            <i class="fa fa-plus"></i>
+          </span>
+          <span class="tree-node-action" title="编辑">
+            <i class="fa fa-pencil"></i>
+          </span>
+        </div>
       </div>
     </div>
     
@@ -255,45 +265,73 @@ const handleDrop = (node, event) => {
 .tree-node {
   display: flex;
   align-items: center;
-  padding: 4px 0;
+  padding: 6px 0;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  margin: 2px 0;
 }
 
 .tree-node:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-tertiary);
+}
+
+.tree-node:hover .tree-node-actions {
+  opacity: 1;
 }
 
 .tree-node-selected {
-  background-color: rgba(0, 120, 215, 0.1);
+  background-color: var(--modern-accent-color, rgba(0, 120, 215, 0.15));
+  color: var(--modern-accent-text-color, inherit);
 }
 
 .tree-node-content {
   display: flex;
   align-items: center;
   width: 100%;
+  padding-right: 8px;
 }
 
 .tree-node-expand-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.tree-node-expand-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .tree-node-expand-placeholder {
-  width: 20px;
+  width: 24px;
 }
 
 .tree-node-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  margin-right: 4px;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.node-type-course .fa {
+  color: var(--color-primary-600, #4f46e5);
+}
+
+.node-type-chapter .fa {
+  color: var(--color-secondary-600, #0891b2);
+}
+
+.node-type-lesson .fa {
+  color: var(--color-success, #059669);
 }
 
 .tree-node-label {
@@ -301,10 +339,46 @@ const handleDrop = (node, event) => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.9rem;
+}
+
+.tree-node-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tree-node-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.tree-node-action:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--color-text-primary);
 }
 
 .tree-node-children {
   position: relative;
+}
+
+.tree-node-children::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12px;
+  bottom: 12px;
+  width: 1px;
+  background-color: var(--color-border);
 }
 
 /* 拖拽相关样式 */
@@ -318,6 +392,7 @@ const handleDrop = (node, event) => {
 
 .tree-node-drag-over {
   background-color: rgba(0, 120, 215, 0.1);
+  box-shadow: 0 0 0 2px var(--modern-accent-color, rgba(0, 120, 215, 0.5));
 }
 
 .tree-node-drag-over-gap-top {
@@ -327,11 +402,12 @@ const handleDrop = (node, event) => {
 .tree-node-drag-over-gap-top::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: -2px;
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #0078d7;
+  background-color: var(--modern-accent-color, #0078d7);
+  z-index: 1;
 }
 
 .tree-node-drag-over-gap-bottom {
@@ -341,10 +417,11 @@ const handleDrop = (node, event) => {
 .tree-node-drag-over-gap-bottom::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -2px;
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #0078d7;
+  background-color: var(--modern-accent-color, #0078d7);
+  z-index: 1;
 }
 </style> 

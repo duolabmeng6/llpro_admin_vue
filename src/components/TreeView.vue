@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import TreeNode from './TreeNode.vue'; // 新增TreeNode组件引用
 
 const props = defineProps({
@@ -20,7 +20,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['node-click', 'node-toggle', 'node-drag']);
+const emit = defineEmits(['node-click', 'node-toggle', 'node-drag', 'expand-all', 'collapse-all']);
 
 // 展开的节点ID集合
 const expandedNodes = ref(new Set());
@@ -36,6 +36,11 @@ onMounted(() => {
   expandAllNodes();
 });
 
+// 监听数据变化，重新展开所有节点
+watch(() => props.data, () => {
+  expandAllNodes();
+}, { deep: true });
+
 // 展开所有节点
 const expandAllNodes = () => {
   const expandAll = (nodes) => {
@@ -50,6 +55,13 @@ const expandAllNodes = () => {
   };
   
   expandAll(props.data);
+  emit('expand-all');
+};
+
+// 折叠所有节点
+const collapseAllNodes = () => {
+  expandedNodes.value.clear();
+  emit('collapse-all');
 };
 
 // 切换节点展开/折叠状态
@@ -214,6 +226,12 @@ const getNodeTypeIcon = (node) => {
       return 'fa-file';
   }
 };
+
+// 导出方法供父组件调用
+defineExpose({
+  expandAllNodes,
+  collapseAllNodes
+});
 </script>
 
 <template>
