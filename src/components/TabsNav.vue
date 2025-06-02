@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
 import { useMenuStore } from '../stores/menu'
@@ -100,10 +100,37 @@ const scrollToActiveTab = () => {
   }
 }
 
+// 监听activeTab变化，滚动到活动标签
+watch(() => activeTab.value, (newPath) => {
+  if (newPath) {
+    // 当活动标签改变时，确保滚动到该标签
+    setTimeout(scrollToActiveTab, 10)
+  }
+})
+
+// 监听tabs变化，如果有新增标签，滚动到最右侧
+watch(() => tabs.value.length, (newLength, oldLength) => {
+  if (newLength > oldLength) {
+    // 如果标签数量增加，滚动到最右侧
+    setTimeout(() => {
+      if (tabsWrapperRef.value) {
+        // 滚动到最右侧
+        tabsWrapperRef.value.scrollLeft = tabsWrapperRef.value.scrollWidth
+        // 更新滚动箭头状态
+        checkScrollPosition()
+      }
+    }, 10)
+  }
+})
+
 // 监听标签变化和窗口大小变化
 onMounted(() => {
   // 初始检查
-  setTimeout(checkScrollPosition, 100)
+  setTimeout(() => {
+    checkScrollPosition()
+    // 初始滚动到激活标签
+    scrollToActiveTab()
+  }, 100)
   
   // 监听窗口大小变化
   window.addEventListener('resize', checkScrollPosition)
