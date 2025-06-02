@@ -38,7 +38,10 @@ const flattenedMenu = computed(() => {
         icon: item.icon,
         fullTitle: parentTitle ? `${parentTitle} > ${item.title}` : item.title,
         pinyin: titlePinyin,
-        firstLetter: titleFirstLetter
+        firstLetter: titleFirstLetter,
+        external: item.external,
+        externalUrl: item.externalUrl,
+        newWindow: item.newWindow
       }
       
       flattened.push(menuItem)
