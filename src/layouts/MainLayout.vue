@@ -4,15 +4,18 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTabsStore } from '../stores/tabs'
 import { useThemeStore } from '../stores/theme'
+import { useSettingsStore } from '../stores/settings'
 import Sidebar from '../components/Sidebar.vue'
 import Navbar from '../components/Navbar.vue'
 import TabsNav from '../components/TabsNav.vue'
+import SystemSettings from '../components/SystemSettings.vue'
 
 const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const themeStore = useThemeStore()
+const settingsStore = useSettingsStore()
 const route = useRoute()
-const isSidebarOpen = ref(localStorage.getItem('sidebarOpen') !== 'false')
+const isSidebarOpen = ref(true)
 const currentTheme = ref(themeStore.currentTheme)
 
 // 背景动画相关变量
@@ -187,6 +190,22 @@ const toggleSidebar = () => {
 
 // 组件挂载时初始化
 onMounted(async () => {
+  // 初始化设置
+  settingsStore.initSettings()
+  
+  // 从设置或本地存储加载侧边栏状态
+  const savedSidebarState = localStorage.getItem('sidebarOpen')
+  
+  // 如果本地存储中有值，使用本地存储的值
+  if (savedSidebarState !== null) {
+    isSidebarOpen.value = savedSidebarState !== 'false'
+  } else {
+    // 否则使用设置中的默认值
+    isSidebarOpen.value = settingsStore.sidebarDefaultExpanded
+    // 并保存到本地存储
+    localStorage.setItem('sidebarOpen', isSidebarOpen.value)
+  }
+  
   // 初始化背景动画
   initBgAnimation();
   
@@ -453,6 +472,9 @@ const initBgAnimation = () => {
         </router-view>
       </main>
     </div>
+    
+    <!-- 系统设置组件 -->
+    <SystemSettings />
   </div>
 </template>
 
