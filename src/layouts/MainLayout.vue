@@ -445,7 +445,7 @@ const initBgAnimation = () => {
       <TabsNav />
       
       <!-- Page content -->
-      <main class="flex-1 overflow-auto content-bg p-4 sm:p-6 lg:p-8">
+      <main class="flex-1 overflow-auto content-bg p-4">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="out-in">
             <keep-alive>

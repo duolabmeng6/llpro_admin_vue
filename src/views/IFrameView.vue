@@ -88,21 +88,21 @@ watch(() => [route.query.url, route.meta.externalUrl], () => {
 
 <style scoped>
 .iframe-container {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
-  overflow: hidden;
+  min-height: calc(100vh - 120px); /* 减去可能的头部和其他元素高度 */
   display: flex;
   flex-direction: column;
-  flex: 1;
+  overflow: hidden;
 }
 
 .iframe-content {
   width: 100%;
   height: 100%;
-  border: none;
   flex: 1;
-  min-height: calc(100vh - 115px); /* 减去导航栏、选项卡栏的高度 */
+  border: none;
+  background-color: white;
 }
 
 .iframe-loading,
@@ -113,27 +113,23 @@ watch(() => [route.query.url, route.meta.externalUrl], () => {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: var(--color-bg-primary);
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
   z-index: 10;
 }
 
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 5px solid var(--color-bg-tertiary);
-  border-top: 5px solid var(--color-primary-500);
+  border: 5px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border-top-color: var(--color-primary, #4299e1);
+  animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.text-muted {
-  color: var(--color-text-secondary);
 }
 </style> 
