@@ -90,17 +90,31 @@ const toggleSidebar = () => {
 }
 
 // 点击菜单项时，添加或切换到对应的选项卡
-const handleMenuClick = (path, event) => {
+const handleMenuClick = (menuItem, event) => {
   // 阻止事件冒泡
   if (event) {
     event.stopPropagation()
   }
   
-  // 如果已经在当前路由，不做任何操作
-  if (route.path === path) return
+  const path = menuItem.path
   
-  // 导航到指定路径
-  router.push(path)
+  // 如果已经在当前路由，不做任何操作
+  if (route.path === path && !menuItem.external) return
+  
+  // 处理外部链接
+  if (menuItem.external && menuItem.externalUrl) {
+    // 判断是否在新窗口打开
+    if (menuItem.newWindow) {
+      // 在新窗口打开链接
+      window.open(menuItem.externalUrl, '_blank')
+    } else {
+      // 使用更优雅的URL形式 - 直接导航到外部链接的路由
+      router.push(`/external/${menuItem.id}`)
+    }
+  } else {
+    // 导航到指定路径
+    router.push(path)
+  }
 }
 
 // 计算菜单项是否有子菜单
@@ -160,7 +174,7 @@ const sidebarWidth = computed(() => {
         <div
           class="group flex items-center px-3 py-2.5 text-base font-medium rounded-lg cursor-pointer menu-item transition-all duration-300"
           :class="isMenuActive(menuItem) ? 'menu-active' : 'menu-inactive'"
-          @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem.path, $event)"
+          @click="hasChildren(menuItem) ? toggleSubmenu(menuItem.id, $event) : handleMenuClick(menuItem, $event)"
         >
           <div class="flex items-center w-full">
             <i 
@@ -194,7 +208,7 @@ const sidebarWidth = computed(() => {
             :key="childItem.id"
             class="group flex items-center pl-10 pr-2 py-2 text-sm font-medium rounded-lg cursor-pointer submenu-item transition-all duration-300 h-9"
             :class="isSubmenuActive(childItem.path) ? 'submenu-active' : 'submenu-inactive'"
-            @click="handleMenuClick(childItem.path, $event)"
+            @click="handleMenuClick(childItem, $event)"
           >
             <div class="flex items-center w-full">
               <i 

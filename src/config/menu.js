@@ -5,6 +5,9 @@
  * path: 路由路径
  * icon: Font Awesome图标类名
  * children: 子菜单
+ * external: 是否为外部链接
+ * externalUrl: 外部链接地址（当external为true时必须提供）
+ * newWindow: 是否在新窗口打开（默认false，在iframe中打开）
  */
 
 export const menuConfig = [
@@ -107,6 +110,40 @@ export const menuConfig = [
         title: '备份恢复',
         path: '/settings/backup',
         icon: 'fa-solid fa-database'
+      }
+    ]
+  },
+  {
+    id: 'external-links',
+    title: '外部链接',
+    path: '/external',
+    icon: 'fa-solid fa-link',
+    children: [
+      {
+        id: 'vue-docs',
+        title: 'Vue文档',
+        path: '/iframe',
+        icon: 'fa-brands fa-vuejs',
+        external: true,
+        externalUrl: 'https://cn.vuejs.org/',
+        newWindow: true
+      },
+      {
+        id: 'tailwind-docs',
+        title: 'Tailwind文档',
+        path: '/iframe',
+        icon: 'fa-solid fa-wind',
+        external: true,
+        externalUrl: 'https://tailwindcss.com/docs'
+      },
+      {
+        id: 'baidu',
+        title: '必应搜索',
+        path: '/iframe',
+        icon: 'fa-solid fa-search',
+        external: true,
+        externalUrl: 'https://cn.bing.com/',
+        newWindow: true
       }
     ]
   }

@@ -82,8 +82,20 @@ const handleMenuItemClick = (item) => {
   // 如果有子菜单的父项被点击，展开该菜单
   menuStore.expandMenuByPath(item.path)
   
-  // 导航到选中的路径
-  router.push(item.path)
+  // 处理外部链接
+  if (item.external && item.externalUrl) {
+    // 判断是否在新窗口打开
+    if (item.newWindow) {
+      // 在新窗口打开链接
+      window.open(item.externalUrl, '_blank')
+    } else {
+      // 使用更优雅的URL形式 - 直接导航到外部链接的路由
+      router.push(`/external/${item.id}`)
+    }
+  } else {
+    // 导航到选中的路径
+    router.push(item.path)
+  }
   
   // 关闭搜索结果
   showResults.value = false

@@ -1,4 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { menuConfig } from '../config/menu'
+
+// 递归处理菜单配置，提取外部链接
+const extractExternalLinks = (menuItems) => {
+  let routes = []
+  
+  menuItems.forEach(item => {
+    if (item.external && item.externalUrl && !item.newWindow) {
+      // 为每个外部链接创建一个路由别名
+      const path = `/external/${item.id}`
+      routes.push({
+        path,
+        name: `External_${item.id}`,
+        component: () => import('../views/IFrameView.vue'),
+        meta: { 
+          title: item.title, 
+          icon: item.icon,
+          externalUrl: item.externalUrl
+        }
+      })
+    }
+    
+    // 递归处理子菜单
+    if (item.children && item.children.length > 0) {
+      routes = routes.concat(extractExternalLinks(item.children))
+    }
+  })
+  
+  return routes
+}
+
+// 提取外部链接路由
+const externalRoutes = extractExternalLinks(menuConfig)
 
 const routes = [
   {
@@ -87,7 +120,15 @@ const routes = [
         name: 'Backup',
         component: () => import('../views/Backup.vue'),
         meta: { title: '备份恢复', icon: 'settings' }
-      }
+      },
+      {
+        path: 'iframe',
+        name: 'IFrameView',
+        component: () => import('../views/IFrameView.vue'),
+        meta: { title: '外部网页', icon: 'link' }
+      },
+      // 添加所有外部链接路由
+      ...externalRoutes
     ]
   },
   {
@@ -112,8 +153,14 @@ router.beforeEach((to, from, next) => {
   } else if (to.path === '/login' && isAuthenticated) {
     next('/dashboard')
   } else {
-    // 设置页面标题
-    document.title = to.meta.title ? `${to.meta.title} - LL Pro 管理系统` : 'LL Pro 管理系统'
+    // 设置页面标题 - 对于外部链接，使用路由元数据中的标题
+    if (to.meta.externalUrl) {
+      document.title = `${to.meta.title} - LL Pro 管理系统`
+    } else if (to.path === '/iframe' && to.query.title) {
+      document.title = `${decodeURIComponent(to.query.title)} - LL Pro 管理系统`
+    } else {
+      document.title = to.meta.title ? `${to.meta.title} - LL Pro 管理系统` : 'LL Pro 管理系统'
+    }
     next()
   }
 })
