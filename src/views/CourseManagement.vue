@@ -358,7 +358,7 @@ const handleCreateLesson = async (lessonData) => {
   grid-template-columns: 250px 1fr 1.5fr;
   gap: 1rem;
   height: calc(100vh - 150px);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .course-list,
@@ -366,7 +366,8 @@ const handleCreateLesson = async (lessonData) => {
 .detail-panel {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
+  max-height: 100%;
 }
 
 .course-list :deep(.card),
@@ -375,7 +376,7 @@ const handleCreateLesson = async (lessonData) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .course-list :deep(.card) > div:not(.card-header),
@@ -383,6 +384,7 @@ const handleCreateLesson = async (lessonData) => {
 .detail-panel :deep(.card) > div:not(.card-header) {
   flex: 1;
   overflow: auto;
+  max-height: calc(100vh - 220px);
 }
 
 .loading-container,

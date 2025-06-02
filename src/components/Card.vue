@@ -38,7 +38,7 @@ const shadowClasses = {
         {{ subtitle }}
       </p>
     </div>
-    <div :class="{ 'p-4 sm:p-6': !noPadding }" class="overflow-auto">
+    <div :class="{ 'p-4 sm:p-6': !noPadding }" class="overflow-auto flex-1">
       <slot></slot>
     </div>
     <div v-if="$slots.footer" class="px-4 py-4 sm:px-6 bg-tertiary border-t border-theme">

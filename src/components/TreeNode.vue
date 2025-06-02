@@ -42,9 +42,9 @@
         :selected-id="selectedId"
         :draggable="draggable"
         :expanded-nodes="expandedNodes"
-        @node-click="(event) => $emit('node-click', child, event)"
-        @node-toggle="(node) => $emit('node-toggle', node)"
-        @node-drag="(data) => $emit('node-drag', data)"
+        @node-click="handleNodeClick"
+        @node-toggle="toggleNode"
+        @node-drag="(data) => emit('node-drag', data)"
       />
     </div>
   </div>
@@ -118,7 +118,8 @@ const handleNodeClick = (node, event) => {
   if (event && typeof event.stopPropagation === 'function') {
     event.stopPropagation();
   }
-  emit('node-click', node, event);
+  // 确保传递的是原始节点，而不是事件对象
+  emit('node-click', node);
 };
 
 // 开始拖拽
@@ -126,8 +127,10 @@ const handleDragStart = (node, event) => {
   if (!props.draggable) return;
   
   draggedNode.value = node;
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', node.id);
+  if (event && event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', node.id);
+  }
 };
 
 // 拖拽结束
@@ -150,7 +153,9 @@ const handleDragEnd = () => {
 const handleDragEnter = (node, event) => {
   if (!props.draggable || node.id === draggedNode.value?.id) return;
   
-  event.preventDefault();
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
   dragOverNode.value = node;
 };
 
@@ -158,35 +163,39 @@ const handleDragEnter = (node, event) => {
 const handleDragOver = (node, event) => {
   if (!props.draggable || node.id === draggedNode.value?.id) return;
   
-  event.preventDefault();
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
   dragOverNode.value = node;
   
   // 计算拖拽位置
-  const { clientY } = event;
-  const targetElement = event.currentTarget;
-  const { top, height } = targetElement.getBoundingClientRect();
-  
-  // 清除所有拖拽样式
-  targetElement.classList.remove('tree-node-drag-over');
-  targetElement.classList.remove('tree-node-drag-over-gap-top');
-  targetElement.classList.remove('tree-node-drag-over-gap-bottom');
-  
-  const gapHeight = height * 0.2;
-  const gapTop = top + gapHeight;
-  const gapBottom = top + height - gapHeight;
-  
-  if (clientY < gapTop) {
-    // 拖拽到节点上方
-    dropPosition.value = 'before';
-    targetElement.classList.add('tree-node-drag-over-gap-top');
-  } else if (clientY > gapBottom) {
-    // 拖拽到节点下方
-    dropPosition.value = 'after';
-    targetElement.classList.add('tree-node-drag-over-gap-bottom');
-  } else {
-    // 拖拽到节点内部
-    dropPosition.value = 'inside';
-    targetElement.classList.add('tree-node-drag-over');
+  if (event && event.currentTarget) {
+    const { clientY } = event;
+    const targetElement = event.currentTarget;
+    const { top, height } = targetElement.getBoundingClientRect();
+    
+    // 清除所有拖拽样式
+    targetElement.classList.remove('tree-node-drag-over');
+    targetElement.classList.remove('tree-node-drag-over-gap-top');
+    targetElement.classList.remove('tree-node-drag-over-gap-bottom');
+    
+    const gapHeight = height * 0.2;
+    const gapTop = top + gapHeight;
+    const gapBottom = top + height - gapHeight;
+    
+    if (clientY < gapTop) {
+      // 拖拽到节点上方
+      dropPosition.value = 'before';
+      targetElement.classList.add('tree-node-drag-over-gap-top');
+    } else if (clientY > gapBottom) {
+      // 拖拽到节点下方
+      dropPosition.value = 'after';
+      targetElement.classList.add('tree-node-drag-over-gap-bottom');
+    } else {
+      // 拖拽到节点内部
+      dropPosition.value = 'inside';
+      targetElement.classList.add('tree-node-drag-over');
+    }
   }
 };
 
@@ -194,13 +203,18 @@ const handleDragOver = (node, event) => {
 const handleDragLeave = (node, event) => {
   if (!props.draggable) return;
   
-  event.preventDefault();
-  const targetElement = event.currentTarget;
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
   
-  // 清除拖拽样式
-  targetElement.classList.remove('tree-node-drag-over');
-  targetElement.classList.remove('tree-node-drag-over-gap-top');
-  targetElement.classList.remove('tree-node-drag-over-gap-bottom');
+  if (event && event.currentTarget) {
+    const targetElement = event.currentTarget;
+    
+    // 清除拖拽样式
+    targetElement.classList.remove('tree-node-drag-over');
+    targetElement.classList.remove('tree-node-drag-over-gap-top');
+    targetElement.classList.remove('tree-node-drag-over-gap-bottom');
+  }
   
   if (dragOverNode.value?.id === node.id) {
     dragOverNode.value = null;
@@ -212,8 +226,14 @@ const handleDragLeave = (node, event) => {
 const handleDrop = (node, event) => {
   if (!props.draggable || !draggedNode.value || !dropPosition.value) return;
   
-  event.preventDefault();
-  event.stopPropagation();
+  if (event) {
+    if (typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    if (typeof event.stopPropagation === 'function') {
+      event.stopPropagation();
+    }
+  }
   
   // 发出拖拽事件
   emit('node-drag', {

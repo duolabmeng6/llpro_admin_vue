@@ -26,6 +26,13 @@ export const menuConfig = [
     children: []
   },
   {
+    id: 'course-management',
+    title: '课程管理',
+    path: '/courses',
+    icon: 'fa-solid fa-book',
+    children: []
+  },
+  {
     id: 'examples',
     title: '示例',
     path: '/examples',

@@ -521,6 +521,8 @@ const addLesson = () => {
 <style scoped>
 .detail-panel {
   padding: 1rem 0;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .loading-container,
@@ -613,5 +615,10 @@ const addLesson = () => {
   gap: 0.5rem;
   margin-top: 1rem;
   justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--color-bg-secondary);
+  padding: 0.5rem 0;
+  z-index: 1;
 }
 </style> 
