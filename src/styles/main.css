@@ -491,4 +491,32 @@ html[data-theme="cyberpunk"] .gradient-text {
 
 html[data-theme="green"] .gradient-text {
   color: var(--color-green-600);
+}
+
+/* 确保滚动条正确显示 */
+.overflow-auto {
+  overflow: auto !important;
+}
+
+/* 确保flex布局中的内容能够正确计算高度 */
+.flex-1 {
+  flex: 1 1 0% !important;
+  min-height: 0;
+}
+
+/* 确保页面组件能够正确适应父容器高度 */
+.router-view-container {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 页面组件默认样式 */
+.page-component {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 } 

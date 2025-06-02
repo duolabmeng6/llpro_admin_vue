@@ -56,6 +56,18 @@ const routes = [
         meta: { title: '仪表盘', icon: 'dashboard' }
       },
       {
+        path: 'profile',
+        name: 'UserProfile',
+        component: () => import('../views/UserProfile.vue'),
+        meta: { title: '个人资料', icon: 'user' }
+      },
+      {
+        path: 'notifications',
+        name: 'Notifications',
+        component: () => import('../views/Notifications.vue'),
+        meta: { title: '通知中心', icon: 'bell' }
+      },
+      {
         path: 'components',
         name: 'ComponentsGallery',
         component: () => import('../views/ComponentsGallery.vue'),
@@ -93,7 +105,7 @@ const routes = [
       },
       {
         path: 'users/profile',
-        name: 'UserProfile',
+        name: 'UserProfileAdmin',
         component: () => import('../views/UserProfile.vue'),
         meta: { title: '用户档案', icon: 'users' }
       },

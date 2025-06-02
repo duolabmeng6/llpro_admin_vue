@@ -91,7 +91,7 @@ watch(() => [route.query.url, route.meta.externalUrl], () => {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 120px); /* 减去可能的头部和其他元素高度 */
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;

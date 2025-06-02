@@ -433,7 +433,7 @@ const initBgAnimation = () => {
     
     <!-- Main content -->
     <div 
-      class="flex-1 flex flex-col overflow-hidden"
+      class="flex-1 flex flex-col overflow-hidden h-full"
       :style="{ marginLeft: isSidebarOpen ? '16rem' : '4rem' }"
       style="transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
     >
@@ -446,11 +446,11 @@ const initBgAnimation = () => {
       <TabsNav />
       
       <!-- Page content -->
-      <main class="flex-1 overflow-auto content-bg p-4">
+      <main class="flex-1 overflow-auto content-bg p-4 min-h-0">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="out-in">
             <keep-alive>
-              <component :is="Component" />
+              <component :is="Component" class="router-view-container" />
             </keep-alive>
           </transition>
         </router-view>
@@ -468,8 +468,13 @@ html, body {
 }
 
 #app {
-  height: 100%;
+  height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.main-container {
+  height: 100vh;
+  display: flex;
 }
 
 /* 主题对应的内容背景 */

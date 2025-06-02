@@ -40,7 +40,7 @@ const menuItems = [
     id: 'settings',
     label: '账户设置',
     icon: 'fa-cog',
-    action: () => router.push('/settings')
+    action: () => router.push('/profile?tab=account')
   },
   {
     id: 'notifications',

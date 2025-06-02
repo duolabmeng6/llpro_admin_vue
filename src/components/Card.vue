@@ -29,7 +29,7 @@ const shadowClasses = {
 </script>
 
 <template>
-  <div class="bg-card rounded-lg overflow-hidden" :class="shadowClasses[shadow]">
+  <div class="bg-card rounded-lg" :class="shadowClasses[shadow]">
     <div v-if="title || subtitle" class="px-4 py-5 sm:px-6 border-b border-theme">
       <h3 v-if="title" class="text-lg leading-6 font-medium text-primary">
         {{ title }}
@@ -38,7 +38,7 @@ const shadowClasses = {
         {{ subtitle }}
       </p>
     </div>
-    <div :class="{ 'p-4 sm:p-6': !noPadding }">
+    <div :class="{ 'p-4 sm:p-6': !noPadding }" class="overflow-auto">
       <slot></slot>
     </div>
     <div v-if="$slots.footer" class="px-4 py-4 sm:px-6 bg-tertiary border-t border-theme">
