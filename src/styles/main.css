@@ -7,6 +7,10 @@
 @import "./themes/cyberpunk.css";
 @import "./themes/green.css";  /* 绿色主题 */
 
+/* 导入组件样式文件 */
+@import "./components/forms.css";
+@import "./components/login.css";  /* 登录页面样式 */
+
 @layer theme {
   /* 主要颜色 - Primary (蓝色系) - 使用 OKLCH 色彩空间 */
   :root {

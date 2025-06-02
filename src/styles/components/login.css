@@ -1,0 +1,363 @@
+/* 登录页面样式 */
+
+/* 登录容器 */
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* 登录卡片包装器 */
+.login-card-wrapper {
+  max-width: 28rem;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+/* 主题切换按钮包装器 */
+.theme-switcher-wrapper {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 20;
+}
+
+/* 登录卡片 */
+.login-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 15px var(--color-shadow);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s var(--theme-transition-timing);
+  
+  /* 玻璃态效果 */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* 赛博朋克主题特殊效果 */
+html[data-theme='cyberpunk'] .login-card {
+  border-color: var(--color-neon-purple);
+  box-shadow: 0 0 20px var(--color-neon-purple);
+}
+
+html[data-theme='cyberpunk'] .login-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border-radius: inherit;
+  background: var(--title-gradient);
+  background-size: 200% 200%;
+  z-index: -1;
+  animation: gradient-shift 5s ease infinite;
+  filter: blur(8px);
+  opacity: 0.7;
+}
+
+/* 登录头部 */
+.login-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* 登录标题 */
+.login-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: var(--title-glow);
+}
+
+/* 标题渐变文本 */
+.title-gradient {
+  background-image: var(--title-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: gradient-shift 5s ease infinite;
+}
+
+/* 登录副标题 */
+.login-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* 登录表单 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 表单字段容器 */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 单个表单字段 */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* 字段标签 */
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* 输入框 */
+.field-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  border: 1px solid var(--color-input-border);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent);
+}
+
+.field-input::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+/* 登录错误信息 */
+.login-error {
+  background-color: color-mix(in oklab, red 15%, var(--color-bg-primary));
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  color: color-mix(in oklab, red 90%, white);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* 登录按钮 */
+.login-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  height: 2.5rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  background-image: var(--title-gradient);
+  background-size: 200% 200%;
+  animation: gradient-shift 5s ease infinite;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px var(--color-shadow);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px var(--color-shadow);
+}
+
+/* 按钮悬停光效 */
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+  z-index: 0;
+}
+
+.login-btn:hover::before {
+  left: 100%;
+  transition: 0.5s;
+}
+
+/* 登录演示信息 */
+.login-demo-info {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* 背景动画 */
+.login-bg-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 深色主题背景 */
+html[data-theme='dark'] .login-bg-animation {
+  background: radial-gradient(ellipse at bottom, var(--color-bg-tertiary) 0%, var(--color-bg-primary) 100%);
+}
+
+html[data-theme='dark'] .login-bg-animation::before {
+  content: '';
+  position: absolute;
+  width: 200vw;
+  height: 200vh;
+  top: -100vh;
+  left: -100vw;
+  background-image: 
+    radial-gradient(circle, color-mix(in oklab, white 80%, transparent) 1px, transparent 1px),
+    radial-gradient(circle, color-mix(in oklab, white 60%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  transform: rotate(45deg);
+  opacity: 0.1;
+  animation: stars-move 100s linear infinite;
+}
+
+/* 浅色主题背景 */
+html[data-theme='light'] .login-bg-animation {
+  background: radial-gradient(ellipse at top, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+}
+
+html[data-theme='light'] .login-bg-animation::before {
+  content: '';
+  position: absolute;
+  width: 200vw;
+  height: 200vh;
+  top: -100vh;
+  left: -100vw;
+  background-image: 
+    linear-gradient(135deg, color-mix(in oklab, var(--color-bg-tertiary) 80%, transparent) 25%, transparent 25%),
+    linear-gradient(225deg, color-mix(in oklab, var(--color-bg-tertiary) 80%, transparent) 25%, transparent 25%),
+    linear-gradient(315deg, color-mix(in oklab, var(--color-bg-tertiary) 80%, transparent) 25%, transparent 25%),
+    linear-gradient(45deg, color-mix(in oklab, var(--color-bg-tertiary) 80%, transparent) 25%, transparent 25%);
+  background-size: 60px 60px;
+  opacity: 0.6;
+  transform: rotate(5deg);
+  animation: light-pattern-move 120s linear infinite;
+}
+
+/* 赛博朋克主题背景 */
+html[data-theme='cyberpunk'] .login-bg-animation {
+  background: radial-gradient(ellipse at bottom, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+}
+
+html[data-theme='cyberpunk'] .login-bg-animation::before {
+  content: '';
+  position: absolute;
+  width: 200vw;
+  height: 200vh;
+  top: -100vh;
+  left: -100vw;
+  background: 
+    linear-gradient(90deg, transparent 0%, var(--color-neon-purple-bg) 50%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, var(--color-neon-cyan-bg) 50%, transparent 100%);
+  background-size: 100px 100px;
+  transform: rotate(45deg);
+  opacity: 0.3;
+  animation: cyber-grid-move 20s linear infinite;
+}
+
+html[data-theme='cyberpunk'] .login-bg-animation::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, var(--color-neon-purple-bg), transparent 40%),
+    radial-gradient(circle at 80% 20%, var(--color-neon-cyan-bg), transparent 40%);
+  opacity: 0.8;
+}
+
+/* 绿色主题背景 */
+html[data-theme='green'] .login-bg-animation {
+  background: radial-gradient(ellipse at center, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+}
+
+html[data-theme='green'] .login-bg-animation::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(45deg, color-mix(in oklab, var(--color-accent) 10%, transparent) 25%, transparent 25%),
+    linear-gradient(135deg, color-mix(in oklab, var(--color-accent) 10%, transparent) 25%, transparent 25%);
+  background-size: 80px 80px;
+  opacity: 0.4;
+  animation: eco-flow 15s ease infinite;
+}
+
+/* 动画关键帧 */
+@keyframes stars-move {
+  0% {
+    transform: rotate(45deg) translateY(0);
+  }
+  100% {
+    transform: rotate(45deg) translateY(1000px);
+  }
+}
+
+@keyframes light-pattern-move {
+  0% {
+    transform: rotate(5deg) translateY(0);
+  }
+  100% {
+    transform: rotate(5deg) translateY(1000px);
+  }
+}
+
+@keyframes cyber-grid-move {
+  0% {
+    transform: rotate(45deg) translateY(0);
+  }
+  100% {
+    transform: rotate(45deg) translateY(100px);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes eco-flow {
+  0% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+  100% { opacity: 0.3; transform: scale(1); }
+} 
