@@ -39,10 +39,7 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// 挂载应用
-app.mount('#app')
-
-// 初始化主题
+// 初始化主题（在挂载前，防止闪烁 FOUC）
 try {
   const themeStore = useThemeStore()
   themeStore.initTheme()
@@ -50,6 +47,9 @@ try {
 } catch (error) {
   console.error('初始化主题失败:', error)
 }
+
+// 挂载应用
+app.mount('#app')
 
 //## markdown editor
 import { config } from 'md-editor-v3';
