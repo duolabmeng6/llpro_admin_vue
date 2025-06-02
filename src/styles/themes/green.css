@@ -49,6 +49,11 @@ html[data-theme='green'] {
   --color-button-secondary-bg: oklch(45% 0.15 180);
   --color-button-secondary-text: white;
   --color-button-secondary-hover-bg: oklch(40% 0.18 180);
+  
+  /* 标题特定样式 */
+  --title-glow: 0 2px 6px rgba(0, 100, 0, 0.15);
+  --title-gradient: linear-gradient(90deg, oklch(40% 0.18 145), oklch(45% 0.15 180));
+  --title-decoration-gradient: linear-gradient(90deg, oklch(40% 0.18 145), transparent, oklch(45% 0.15 180));
 }
 
 /* 绿色主题特有样式 */

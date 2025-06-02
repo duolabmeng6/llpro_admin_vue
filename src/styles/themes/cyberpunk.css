@@ -71,6 +71,11 @@ html[data-theme='cyberpunk'] {
   /* 霓虹效果 */
   --neon-glow: 0 0 10px oklch(70% 0.3 320), 0 0 20px oklch(70% 0.3 320);
   --neon-text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  
+  /* 标题特定样式 */
+  --title-glow: 0 0 8px var(--color-neon-purple), 0 0 15px var(--color-neon-cyan);
+  --title-gradient: linear-gradient(90deg, var(--color-neon-purple), var(--color-neon-cyan));
+  --title-decoration-gradient: linear-gradient(90deg, var(--color-neon-purple), transparent, var(--color-neon-cyan));
 }
 
 /* 赛博朋克特定效果 */

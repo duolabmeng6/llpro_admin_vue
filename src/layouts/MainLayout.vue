@@ -61,34 +61,6 @@ watch(() => route.path, (newPath) => {
   }
 }, { immediate: true })
 
-// 强制重新应用当前主题
-const reapplyCurrentTheme = async () => {
-  try {
-    const theme = themeStore.currentTheme;
-    console.log('管理面板重新应用当前主题:', theme);
-    
-    // 确保主题CSS文件被正确加载
-    const themeConfig = themeStore.availableThemes.find(t => t.id === theme);
-    if (themeConfig && themeConfig.file) {
-      // 引入主题加载工具
-      const { loadTheme } = await import('../utils/themeLoader');
-      await loadTheme(themeConfig.file);
-      
-      // 强制重新应用主题变量
-      document.documentElement.style.setProperty('--theme-transition', 'all 0.3s ease');
-      setTimeout(() => {
-        document.documentElement.style.removeProperty('--theme-transition');
-      }, 300);
-    } else {
-      console.warn('主题配置不完整或未找到:', theme);
-    }
-    
-    console.log('主题重新应用成功');
-  } catch (error) {
-    console.error('重新应用主题时出错:', error);
-  }
-}
-
 // 平滑过渡粒子颜色
 const transitionParticleColors = () => {
   // 创建过渡动画
@@ -217,18 +189,15 @@ const toggleSidebar = () => {
 onMounted(async () => {
   console.log('MainLayout组件挂载，初始化主题...');
   
-  // 重新应用当前主题
-  await reapplyCurrentTheme();
-  
   // 初始化背景动画
   initBgAnimation();
   
   // 定期检查主题是否正确应用（防止某些情况下主题类名丢失）
   const themeCheckInterval = setInterval(() => {
-    const currentThemeClass = document.documentElement.getAttribute('data-theme');
-    if (currentThemeClass !== themeStore.currentTheme) {
+    const currentThemeAttr = document.documentElement.getAttribute('data-theme');
+    if (currentThemeAttr !== themeStore.currentTheme) {
       console.warn('检测到主题不一致，重新应用主题');
-      themeStore.updateHtmlThemeClass(themeStore.currentTheme);
+      themeStore.applyTheme(themeStore.currentTheme);
     }
   }, 5000);
   

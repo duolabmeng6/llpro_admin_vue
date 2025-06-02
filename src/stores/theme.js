@@ -180,6 +180,7 @@ export const useThemeStore = defineStore('theme', () => {
     getCurrentTheme,
     initTheme,
     setTheme,
-    setupSystemThemeListener
+    setupSystemThemeListener,
+    applyTheme
   }
 })

@@ -49,4 +49,9 @@ html[data-theme='light'] {
   --color-button-secondary-bg: var(--color-secondary-600);
   --color-button-secondary-text: white;
   --color-button-secondary-hover-bg: var(--color-secondary-700);
+  
+  /* 标题特定样式 */
+  --title-glow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --title-gradient: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500), var(--color-secondary-600));
+  --title-decoration-gradient: linear-gradient(90deg, var(--color-primary-600), var(--color-secondary-600));
 }

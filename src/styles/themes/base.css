@@ -55,6 +55,11 @@
     /* 主题过渡 */
     --theme-transition-duration: 0.3s;
     --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* 标题特定样式 - 默认 */
+    --title-glow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --title-gradient: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500), var(--color-secondary-600));
+    --title-decoration-gradient: linear-gradient(90deg, var(--color-primary-600), var(--color-secondary-600));
   }
 }
 
@@ -68,6 +73,35 @@ body,
   transition-property: background-color, color, border-color, box-shadow;
   transition-duration: var(--theme-transition-duration);
   transition-timing-function: var(--theme-transition-timing);
+}
+
+/* 全局动画定义 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+@keyframes scanner-line {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes cyberpunk-glow {
+  0% { text-shadow: 0 0 5px var(--color-neon-purple, rgba(236, 64, 255, 0.8)), 0 0 10px var(--color-accent, rgba(236, 64, 255, 0.6)); }
+  50% { text-shadow: 0 0 10px var(--color-neon-cyan, rgba(64, 224, 255, 0.9)), 0 0 20px var(--color-neon-cyan, rgba(64, 224, 255, 0.7)), 0 0 30px var(--color-neon-purple, rgba(236, 64, 255, 0.5)); }
+  100% { text-shadow: 0 0 5px var(--color-neon-purple, rgba(236, 64, 255, 0.8)), 0 0 10px var(--color-accent, rgba(236, 64, 255, 0.6)); }
+}
+
+@keyframes eco-flow {
+  0% { opacity: 0.6; transform: scaleX(0.95); }
+  50% { opacity: 1; transform: scaleX(1.05); }
+  100% { opacity: 0.6; transform: scaleX(0.95); }
 }
 
 /* 基础主题工具类 */
