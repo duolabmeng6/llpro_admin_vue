@@ -764,7 +764,6 @@ const addLesson = () => {
   display: flex;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--color-border, #e5e7eb);
-  background-color: var(--color-bg-secondary, #f9fafb);
 }
 
 .detail-panel-title {

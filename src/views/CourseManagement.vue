@@ -670,13 +670,7 @@ const handlePageChange = (page) => {
 }
 
 /* 详情面板样式覆盖 */
-:deep(.detail-panel-header-main) {
-  /* background-color: var(--color-bg-secondary, #f9fafb); - 已移除 */
-}
-
-:root.dark :deep(.detail-panel-header-main) {
-  /* background-color: var(--color-bg-secondary, #111827); - 已移除 */
-}
+/* 删除已注释的样式代码 */
 
 /* 课程列表样式 */
 .course-list-container {
