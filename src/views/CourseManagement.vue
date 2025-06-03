@@ -321,7 +321,7 @@ const handlePageChange = (page) => {
       <div class="flex flex-col h-full overflow-hidden border-r border-gray-200 dark:border-gray-700 w-1/5 min-w-[250px]">
         <div class="course-list-container h-full flex flex-col">
           <!-- 顶部固定区域 -->
-          <div class="course-list-header flex flex-col gap-3 p-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10">
+          <div class="course-list-header flex flex-col gap-3 p-3 border-b border-gray-200 dark:border-gray-700 z-10">
             <div class="w-full">
               <Button @click="showCreateCourseModal = true" variant="primary" size="sm" class="w-full flex items-center justify-center">
                 <i class="fa fa-plus mr-2"></i>创建课程
@@ -331,7 +331,7 @@ const handlePageChange = (page) => {
               <input 
                 type="text" 
                 placeholder="搜索课程..." 
-                class="w-full py-2 pl-3 pr-8 text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full py-2 pl-3 pr-8 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <i class="fa fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
@@ -360,8 +360,8 @@ const handlePageChange = (page) => {
                   :class="[
                     'flex items-start p-4 rounded-lg cursor-pointer transition-all duration-200 border',
                     currentCourseId === course.id 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm' 
-                      : 'bg-white dark:bg-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-gray-750 hover:border-gray-200 dark:hover:border-gray-700 hover:-translate-y-0.5 hover:shadow-sm'
+                      ? 'border-blue-200 dark:border-blue-800 shadow-sm' 
+                      : 'border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:-translate-y-0.5 hover:shadow-sm'
                   ]"
                   @click="selectCourse(course.id)"
                 >
@@ -379,8 +379,8 @@ const handlePageChange = (page) => {
                         :class="[
                           'ml-2 px-2 py-0.5 text-xs font-medium rounded-full',
                           course.status === 'published' 
-                            ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                            : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                            ? 'text-green-700 dark:text-green-400' 
+                            : 'text-yellow-700 dark:text-yellow-400'
                         ]"
                       >
                         {{ course.status === 'published' ? '已发布' : '草稿' }}
@@ -393,7 +393,7 @@ const handlePageChange = (page) => {
           </div>
           
           <!-- 底部固定区域，包含分页功能 -->
-          <div v-if="totalItems > pageSize" class="course-list-footer px-3 pt-2 pb-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10">
+          <div v-if="totalItems > pageSize" class="course-list-footer px-3 pt-2 pb-3 border-t border-gray-200 dark:border-gray-700 z-10">
             <Pagination
               :current-page="currentPage"
               :total-pages="totalPages"
@@ -415,9 +415,9 @@ const handlePageChange = (page) => {
         <!-- 内容视图：课程结构与详情 -->
         <template v-else-if="mainAreaViewMode === 'content'">
           <!-- 中间：课程结构 -->
-          <div class="w-[35%] border-r border-gray-200 dark:border-gray-700 h-full bg-white dark:bg-gray-900">
+          <div class="w-[35%] border-r border-gray-200 dark:border-gray-700 h-full">
             <div class="flex flex-col h-full overflow-hidden">
-              <div class="px-4 py-4 border-b border-gray-200  dark:border-gray-700 flex justify-between items-center  dark:bg-gray-800">
+              <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 overflow-hidden text-ellipsis whitespace-nowrap">课程结构</h3>
                 <div class="flex gap-2">
                   <Button size="sm" variant="outline" @click="toggleTreeExpansion" class="min-w-[100px]">
@@ -497,7 +497,7 @@ const handlePageChange = (page) => {
             id="course-title"
             v-model="newCourseData.title"
             type="text"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入课程标题"
             required
           />
@@ -508,7 +508,7 @@ const handlePageChange = (page) => {
           <textarea
             id="course-description"
             v-model="newCourseData.description"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
             placeholder="请输入课程描述"
             rows="4"
           ></textarea>
@@ -519,7 +519,7 @@ const handlePageChange = (page) => {
           <select
             id="course-status"
             v-model="newCourseData.status"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="draft">草稿</option>
             <option value="published">已发布</option>
@@ -541,7 +541,7 @@ const handlePageChange = (page) => {
             id="chapter-title"
             v-model="newChapterData.title"
             type="text"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入章节标题"
             required
           />
@@ -552,7 +552,7 @@ const handlePageChange = (page) => {
           <textarea
             id="chapter-description"
             v-model="newChapterData.description"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
             placeholder="请输入章节描述"
             rows="4"
           ></textarea>
@@ -573,7 +573,7 @@ const handlePageChange = (page) => {
             id="lesson-title"
             v-model="newLessonData.title"
             type="text"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入小节标题"
             required
           />
@@ -584,7 +584,7 @@ const handlePageChange = (page) => {
           <select
             id="lesson-type"
             v-model="newLessonData.type"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="video">视频</option>
             <option value="text">文本</option>
@@ -598,7 +598,7 @@ const handlePageChange = (page) => {
             id="lesson-video-url"
             v-model="newLessonData.videoUrl"
             type="text"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入视频URL"
           />
         </div>
@@ -610,7 +610,7 @@ const handlePageChange = (page) => {
             v-model.number="newLessonData.duration"
             type="number"
             min="0"
-            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入小节时长"
           />
         </div>
@@ -625,10 +625,10 @@ const handlePageChange = (page) => {
           :key="toast.id" 
           :class="[
             'flex items-center p-3 rounded-lg shadow-md min-w-[250px] max-w-[350px]', 
-            toast.type === 'success' ? 'bg-white dark:bg-gray-800 border-l-4 border-l-green-500' : 
-            toast.type === 'error' ? 'bg-white dark:bg-gray-800 border-l-4 border-l-red-500' : 
-            toast.type === 'warning' ? 'bg-white dark:bg-gray-800 border-l-4 border-l-yellow-500' : 
-            'bg-white dark:bg-gray-800 border-l-4 border-l-blue-500'
+            toast.type === 'success' ? 'border-l-4 border-l-green-500' : 
+            toast.type === 'error' ? 'border-l-4 border-l-red-500' : 
+            toast.type === 'warning' ? 'border-l-4 border-l-yellow-500' : 
+            'border-l-4 border-l-blue-500'
           ]"
         >
           <div class="mr-3 text-lg">
@@ -671,11 +671,11 @@ const handlePageChange = (page) => {
 
 /* 详情面板样式覆盖 */
 :deep(.detail-panel-header-main) {
-  background-color: var(--color-bg-secondary, #f9fafb);
+  /* background-color: var(--color-bg-secondary, #f9fafb); - 已移除 */
 }
 
 :root.dark :deep(.detail-panel-header-main) {
-  background-color: var(--color-bg-secondary, #111827);
+  /* background-color: var(--color-bg-secondary, #111827); - 已移除 */
 }
 
 /* 课程列表样式 */
@@ -683,7 +683,7 @@ const handlePageChange = (page) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--color-bg-primary, #ffffff);
+  /* background-color: var(--color-bg-primary, #ffffff); - 已移除 */
 }
 
 .course-list-header {
@@ -711,21 +711,21 @@ const handlePageChange = (page) => {
 }
 
 .course-list-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  /* background-color: rgba(0, 0, 0, 0.2); - 已移除 */
   border-radius: 3px;
 }
 
 .course-list-scroll::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.05);
+  /* background-color: rgba(0, 0, 0, 0.05); - 已移除 */
 }
 
 /* 暗色模式滚动条 */
 :root.dark .course-list-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
+  /* background-color: rgba(255, 255, 255, 0.2); - 已移除 */
 }
 
 :root.dark .course-list-scroll::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.05);
+  /* background-color: rgba(255, 255, 255, 0.05); - 已移除 */
 }
 
 /* 课程结构树视图容器 */
@@ -750,20 +750,20 @@ const handlePageChange = (page) => {
 }
 
 .tree-view-container :deep(.tree-container::-webkit-scrollbar-thumb) {
-  background-color: rgba(0, 0, 0, 0.2);
+  /* background-color: rgba(0, 0, 0, 0.2); - 已移除 */
   border-radius: 3px;
 }
 
 .tree-view-container :deep(.tree-container::-webkit-scrollbar-track) {
-  background-color: rgba(0, 0, 0, 0.05);
+  /* background-color: rgba(0, 0, 0, 0.05); - 已移除 */
 }
 
 /* 暗色模式滚动条 */
 :root.dark .tree-view-container :deep(.tree-container::-webkit-scrollbar-thumb) {
-  background-color: rgba(255, 255, 255, 0.2);
+  /* background-color: rgba(255, 255, 255, 0.2); - 已移除 */
 }
 
 :root.dark .tree-view-container :deep(.tree-container::-webkit-scrollbar-track) {
-  background-color: rgba(255, 255, 255, 0.05);
+  /* background-color: rgba(255, 255, 255, 0.05); - 已移除 */
 }
 </style> 

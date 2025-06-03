@@ -825,7 +825,6 @@ const addLesson = () => {
 }
 
 .detail-panel-tab.active {
-  background-color: var(--modern-accent-color, rgba(0, 120, 215, 0.15));
   color: var(--color-text-primary);
   font-weight: 500;
 }
@@ -852,17 +851,11 @@ const addLesson = () => {
 
 /* 暗色模式适配 */
 :root.dark .detail-panel-container {
-  background-color: var(--color-bg-primary, #1f2937);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 :root.dark .detail-panel-header-main {
-  background-color: var(--color-bg-secondary, #111827);
   border-bottom-color: var(--color-border, #374151);
-}
-
-:root.dark .detail-panel-title {
-  color: var(--color-text-primary, #f9fafb);
 }
 
 .loading-container,
@@ -912,7 +905,6 @@ const addLesson = () => {
 
 .no-cover {
   padding: 1rem;
-  background-color: var(--color-bg-tertiary);
   border-radius: 4px;
   text-align: center;
   color: var(--color-text-secondary);
@@ -927,17 +919,14 @@ const addLesson = () => {
 }
 
 .type-video {
-  background-color: var(--color-primary-100, rgba(79, 70, 229, 0.1));
   color: var(--color-primary-600, #4f46e5);
 }
 
 .type-text {
-  background-color: var(--color-secondary-100, rgba(8, 145, 178, 0.1));
   color: var(--color-secondary-600, #0891b2);
 }
 
 .type-quiz {
-  background-color: var(--color-success-bg, rgba(5, 150, 105, 0.1));
   color: var(--color-success, #059669);
 }
 
