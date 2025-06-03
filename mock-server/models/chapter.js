@@ -19,6 +19,15 @@ let chapters = [
     order: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
+  },
+  {
+    id: uuidv4(),
+    courseId: '1', // 这里需要替换为实际的课程ID
+    title: '第三章：高级技术',
+    description: '深入学习前端高级技术',
+    order: 3,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
 ];
 
@@ -83,17 +92,28 @@ const ChapterModel = {
 
   // 重新排序章节
   reorder: (reorderData) => {
+    console.log('章节排序 - 接收到的数据:', reorderData);
+    
     // reorderData格式: [{id: '1', order: 2}, {id: '2', order: 1}]
+    const updatedChapters = [];
+    
     reorderData.forEach(item => {
       const chapter = chapters.find(c => c.id === item.id);
       if (chapter) {
+        console.log(`更新章节 ${chapter.id} 的顺序: ${chapter.order} -> ${item.order}`);
         chapter.order = item.order;
         chapter.updatedAt = new Date().toISOString();
+        updatedChapters.push({ ...chapter });
+      } else {
+        console.warn(`未找到章节: ${item.id}`);
       }
     });
-    return chapters.filter(chapter => 
-      reorderData.some(item => item.id === chapter.id)
-    );
+    
+    // 重新排序所有章节
+    chapters.sort((a, b) => a.order - b.order);
+    console.log('排序后的所有章节:', chapters.map(c => ({ id: c.id, order: c.order })));
+    
+    return updatedChapters;
   }
 };
 

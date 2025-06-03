@@ -486,22 +486,72 @@ export const useCourseStore = defineStore('course', {
       this.clearError();
       
       try {
+        console.log('开始重排序章节:', reorderData);
+        
+        // 验证数据格式
+        if (!reorderData || (Array.isArray(reorderData) && reorderData.length === 0)) {
+          throw new Error('排序数据不能为空');
+        }
+        
+        // 记录排序前的章节顺序
+        if (this.courseStructure && this.courseStructure.chapters) {
+          console.log('排序前的章节顺序:', this.courseStructure.chapters.map(c => ({
+            id: c.id,
+            title: c.title,
+            order: c.order
+          })));
+        }
+        
+        // 调用API进行排序
         const updatedChapters = await ChapterAPI.reorderChapters(reorderData);
+        console.log('章节排序API返回结果:', updatedChapters);
+        
+        // 验证API返回结果
+        if (!updatedChapters || (Array.isArray(updatedChapters) && updatedChapters.length === 0)) {
+          console.warn('章节排序API返回结果为空，保持原有顺序');
+          return [];
+        }
         
         // 更新课程结构中的章节顺序
         if (this.courseStructure && this.courseStructure.chapters) {
-          for (const updatedChapter of updatedChapters) {
+          // 检查返回的updatedChapters结构
+          let chaptersToUpdate = updatedChapters;
+          
+          // 如果API返回的是包含chapters数组的对象，提取chapters数组
+          if (!Array.isArray(updatedChapters) && updatedChapters.chapters) {
+            chaptersToUpdate = updatedChapters.chapters;
+            console.log('从API响应中提取chapters数组:', chaptersToUpdate);
+          }
+          
+          // 处理单个对象情况
+          if (!Array.isArray(chaptersToUpdate)) {
+            chaptersToUpdate = [chaptersToUpdate];
+            console.log('将单个章节对象转换为数组:', chaptersToUpdate);
+          }
+          
+          // 更新各章节的顺序
+          for (const updatedChapter of chaptersToUpdate) {
             const index = this.courseStructure.chapters.findIndex(
               chapter => chapter.id === updatedChapter.id
             );
             if (index !== -1) {
+              console.log(`更新本地章节 ${updatedChapter.id} 的顺序: ${this.courseStructure.chapters[index].order} -> ${updatedChapter.order}`);
               this.courseStructure.chapters[index].order = updatedChapter.order;
+            } else {
+              console.warn(`未找到要更新的章节: ${updatedChapter.id}`);
             }
           }
+          
+          // 重新排序章节列表
+          this.courseStructure.chapters.sort((a, b) => a.order - b.order);
+          console.log('章节重排序后的顺序:', this.courseStructure.chapters.map(c => ({ id: c.id, title: c.title, order: c.order })));
+        } else {
+          console.warn('课程结构不完整或为空，无法更新章节顺序');
         }
         
         return updatedChapters;
       } catch (error) {
+        console.error('重新排序章节失败:', error);
         this.setError(error.message || '重新排序章节失败');
         throw error;
       } finally {
@@ -515,27 +565,95 @@ export const useCourseStore = defineStore('course', {
       this.clearError();
       
       try {
+        console.log('开始重排序小节:', reorderData);
+        
+        // 验证数据格式
+        if (!reorderData || (Array.isArray(reorderData) && reorderData.length === 0)) {
+          throw new Error('排序数据不能为空');
+        }
+        
+        // 找到要排序的小节所在章节，记录排序前的状态
+        if (this.courseStructure && this.courseStructure.chapters) {
+          let foundChapter = null;
+          let lessonIdToFind = Array.isArray(reorderData) ? reorderData[0].id : reorderData.id;
+          
+          for (const chapter of this.courseStructure.chapters) {
+            if (chapter.lessons && chapter.lessons.some(l => l.id === lessonIdToFind)) {
+              foundChapter = chapter;
+              break;
+            }
+          }
+          
+          if (foundChapter) {
+            console.log(`排序前的小节顺序 (章节 ${foundChapter.id}):`, foundChapter.lessons.map(l => ({
+              id: l.id,
+              title: l.title,
+              order: l.order
+            })));
+          }
+        }
+        
+        // 调用API进行排序
         const updatedLessons = await LessonAPI.reorderLessons(reorderData);
+        console.log('小节排序API返回结果:', updatedLessons);
+        
+        // 验证API返回结果
+        if (!updatedLessons || (Array.isArray(updatedLessons) && updatedLessons.length === 0)) {
+          console.warn('小节排序API返回结果为空，保持原有顺序');
+          return [];
+        }
         
         // 更新课程结构中的小节顺序
         if (this.courseStructure && this.courseStructure.chapters) {
-          for (const updatedLesson of updatedLessons) {
+          // 检查返回的updatedLessons结构
+          let lessonsToUpdate = updatedLessons;
+          
+          // 如果API返回的是包含lessons数组的对象，提取lessons数组
+          if (!Array.isArray(updatedLessons) && updatedLessons.lessons) {
+            lessonsToUpdate = updatedLessons.lessons;
+            console.log('从API响应中提取lessons数组:', lessonsToUpdate);
+          }
+          
+          // 处理单个对象情况
+          if (!Array.isArray(lessonsToUpdate)) {
+            lessonsToUpdate = [lessonsToUpdate];
+            console.log('将单个小节对象转换为数组:', lessonsToUpdate);
+          }
+          
+          // 更新各小节的顺序
+          for (const updatedLesson of lessonsToUpdate) {
+            let updated = false;
+            
             for (const chapter of this.courseStructure.chapters) {
               if (chapter.lessons) {
                 const lessonIndex = chapter.lessons.findIndex(
                   lesson => lesson.id === updatedLesson.id
                 );
                 if (lessonIndex !== -1) {
+                  console.log(`更新本地小节 ${updatedLesson.id} 的顺序: ${chapter.lessons[lessonIndex].order} -> ${updatedLesson.order}`);
                   chapter.lessons[lessonIndex].order = updatedLesson.order;
+                  
+                  // 重新排序小节列表
+                  chapter.lessons.sort((a, b) => a.order - b.order);
+                  console.log(`章节 ${chapter.id} 中的小节重排序后的顺序:`, chapter.lessons.map(l => ({ id: l.id, title: l.title, order: l.order })));
+                  
+                  updated = true;
                   break;
                 }
               }
             }
+            
+            if (!updated) {
+              console.warn(`未找到要更新的小节: ${updatedLesson.id}`);
+            }
           }
+        } else {
+          console.warn('课程结构不完整或为空，无法更新小节顺序');
         }
         
         return updatedLessons;
       } catch (error) {
+        console.error('重新排序小节失败:', error);
         this.setError(error.message || '重新排序小节失败');
         throw error;
       } finally {

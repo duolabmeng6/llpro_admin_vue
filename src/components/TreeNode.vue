@@ -4,17 +4,9 @@
       :class="[
         'tree-node',
         node.id === selectedId ? 'tree-node-selected' : '',
-        draggable ? 'tree-node-draggable' : '',
         hasChildren ? 'tree-node-has-children' : ''
       ]"
-      :draggable="draggable"
       @click="(event) => handleNodeClick(node, event)"
-      @dragstart="(event) => handleDragStart(node, event)"
-      @dragend="handleDragEnd"
-      @dragenter="(event) => handleDragEnter(node, event)"
-      @dragover="(event) => handleDragOver(node, event)"
-      @dragleave="(event) => handleDragLeave(node, event)"
-      @drop="(event) => handleDrop(node, event)"
     >
       <div class="tree-node-content" :style="getNodeIndentStyle(level)">
         <span
@@ -44,26 +36,38 @@
     </div>
     
     <div v-if="hasChildren && isExpanded" class="tree-node-children">
-      <TreeNode
-        v-for="child in node.children"
-        :key="child.id"
-        :node="child"
-        :level="level + 1"
-        :selected-id="selectedId"
-        :draggable="draggable"
-        :expanded-nodes="expandedNodes"
-        @node-click="handleNodeClick"
-        @node-toggle="toggleNode"
-        @node-drag="(data) => emit('node-drag', data)"
-        @node-add="(node) => emit('node-add', node)"
-        @node-edit="(node) => emit('node-edit', node)"
-      />
+      <draggable
+        :list="localChildren"
+        :disabled="!draggable"
+        item-key="id"
+        ghost-class="tree-node-ghost"
+        chosen-class="tree-node-chosen"
+        drag-class="tree-node-drag"
+        @change="handleChildDragChange"
+        handle=".tree-node-content"
+      >
+        <template #item="{ element: childNode }">
+          <TreeNode
+            :node="childNode"
+            :level="level + 1"
+            :selected-id="selectedId"
+            :draggable="draggable"
+            :expanded-nodes="expandedNodes"
+            @node-click="handleNodeClick"
+            @node-toggle="toggleNode"
+            @node-drag="(data) => emit('node-drag', data)"
+            @node-add="(node) => emit('node-add', node)"
+            @node-edit="(node) => emit('node-edit', node)"
+          />
+        </template>
+      </draggable>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
+import draggable from 'vuedraggable';
 
 const props = defineProps({
   node: {
@@ -90,14 +94,22 @@ const props = defineProps({
 
 const emit = defineEmits(['node-click', 'node-toggle', 'node-drag', 'node-add', 'node-edit']);
 
+// 本地数据，用于draggable组件绑定
+const localChildren = ref([]);
+
+// 监听props.node.children变化，更新本地数据
+watch(() => props.node.children, (newChildren) => {
+  if (newChildren) {
+    // 深拷贝数据，避免直接引用props
+    localChildren.value = JSON.parse(JSON.stringify(newChildren));
+  } else {
+    localChildren.value = [];
+  }
+}, { immediate: true, deep: true });
+
 // 计算属性
 const hasChildren = computed(() => props.node.children && props.node.children.length > 0);
 const isExpanded = computed(() => props.expandedNodes.has(props.node.id));
-
-// 拖拽相关状态
-const draggedNode = ref(null);
-const dragOverNode = ref(null);
-const dropPosition = ref(null);
 
 // 获取节点的缩进样式
 const getNodeIndentStyle = (level) => {
@@ -159,128 +171,77 @@ const handleNodeEdit = (node, event) => {
   emit('node-edit', node);
 };
 
-// 开始拖拽
-const handleDragStart = (node, event) => {
-  if (!props.draggable) return;
-  
-  draggedNode.value = node;
-  if (event && event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', node.id);
+// 处理子节点拖拽变化事件
+const handleChildDragChange = (evt) => {
+  // 只在开发环境输出详细日志
+  if (process.env.NODE_ENV === 'development') {
+    console.log('TreeNode - 子节点拖拽变化事件:', evt);
   }
-};
-
-// 拖拽结束
-const handleDragEnd = () => {
-  draggedNode.value = null;
-  dragOverNode.value = null;
-  dropPosition.value = null;
   
-  // 移除拖拽时的样式
-  const elements = document.querySelectorAll('.tree-node');
-  elements.forEach(el => {
-    el.classList.remove('tree-node-dragging');
-    el.classList.remove('tree-node-drag-over');
-    el.classList.remove('tree-node-drag-over-gap-top');
-    el.classList.remove('tree-node-drag-over-gap-bottom');
-  });
-};
-
-// 拖拽进入节点
-const handleDragEnter = (node, event) => {
-  if (!props.draggable || node.id === draggedNode.value?.id) return;
-  
-  if (event && typeof event.preventDefault === 'function') {
-    event.preventDefault();
+  if (!evt.added && !evt.moved && !evt.removed) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('TreeNode - 无拖拽变化，忽略事件');
+    }
+    return;
   }
-  dragOverNode.value = node;
-};
-
-// 拖拽经过节点
-const handleDragOver = (node, event) => {
-  if (!props.draggable || node.id === draggedNode.value?.id) return;
   
-  if (event && typeof event.preventDefault === 'function') {
-    event.preventDefault();
-  }
-  dragOverNode.value = node;
-  
-  // 计算拖拽位置
-  if (event && event.currentTarget) {
-    const { clientY } = event;
-    const targetElement = event.currentTarget;
-    const { top, height } = targetElement.getBoundingClientRect();
+  // 更新父节点的children属性
+  if (props.node && typeof props.node === 'object') {
+    // 创建一个新的节点对象，避免直接修改props
+    const updatedNode = { ...props.node, children: localChildren.value };
     
-    // 清除所有拖拽样式
-    targetElement.classList.remove('tree-node-drag-over');
-    targetElement.classList.remove('tree-node-drag-over-gap-top');
-    targetElement.classList.remove('tree-node-drag-over-gap-bottom');
-    
-    const gapHeight = height * 0.2;
-    const gapTop = top + gapHeight;
-    const gapBottom = top + height - gapHeight;
-    
-    if (clientY < gapTop) {
-      // 拖拽到节点上方
-      dropPosition.value = 'before';
-      targetElement.classList.add('tree-node-drag-over-gap-top');
-    } else if (clientY > gapBottom) {
-      // 拖拽到节点下方
-      dropPosition.value = 'after';
-      targetElement.classList.add('tree-node-drag-over-gap-bottom');
-    } else {
-      // 拖拽到节点内部
-      dropPosition.value = 'inside';
-      targetElement.classList.add('tree-node-drag-over');
+    // 处理小节拖拽
+    if (evt.moved) {
+      const { element: draggedNode, newIndex, oldIndex } = evt.moved;
+      
+      // 如果新旧索引相同，说明没有实际的拖拽发生
+      if (newIndex === oldIndex) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('TreeNode - 新旧索引相同，忽略事件');
+        }
+        return;
+      }
+      
+      // 确定目标节点和位置
+      let targetNode;
+      let position;
+      
+      if (newIndex > oldIndex) {
+        // 向下拖动
+        targetNode = localChildren.value[newIndex];
+        position = 'after';
+      } else {
+        // 向上拖动
+        targetNode = localChildren.value[newIndex];
+        position = 'before';
+      }
+      
+      // 确保draggedNode和targetNode不是同一个节点
+      // 在vuedraggable中，只要新旧索引不同，就表示位置发生了变化
+      // 不需要再通过ID判断是否为同一节点
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('TreeNode - 拖拽处理:', {
+          draggedNode,
+          targetNode,
+          position,
+          oldIndex,
+          newIndex
+        });
+      }
+      
+      // 发出拖拽事件，确保包含完整的拖拽信息
+      emit('node-drag', {
+        draggedNode,
+        targetNode,
+        position,
+        oldIndex,
+        newIndex,
+        parentNode: props.node,
+        timestamp: new Date().toISOString()
+      });
     }
   }
-};
-
-// 拖拽离开节点
-const handleDragLeave = (node, event) => {
-  if (!props.draggable) return;
-  
-  if (event && typeof event.preventDefault === 'function') {
-    event.preventDefault();
-  }
-  
-  if (event && event.currentTarget) {
-    const targetElement = event.currentTarget;
-    
-    // 清除拖拽样式
-    targetElement.classList.remove('tree-node-drag-over');
-    targetElement.classList.remove('tree-node-drag-over-gap-top');
-    targetElement.classList.remove('tree-node-drag-over-gap-bottom');
-  }
-  
-  if (dragOverNode.value?.id === node.id) {
-    dragOverNode.value = null;
-    dropPosition.value = null;
-  }
-};
-
-// 放置节点
-const handleDrop = (node, event) => {
-  if (!props.draggable || !draggedNode.value || !dropPosition.value) return;
-  
-  if (event) {
-    if (typeof event.preventDefault === 'function') {
-      event.preventDefault();
-    }
-    if (typeof event.stopPropagation === 'function') {
-      event.stopPropagation();
-    }
-  }
-  
-  // 发出拖拽事件
-  emit('node-drag', {
-    draggedNode: draggedNode.value,
-    targetNode: node,
-    position: dropPosition.value
-  });
-  
-  // 清除拖拽状态
-  handleDragEnd();
 };
 </script>
 
@@ -411,46 +372,37 @@ const handleDrop = (node, event) => {
 }
 
 /* 拖拽相关样式 */
-.tree-node-draggable {
-  user-select: none;
-}
-
-.tree-node-dragging {
+.tree-node-ghost {
   opacity: 0.5;
+  background: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-primary);
 }
 
-.tree-node-drag-over {
-  background-color: rgba(0, 120, 215, 0.1);
-  box-shadow: 0 0 0 2px var(--modern-accent-color, rgba(0, 120, 215, 0.5));
+.tree-node-chosen {
+  background-color: var(--color-bg-selected);
 }
 
-.tree-node-drag-over-gap-top {
-  position: relative;
+.tree-node-drag {
+  opacity: 0.8;
 }
 
-.tree-node-drag-over-gap-top::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--modern-accent-color, #0078d7);
-  z-index: 1;
+/* 放置成功动画 */
+.tree-node-drop-success {
+  animation: drop-success 0.8s ease-in-out;
 }
 
-.tree-node-drag-over-gap-bottom {
-  position: relative;
-}
-
-.tree-node-drag-over-gap-bottom::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--modern-accent-color, #0078d7);
-  z-index: 1;
+@keyframes drop-success {
+  0% {
+    background-color: rgba(16, 185, 129, 0.05);
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    background-color: rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
 }
 </style> 

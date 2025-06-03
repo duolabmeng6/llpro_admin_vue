@@ -29,7 +29,8 @@
     "screenfull": "^6.0.2",
     "uuid": "^11.1.0",
     "vue": "^3.5.16",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.8",
