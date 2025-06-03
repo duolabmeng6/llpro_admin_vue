@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import { useCourseStore } from '../stores/course';
 import TreeView from '../components/TreeView.vue';
 import DetailPanel from '../components/DetailPanel.vue';
@@ -21,6 +21,8 @@ const showCreateCourseModal = ref(false);
 const showAddChapterModal = ref(false);
 // 是否显示创建小节对话框
 const showAddLessonModal = ref(false);
+// 详情面板是否处于编辑模式
+const detailPanelEditMode = ref(false);
 // 新课程表单数据
 const newCourseData = ref({
   title: '',
@@ -141,6 +143,9 @@ const createCourse = async () => {
 
 // 树节点点击事件
 const handleNodeClick = (node) => {
+  // 重置编辑模式
+  detailPanelEditMode.value = false;
+  // 选中节点
   courseStore.selectNode(node);
 };
 
@@ -158,8 +163,19 @@ const handleNodeAdd = (node) => {
 
 // 树节点编辑事件
 const handleNodeEdit = (node) => {
-  // 选中该节点，然后在详情面板中进入编辑模式
+  // 选中该节点
   courseStore.selectNode(node);
+  
+  // 强制刷新编辑模式：先设置为false，然后在下一个DOM更新周期设置为true
+  detailPanelEditMode.value = false;
+  nextTick(() => {
+    detailPanelEditMode.value = true;
+  });
+};
+
+// 处理详情面板编辑模式变更
+const handleEditModeChange = (value) => {
+  detailPanelEditMode.value = value;
 };
 
 // 树节点拖拽事件
@@ -451,6 +467,8 @@ const handlePageChange = (page) => {
               :node-type="selectedNodeType"
               :node-data="selectedNodeData"
               :loading="loading"
+              :edit-mode="detailPanelEditMode"
+              @update:edit-mode="handleEditModeChange"
               @save="handleSave"
               @delete="handleDelete"
               @create-chapter="handleCreateChapter"

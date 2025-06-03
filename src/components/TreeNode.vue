@@ -36,7 +36,7 @@
           <span class="tree-node-action" title="添加" v-if="node.type !== 'lesson'" @click.stop="handleNodeAdd(node)">
             <i class="fa fa-plus"></i>
           </span>
-          <span class="tree-node-action" title="编辑" @click.stop="handleNodeEdit(node)">
+          <span class="tree-node-action" title="编辑" @click.stop.prevent="(event) => handleNodeEdit(node, event)">
             <i class="fa fa-pencil"></i>
           </span>
         </div>
@@ -140,7 +140,22 @@ const handleNodeAdd = (node) => {
 };
 
 // 编辑节点
-const handleNodeEdit = (node) => {
+const handleNodeEdit = (node, event) => {
+  // 确保事件不会冒泡和触发默认行为
+  if (event) {
+    if (typeof event.stopPropagation === 'function') {
+      event.stopPropagation();
+    }
+    if (typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    
+    // 阻止事件进一步传播
+    event.cancelBubble = true;
+    event.returnValue = false;
+  }
+  
+  // 发出编辑事件
   emit('node-edit', node);
 };
 

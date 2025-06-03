@@ -22,6 +22,11 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  // 是否处于编辑模式（由父组件控制）
+  editMode: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -29,7 +34,8 @@ const emit = defineEmits([
   'save',
   'delete',
   'create-chapter',
-  'create-lesson'
+  'create-lesson',
+  'update:editMode' // 添加编辑模式更新事件
 ]);
 
 // 编辑表单数据
@@ -73,6 +79,15 @@ watch(() => props.nodeData, (newVal) => {
   }
 }, { immediate: true, deep: true });
 
+// 监听editMode属性变化
+watch(() => props.editMode, (newVal) => {
+  if (newVal && !isEditing.value && props.nodeData) {
+    // 当外部设置editMode为true且当前不在编辑状态时进入编辑模式
+    isEditing.value = true;
+    formData.value = { ...props.nodeData };
+  }
+}, { immediate: true });
+
 // 计算面板标题
 const panelTitle = computed(() => {
   if (!props.nodeType || !props.nodeData) return '详情';
@@ -104,6 +119,11 @@ const toggleEditMode = () => {
   if (isEditing.value) {
     // 保存编辑
     emit('save', props.nodeType, formData.value);
+    // 通知父组件编辑模式已关闭
+    emit('update:editMode', false);
+  } else {
+    // 进入编辑模式
+    emit('update:editMode', true);
   }
   isEditing.value = !isEditing.value;
 };
@@ -112,6 +132,8 @@ const toggleEditMode = () => {
 const cancelEdit = () => {
   formData.value = { ...props.nodeData };
   isEditing.value = false;
+  // 通知父组件编辑模式已关闭
+  emit('update:editMode', false);
 };
 
 // 确认删除
