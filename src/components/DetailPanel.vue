@@ -148,23 +148,23 @@ const addLesson = () => {
 </script>
 
 <template>
-  <Card :title="panelTitle">
+  <Card :title="panelTitle" class="h-full flex flex-col">
     <template v-if="loading">
-      <div class="loading-container">
+      <div class="loading-container flex-1 flex items-center justify-center">
         <i class="fa fa-spinner fa-spin"></i>
         <span class="ml-2">加载中...</span>
       </div>
     </template>
     
     <template v-else-if="!nodeData">
-      <div class="empty-container">
+      <div class="empty-container flex-1 flex items-center justify-center">
         <i class="fa fa-info-circle empty-icon"></i>
         <p>请选择一个节点查看详情</p>
       </div>
     </template>
     
     <template v-else>
-      <div class="detail-panel">
+      <div class="detail-panel h-full flex flex-col">
         <div class="detail-panel-header">
           <div class="detail-panel-tabs">
             <div 
@@ -250,9 +250,9 @@ const addLesson = () => {
           </div>
         </div>
         
-        <div class="detail-panel-content">
+        <div class="detail-panel-content flex-1 overflow-auto">
           <!-- 基本信息选项卡 -->
-          <div v-show="activeTab === 'info'" class="detail-tab-content">
+          <div v-show="activeTab === 'info'" class="detail-tab-content h-full">
             <!-- 课程详情 -->
             <div v-if="nodeType === 'course'" class="course-detail-container">
               <div v-if="isEditing" class="course-form">
@@ -524,8 +524,8 @@ const addLesson = () => {
             </div>
           </div>
           
-          <!-- 内容选项卡 (仅小节) -->
-          <div v-show="activeTab === 'content' && nodeType === 'lesson'" class="detail-tab-content">
+          <!-- 内容选项卡 -->
+          <div v-show="activeTab === 'content'" class="detail-tab-content h-full">
             <div v-if="isEditing" class="lesson-content-editor">
               <MarkdownEditor
                 v-model="formData.content"
@@ -553,7 +553,7 @@ const addLesson = () => {
           </div>
           
           <!-- 设置选项卡 -->
-          <div v-show="activeTab === 'settings'" class="detail-tab-content">
+          <div v-show="activeTab === 'settings'" class="detail-tab-content h-full">
             <div class="settings-container">
               <div class="settings-section">
                 <h3 class="settings-title">高级设置</h3>
@@ -774,6 +774,18 @@ const addLesson = () => {
 
 .detail-tab-content {
   height: 100%;
+  overflow-y: auto;
+}
+
+.loading-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  color: var(--color-text-secondary);
 }
 
 .detail-grid {

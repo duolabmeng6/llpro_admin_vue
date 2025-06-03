@@ -6,6 +6,7 @@ import DetailPanel from '../components/DetailPanel.vue';
 import Card from '../components/Card.vue';
 import Button from '../components/Button.vue';
 import Modal from '../components/Modal.vue';
+import Pagination from '../components/Pagination.vue';
 
 const courseStore = useCourseStore();
 
@@ -67,6 +68,13 @@ const selectedNodeId = computed(() => {
       return null;
   }
 });
+
+// 分页相关计算属性
+const pagination = computed(() => courseStore.pagination);
+const currentPage = computed(() => pagination.value.currentPage);
+const totalPages = computed(() => pagination.value.totalPages);
+const pageSize = computed(() => pagination.value.pageSize);
+const totalItems = computed(() => pagination.value.totalItems);
 
 // 添加树形结构组件引用
 const treeViewRef = ref(null);
@@ -283,6 +291,11 @@ const handleCreateLesson = async (lessonData) => {
     console.error('创建小节失败:', error);
   }
 };
+
+// 处理页码变化
+const handlePageChange = (page) => {
+  courseStore.handlePageChange(page);
+};
 </script>
 
 <template>
@@ -291,7 +304,7 @@ const handleCreateLesson = async (lessonData) => {
     <div class="course-management-content">
       <!-- 左侧：课程列表 -->
       <div class="flex flex-col h-full overflow-hidden border-r border-gray-200 dark:border-gray-700 w-1/5 min-w-[250px]">
-        <Card shadow="sm">
+        <Card shadow="sm" class="h-full flex flex-col">
           <div class="flex flex-col gap-3 p-3 border-b border-gray-200 dark:border-gray-700">
             <div class="w-full">
               <Button @click="showCreateCourseModal = true" variant="primary" size="sm" class="w-full flex items-center justify-center">
@@ -321,7 +334,7 @@ const handleCreateLesson = async (lessonData) => {
             </Button>
           </div>
           
-          <div v-else class="flex flex-col p-3 gap-3 overflow-auto">
+          <div v-else class="flex flex-col p-3 gap-3 overflow-auto flex-1">
             <div
               v-for="course in courseStore.courses"
               :key="course.id"
@@ -357,6 +370,17 @@ const handleCreateLesson = async (lessonData) => {
               </div>
             </div>
           </div>
+          
+          <!-- 分页组件 -->
+          <div v-if="totalItems > pageSize" class="px-3 pt-2 pb-3 border-t border-gray-200 dark:border-gray-700">
+            <Pagination
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :page-size="pageSize"
+              :total-items="totalItems"
+              @update:currentPage="handlePageChange"
+            />
+          </div>
         </Card>
       </div>
       
@@ -371,7 +395,7 @@ const handleCreateLesson = async (lessonData) => {
         <template v-else-if="mainAreaViewMode === 'content'">
           <!-- 中间：课程结构 -->
           <div class="course-structure-panel">
-            <Card title="课程结构" shadow="sm">
+            <Card title="课程结构" shadow="sm" class="h-full flex flex-col">
               <div class="course-structure-header">
                 <div class="course-structure-actions">
                   <Button size="sm" variant="outline" title="展开全部" @click="expandAllNodes">
@@ -383,16 +407,16 @@ const handleCreateLesson = async (lessonData) => {
                 </div>
               </div>
               
-              <div v-if="!currentCourseId" class="empty-container">
+              <div v-if="!currentCourseId" class="empty-container flex-1 flex items-center justify-center">
                 <p>请选择一个课程</p>
               </div>
               
-              <div v-else-if="loading && currentCourseId" class="loading-container">
+              <div v-else-if="loading && currentCourseId" class="loading-container flex-1 flex items-center justify-center">
                 <i class="fa fa-spinner fa-spin"></i>
                 <span class="ml-2">加载中...</span>
               </div>
               
-              <div v-else-if="treeData.length === 0" class="empty-container">
+              <div v-else-if="treeData.length === 0" class="empty-container flex-1 flex flex-col items-center justify-center">
                 <i class="fa fa-sitemap empty-icon"></i>
                 <p>课程结构为空</p>
                 <Button 
@@ -406,7 +430,7 @@ const handleCreateLesson = async (lessonData) => {
                 </Button>
               </div>
               
-              <div v-else class="tree-container">
+              <div v-else class="tree-container flex-1">
                 <TreeView
                   ref="treeViewRef"
                   :data="treeData"
@@ -431,6 +455,7 @@ const handleCreateLesson = async (lessonData) => {
               @delete="handleDelete"
               @create-chapter="handleCreateChapter"
               @create-lesson="handleCreateLesson"
+              class="h-full"
             />
           </div>
         </template>
@@ -614,7 +639,7 @@ const handleCreateLesson = async (lessonData) => {
 
 .course-management-content {
   display: flex;
-  height: calc(100vh - 64px);
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -623,6 +648,7 @@ const handleCreateLesson = async (lessonData) => {
   flex: 1;
   display: flex;
   overflow: hidden;
+  height: 100%;
 }
 
 /* 欢迎视图 */
@@ -632,6 +658,7 @@ const handleCreateLesson = async (lessonData) => {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  height: 100%;
 }
 
 /* 课程结构面板 */
@@ -666,6 +693,8 @@ const handleCreateLesson = async (lessonData) => {
   flex: 1;
   overflow: auto;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .course-structure-header {
@@ -694,6 +723,15 @@ const handleCreateLesson = async (lessonData) => {
   border-radius: 0;
   border: none;
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-panel :deep(.card) > div:not(.card-header) {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 通用样式 */
@@ -708,6 +746,16 @@ const handleCreateLesson = async (lessonData) => {
   padding: 0.5rem;
   height: 100%;
   overflow: auto;
+}
+
+.empty-container, .loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+  text-align: center;
 }
 
 .create-course-form,

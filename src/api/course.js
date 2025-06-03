@@ -5,9 +5,9 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 // 课程API
 export const CourseAPI = {
   // 获取所有课程
-  getAllCourses: async () => {
+  getAllCourses: async (params = {}) => {
     try {
-      const response = await axios.get(`${API_URL}/courses`);
+      const response = await axios.get(`${API_URL}/courses`, { params });
       return response.data;
     } catch (error) {
       console.error('获取课程列表失败:', error);

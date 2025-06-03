@@ -5,7 +5,7 @@ import { LessonModel, updateChapterIds } from '../models/lesson.js';
 // 初始化关联ID
 const initializeIds = () => {
   // 获取所有课程ID
-  const courses = CourseModel.getAll();
+  const { courses } = CourseModel.getAll();
   const courseIds = courses.map(course => course.id);
   
   // 更新章节中的课程ID
@@ -27,8 +27,23 @@ const CourseController = {
   // 获取所有课程
   getAllCourses: (req, res) => {
     try {
-      const courses = CourseModel.getAll();
-      res.json(courses);
+      // 获取分页参数
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      
+      // 获取所有课程，带分页
+      const { courses, total } = CourseModel.getAll({ page, limit });
+      
+      // 构建分页响应
+      res.json({
+        data: courses,
+        meta: {
+          currentPage: page,
+          pageSize: limit,
+          totalItems: total,
+          totalPages: Math.ceil(total / limit)
+        }
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

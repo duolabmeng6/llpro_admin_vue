@@ -29,7 +29,7 @@ const shadowClasses = {
 </script>
 
 <template>
-  <div class="bg-card rounded-lg" :class="shadowClasses[shadow]">
+  <div class="bg-card rounded-lg h-full flex flex-col" :class="shadowClasses[shadow]">
     <div v-if="title || subtitle" class="px-4 py-5 sm:px-6 border-b border-theme">
       <h3 v-if="title" class="text-lg leading-6 font-medium text-primary">
         {{ title }}

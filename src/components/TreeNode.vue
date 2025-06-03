@@ -357,7 +357,7 @@ const handleDrop = (node, event) => {
 .tree-node-actions {
   display: flex;
   gap: 4px;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s ease;
 }
 
@@ -372,11 +372,13 @@ const handleDrop = (node, event) => {
   font-size: 0.8rem;
   color: var(--color-text-secondary);
   transition: all 0.15s ease;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .tree-node-action:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.15);
   color: var(--color-text-primary);
+  transform: scale(1.1);
 }
 
 .tree-node-children {

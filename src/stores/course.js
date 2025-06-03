@@ -19,6 +19,13 @@ export const useCourseStore = defineStore('course', {
     error: null,
     // 当前选中的节点类型：'course', 'chapter', 'lesson'
     selectedNodeType: null,
+    // 分页相关状态
+    pagination: {
+      currentPage: 1,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 1
+    }
   }),
   
   getters: {
@@ -99,19 +106,59 @@ export const useCourseStore = defineStore('course', {
     },
     
     // 获取所有课程
-    async fetchCourses() {
+    async fetchCourses(params = {}) {
       this.setLoading(true);
       this.clearError();
       
       try {
-        const courses = await CourseAPI.getAllCourses();
-        this.courses = courses;
-        return courses;
+        // 构建查询参数
+        const queryParams = {
+          page: params.page || this.pagination.currentPage,
+          limit: params.limit || this.pagination.pageSize
+        };
+        
+        // 获取课程列表
+        const response = await CourseAPI.getAllCourses(queryParams);
+        
+        // 更新课程列表
+        this.courses = response.data;
+        
+        // 更新分页信息
+        this.pagination = {
+          currentPage: response.meta.currentPage,
+          pageSize: response.meta.pageSize,
+          totalItems: response.meta.totalItems,
+          totalPages: response.meta.totalPages
+        };
+        
+        return this.courses;
       } catch (error) {
         this.setError(error.message || '获取课程列表失败');
         throw error;
       } finally {
         this.setLoading(false);
+      }
+    },
+    
+    // 页码变化处理
+    async handlePageChange(page) {
+      if (page === this.pagination.currentPage) return;
+      
+      try {
+        await this.fetchCourses({ page });
+      } catch (error) {
+        console.error('分页加载失败:', error);
+      }
+    },
+    
+    // 每页数量变化处理
+    async handlePageSizeChange(pageSize) {
+      if (pageSize === this.pagination.pageSize) return;
+      
+      try {
+        await this.fetchCourses({ page: 1, limit: pageSize });
+      } catch (error) {
+        console.error('分页大小变更失败:', error);
       }
     },
     
