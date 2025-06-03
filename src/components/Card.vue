@@ -30,13 +30,15 @@ const shadowClasses = {
 
 <template>
   <div class="bg-card rounded-lg h-full flex flex-col" :class="shadowClasses[shadow]">
-    <div v-if="title || subtitle" class="px-4 py-5 sm:px-6 border-b border-theme">
-      <h3 v-if="title" class="text-lg leading-6 font-medium text-primary">
-        {{ title }}
-      </h3>
-      <p v-if="subtitle" class="mt-1 max-w-2xl text-sm text-secondary">
-        {{ subtitle }}
-      </p>
+    <div v-if="$slots.title || title || subtitle" class="px-4 py-5 sm:px-6 border-b border-theme">
+      <slot name="title">
+        <h3 v-if="title" class="text-lg leading-6 font-medium text-primary">
+          {{ title }}
+        </h3>
+        <p v-if="subtitle" class="mt-1 max-w-2xl text-sm text-secondary">
+          {{ subtitle }}
+        </p>
+      </slot>
     </div>
     <div :class="{ 'p-4 sm:p-6': !noPadding }" class="overflow-auto flex-1">
       <slot></slot>

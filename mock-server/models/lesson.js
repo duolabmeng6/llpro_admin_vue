@@ -9,7 +9,7 @@ let lessons = [
     content: '本节介绍前端开发的基本概念和工具链',
     duration: 15, // 分钟
     type: 'video',
-    order: 1,
+    order: 100, // 使用较大的步长
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -20,7 +20,7 @@ let lessons = [
     content: '学习HTML的基本标签和结构',
     duration: 20,
     type: 'video',
-    order: 2,
+    order: 200,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -31,7 +31,7 @@ let lessons = [
     content: '学习CSS的基本标签和结构',
     duration: 20,
     type: 'video',
-    order: 3,
+    order: 300,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -42,7 +42,7 @@ let lessons = [
     content: '学习JavaScript的基本标签和结构',
     duration: 20,
     type: 'video',
-    order: 4,
+    order: 400,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -53,7 +53,7 @@ let lessons = [
     content: '学习CSS的高级选择器和伪类',
     duration: 25,
     type: 'video',
-    order: 1,
+    order: 100, // 每个章节都从100开始
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -65,7 +65,7 @@ let lessons = [
     content: '学习Flexbox和Grid等现代CSS布局技术',
     duration: 30,
     type: 'video',
-    order: 2,
+    order: 200,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -76,7 +76,7 @@ let lessons = [
     content: '学习CSS动画、过渡和变换效果',
     duration: 25,
     type: 'video',
-    order: 3,
+    order: 300,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -87,7 +87,7 @@ let lessons = [
     content: '学习媒体查询和响应式网页设计原则',
     duration: 35,
     type: 'video',
-    order: 4,
+    order: 400,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -99,7 +99,7 @@ let lessons = [
     content: '深入学习JavaScript的高级特性和ES6+语法',
     duration: 40,
     type: 'video',
-    order: 1,
+    order: 100, // 每个章节都从100开始
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -110,7 +110,7 @@ let lessons = [
     content: '学习Promise、async/await和事件循环',
     duration: 35,
     type: 'video',
-    order: 2,
+    order: 200,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   },
@@ -121,7 +121,7 @@ let lessons = [
     content: '了解主流前端框架的基本概念和比较',
     duration: 30,
     type: 'document',
-    order: 3,
+    order: 300,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   }
@@ -155,7 +155,7 @@ const LessonModel = {
     const newLesson = {
       id: uuidv4(),
       ...lessonData,
-      order: lessonData.order || maxOrder + 1,
+      order: lessonData.order || maxOrder + 100, // 使用100作为步长
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -250,37 +250,36 @@ const LessonModel = {
 
 // 更新初始数据中的章节ID
 const updateChapterIds = (chapterIds) => {
-  if (chapterIds && chapterIds.length >= 2) {
-    console.log('更新小节的章节ID关联，可用章节ID:', chapterIds);
-    
-    // 为每个小节分配适当的章节ID
-    lessons.forEach((lesson, index) => {
-      // 根据小节的title前缀判断它属于哪个章节
-      const titlePrefix = lesson.title.split('.')[0];
-      
-      if (titlePrefix === '1') {
-        // 第一章的小节
-        if (chapterIds[0]) {
-          console.log(`更新小节 "${lesson.title}" 的章节ID: ${lesson.chapterId} -> ${chapterIds[0]}`);
-          lesson.chapterId = chapterIds[0];
-        }
-      } else if (titlePrefix === '2') {
-        // 第二章的小节
-        if (chapterIds[1]) {
-          console.log(`更新小节 "${lesson.title}" 的章节ID: ${lesson.chapterId} -> ${chapterIds[1]}`);
-          lesson.chapterId = chapterIds[1];
-        }
-      } else if (titlePrefix === '3') {
-        // 第三章的小节
-        if (chapterIds[2]) {
-          console.log(`更新小节 "${lesson.title}" 的章节ID: ${lesson.chapterId} -> ${chapterIds[2]}`);
-          lesson.chapterId = chapterIds[2];
-        }
-      }
-    });
-    
-    console.log('小节章节ID更新完成');
+  if (!chapterIds || !Array.isArray(chapterIds) || chapterIds.length === 0) {
+    console.warn('无效的章节ID数组，无法更新小节的章节ID关联');
+    return;
   }
+  
+  console.log('更新小节的章节ID关联，可用章节ID:', chapterIds);
+  
+  // 为每个小节分配适当的章节ID
+  lessons.forEach((lesson) => {
+    // 从小节标题中提取章节编号
+    const titleMatch = lesson.title.match(/^(\d+)\./);
+    if (!titleMatch) {
+      console.warn(`无法从小节标题 "${lesson.title}" 中提取章节编号`);
+      return;
+    }
+    
+    const chapterNumber = parseInt(titleMatch[1], 10);
+    // 章节编号从1开始，数组索引从0开始，所以需要减1
+    const chapterIndex = chapterNumber - 1;
+    
+    if (chapterIndex >= 0 && chapterIndex < chapterIds.length) {
+      const newChapterId = chapterIds[chapterIndex];
+      console.log(`更新小节 "${lesson.title}" 的章节ID: ${lesson.chapterId} -> ${newChapterId}`);
+      lesson.chapterId = newChapterId;
+    } else {
+      console.warn(`章节编号 ${chapterNumber} 超出范围，无法为小节 "${lesson.title}" 分配章节ID`);
+    }
+  });
+  
+  console.log('小节章节ID更新完成');
 };
 
 export {

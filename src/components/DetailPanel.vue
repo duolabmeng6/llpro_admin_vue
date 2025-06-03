@@ -2,7 +2,6 @@
 import { computed, ref, watch } from 'vue';
 import { Form, FormGroup, Select, Textarea } from './form';
 import Button from './Button.vue';
-import Card from './Card.vue';
 import Modal from './Modal.vue';
 import MultiImageUpload from './MultiImageUpload.vue';
 import MarkdownEditor from './MarkdownEditor.vue';
@@ -170,438 +169,445 @@ const addLesson = () => {
 </script>
 
 <template>
-  <Card :title="panelTitle" class="h-full flex flex-col">
-    <template v-if="loading">
-      <div class="loading-container flex-1 flex items-center justify-center">
-        <i class="fa fa-spinner fa-spin"></i>
-        <span class="ml-2">加载中...</span>
-      </div>
-    </template>
-    
-    <template v-else-if="!nodeData">
-      <div class="empty-container flex-1 flex items-center justify-center">
-        <i class="fa fa-info-circle empty-icon"></i>
-        <p>请选择一个节点查看详情</p>
-      </div>
-    </template>
-    
-    <template v-else>
-      <div class="detail-panel h-full flex flex-col">
-        <div class="detail-panel-header">
-          <div class="detail-panel-tabs">
-            <div 
-              class="detail-panel-tab" 
-              :class="{ 'active': activeTab === 'info' }"
-              @click="activeTab = 'info'"
-            >
-              <i class="fa fa-info-circle mr-2"></i>基本信息
-            </div>
-            <div 
-              v-if="nodeType === 'lesson'"
-              class="detail-panel-tab" 
-              :class="{ 'active': activeTab === 'content' }"
-              @click="activeTab = 'content'"
-            >
-              <i class="fa fa-file-text mr-2"></i>内容
-            </div>
-            <div 
-              class="detail-panel-tab" 
-              :class="{ 'active': activeTab === 'settings' }"
-              @click="activeTab = 'settings'"
-            >
-              <i class="fa fa-cog mr-2"></i>设置
-            </div>
-          </div>
-          
-          <div class="detail-panel-actions">
-            <Button 
-              v-if="!isEditing" 
-              @click="toggleEditMode" 
-              size="sm" 
-              variant="outline"
-              title="编辑"
-            >
-              <i class="fa fa-pencil"></i>
-            </Button>
-            <Button 
-              v-if="isEditing" 
-              @click="toggleEditMode" 
-              size="sm" 
-              variant="primary"
-              title="保存"
-            >
-              <i class="fa fa-save mr-2"></i>保存
-            </Button>
-            <Button 
-              v-if="isEditing" 
-              @click="cancelEdit" 
-              size="sm" 
-              variant="outline"
-              title="取消"
-            >
-              <i class="fa fa-times mr-2"></i>取消
-            </Button>
-            <Button 
-              v-if="!isEditing && showAddChapterButton" 
-              @click="showAddChapterModal = true" 
-              size="sm" 
-              variant="outline"
-              title="添加章节"
-            >
-              <i class="fa fa-plus mr-2"></i>章节
-            </Button>
-            <Button 
-              v-if="!isEditing && showAddLessonButton" 
-              @click="showAddLessonModal = true" 
-              size="sm" 
-              variant="outline"
-              title="添加小节"
-            >
-              <i class="fa fa-plus mr-2"></i>小节
-            </Button>
-            <Button 
-              v-if="!isEditing" 
-              @click="showDeleteConfirm = true" 
-              size="sm" 
-              variant="outline"
-              class="delete-button"
-              title="删除"
-            >
-              <i class="fa fa-trash"></i>
-            </Button>
-          </div>
+  <div class="detail-panel-container">
+    <div class="detail-panel-header-main">
+      <div class="flex justify-between items-center w-full">
+        <h3 class="detail-panel-title">{{ panelTitle }}</h3>
+        <div class="detail-panel-actions flex gap-2 flex-wrap justify-end ml-4">
+          <Button 
+            v-if="!isEditing" 
+            @click="toggleEditMode" 
+            size="sm" 
+            variant="outline"
+            title="编辑"
+          >
+            <i class="fa fa-pencil mr-2"></i>编辑
+          </Button>
+          <Button 
+            v-if="isEditing" 
+            @click="toggleEditMode" 
+            size="sm" 
+            variant="primary"
+            title="保存"
+          >
+            <i class="fa fa-save mr-2"></i>保存
+          </Button>
+          <Button 
+            v-if="isEditing" 
+            @click="cancelEdit" 
+            size="sm" 
+            variant="outline"
+            title="取消"
+          >
+            <i class="fa fa-times mr-2"></i>取消
+          </Button>
+          <Button 
+            v-if="!isEditing && showAddChapterButton" 
+            @click="showAddChapterModal = true" 
+            size="sm" 
+            variant="outline"
+            title="添加章节"
+          >
+            <i class="fa fa-plus mr-2"></i>章节
+          </Button>
+          <Button 
+            v-if="!isEditing && showAddLessonButton" 
+            @click="showAddLessonModal = true" 
+            size="sm" 
+            variant="outline"
+            title="添加小节"
+          >
+            <i class="fa fa-plus mr-2"></i>小节
+          </Button>
+          <Button 
+            v-if="!isEditing" 
+            @click="showDeleteConfirm = true" 
+            size="sm" 
+            variant="outline"
+            class="delete-button"
+            title="删除"
+          >
+            <i class="fa fa-trash mr-2"></i>删除
+          </Button>
         </div>
-        
-        <div class="detail-panel-content flex-1 overflow-auto">
-          <!-- 基本信息选项卡 -->
-          <div v-show="activeTab === 'info'" class="detail-tab-content h-full">
-            <!-- 课程详情 -->
-            <div v-if="nodeType === 'course'" class="course-detail-container">
-              <div v-if="isEditing" class="course-form">
-                <Form :model="formData">
-                  <FormGroup label="课程标题">
-                    <input
-                      v-model="formData.title"
-                      type="text"
-                      class="form-input"
-                      placeholder="请输入课程标题"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="课程描述">
-                    <Textarea
-                      v-model="formData.description"
-                      placeholder="请输入课程描述"
-                      rows="4"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="课程状态">
-                    <Select
-                      v-model="formData.status"
-                      :options="[
-                        { value: 'draft', label: '草稿' },
-                        { value: 'published', label: '已发布' }
-                      ]"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="课程封面">
-                    <MultiImageUpload
-                      v-model="formData.cover"
-                      :max="1"
-                      accept="image/*"
-                    />
-                  </FormGroup>
-                </Form>
+      </div>
+    </div>
+    
+    <div class="detail-panel-body">
+      <template v-if="loading">
+        <div class="loading-container flex-1 flex items-center justify-center">
+          <i class="fa fa-spinner fa-spin"></i>
+          <span class="ml-2">加载中...</span>
+        </div>
+      </template>
+      
+      <template v-else-if="!nodeData">
+        <div class="empty-container flex-1 flex items-center justify-center">
+          <i class="fa fa-info-circle empty-icon"></i>
+          <p>请选择一个节点查看详情</p>
+        </div>
+      </template>
+      
+      <template v-else>
+        <div class="detail-panel-content-wrapper">
+          <div class="detail-panel-header">
+            <div class="detail-panel-tabs">
+              <div 
+                class="detail-panel-tab" 
+                :class="{ 'active': activeTab === 'info' }"
+                @click="activeTab = 'info'"
+              >
+                <i class="fa fa-info-circle mr-2"></i>基本信息
               </div>
-              <div v-else class="course-detail">
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <div class="detail-label">课程标题</div>
-                    <div class="detail-value">{{ nodeData.title }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">课程描述</div>
-                    <div class="detail-value description">{{ nodeData.description }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">课程状态</div>
-                    <div class="detail-value">
-                      <span :class="`status-badge ${nodeData.status === 'published' ? 'status-published' : 'status-draft'}`">
-                        {{ nodeData.status === 'published' ? '已发布' : '草稿' }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">课程封面</div>
-                    <div class="detail-value">
-                      <img v-if="nodeData.cover" :src="nodeData.cover" class="course-cover" alt="课程封面" />
-                      <div v-else class="no-cover">暂无封面</div>
-                    </div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">创建时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">更新时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
-                  </div>
-                </div>
+              <div 
+                v-if="nodeType === 'lesson'"
+                class="detail-panel-tab" 
+                :class="{ 'active': activeTab === 'content' }"
+                @click="activeTab = 'content'"
+              >
+                <i class="fa fa-file-text mr-2"></i>内容
               </div>
-            </div>
-            
-            <!-- 章节详情 -->
-            <div v-else-if="nodeType === 'chapter'" class="chapter-detail-container">
-              <!-- 章节编辑表单 -->
-              <div v-if="isEditing" class="chapter-form">
-                <Form :model="formData">
-                  <FormGroup label="章节标题">
-                    <input
-                      v-model="formData.title"
-                      type="text"
-                      class="form-input"
-                      placeholder="请输入章节标题"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="章节描述">
-                    <Textarea
-                      v-model="formData.description"
-                      placeholder="请输入章节描述"
-                      rows="4"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="章节类型">
-                    <Select
-                      v-model="formData.type"
-                      :options="[
-                        { value: 'video', label: '视频' },
-                        { value: 'text', label: '文本' }
-                      ]"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="视频地址" v-if="formData.type === 'video'">
-                    <input
-                      v-model="formData.videoUrl"
-                      type="text"
-                      class="form-input"
-                      placeholder="请输入视频URL地址"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="章节内容" v-if="formData.type === 'text'">
-                    <Textarea
-                      v-model="formData.content"
-                      placeholder="请输入章节内容"
-                      rows="6"
-                    />
-                  </FormGroup>
-                </Form>
-              </div>
-              
-              <!-- 章节详情展示 -->
-              <div v-else class="chapter-detail">
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <div class="detail-label">章节标题</div>
-                    <div class="detail-value">{{ nodeData.title }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">章节描述</div>
-                    <div class="detail-value description">{{ nodeData.description }}</div>
-                  </div>
-                  
-                  <div class="detail-item" v-if="nodeData.type">
-                    <div class="detail-label">章节类型</div>
-                    <div class="detail-value">
-                      <span class="lesson-type-badge" :class="`type-${nodeData.type}`">
-                        {{ nodeData.type === 'video' ? '视频' : nodeData.type === 'text' ? '文本' : '未知' }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="detail-item" v-if="nodeData.type === 'video' && nodeData.videoUrl">
-                    <div class="detail-label">视频地址</div>
-                    <div class="detail-value">
-                      <a :href="nodeData.videoUrl" target="_blank" class="video-url">{{ nodeData.videoUrl }}</a>
-                    </div>
-                  </div>
-                  
-                  <div class="detail-item" v-if="nodeData.type === 'text' && nodeData.content">
-                    <div class="detail-label">章节内容</div>
-                    <div class="detail-value description">{{ nodeData.content }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">小节数量</div>
-                    <div class="detail-value">{{ nodeData.lessons ? nodeData.lessons.length : 0 }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">创建时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">更新时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- 小节详情 -->
-            <div v-else-if="nodeType === 'lesson'" class="lesson-detail-container">
-              <!-- 小节编辑表单 -->
-              <div v-if="isEditing" class="lesson-form">
-                <Form :model="formData">
-                  <FormGroup label="小节标题">
-                    <input
-                      v-model="formData.title"
-                      type="text"
-                      class="form-input"
-                      placeholder="请输入小节标题"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="小节类型">
-                    <Select
-                      v-model="formData.type"
-                      :options="[
-                        { value: 'video', label: '视频' },
-                        { value: 'text', label: '文本' },
-                        { value: 'quiz', label: '测验' }
-                      ]"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="时长(分钟)" v-if="formData.type === 'video'">
-                    <input
-                      v-model.number="formData.duration"
-                      type="number"
-                      min="0"
-                      class="form-input"
-                      placeholder="请输入视频时长"
-                    />
-                  </FormGroup>
-                  
-                  <FormGroup label="视频地址" v-if="formData.type === 'video'">
-                    <input
-                      v-model="formData.videoUrl"
-                      type="text"
-                      class="form-input"
-                      placeholder="请输入视频URL地址"
-                    />
-                  </FormGroup>
-                </Form>
-              </div>
-              
-              <!-- 小节详情展示 -->
-              <div v-else class="lesson-detail">
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <div class="detail-label">小节标题</div>
-                    <div class="detail-value">{{ nodeData.title }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">小节类型</div>
-                    <div class="detail-value">
-                      <span class="lesson-type-badge" :class="`type-${nodeData.type}`">
-                        {{ 
-                          nodeData.type === 'video' ? '视频' : 
-                          nodeData.type === 'text' ? '文本' : 
-                          nodeData.type === 'quiz' ? '测验' : '未知'
-                        }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="detail-item" v-if="nodeData.type === 'video'">
-                    <div class="detail-label">视频时长</div>
-                    <div class="detail-value">{{ nodeData.duration }} 分钟</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">创建时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
-                  </div>
-                  
-                  <div class="detail-item">
-                    <div class="detail-label">更新时间</div>
-                    <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
-                  </div>
-                </div>
+              <div 
+                class="detail-panel-tab" 
+                :class="{ 'active': activeTab === 'settings' }"
+                @click="activeTab = 'settings'"
+              >
+                <i class="fa fa-cog mr-2"></i>设置
               </div>
             </div>
           </div>
           
-          <!-- 内容选项卡 -->
-          <div v-show="activeTab === 'content'" class="detail-tab-content h-full">
-            <div v-if="isEditing" class="lesson-content-editor">
-              <MarkdownEditor
-                v-model="formData.content"
-                height="400px"
-                :toolbars="{ 
-                  preview: true,
-                  upload: true,
-                  katex: true,
-                  mermaid: true
-                }"
-              />
+          <div class="detail-panel-content">
+            <!-- 基本信息选项卡 -->
+            <div v-show="activeTab === 'info'" class="detail-tab-content h-full">
+              <!-- 课程详情 -->
+              <div v-if="nodeType === 'course'" class="course-detail-container">
+                <div v-if="isEditing" class="course-form">
+                  <Form :model="formData">
+                    <FormGroup label="课程标题">
+                      <input
+                        v-model="formData.title"
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入课程标题"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="课程描述">
+                      <Textarea
+                        v-model="formData.description"
+                        placeholder="请输入课程描述"
+                        rows="4"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="课程状态">
+                      <Select
+                        v-model="formData.status"
+                        :options="[
+                          { value: 'draft', label: '草稿' },
+                          { value: 'published', label: '已发布' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="课程封面">
+                      <MultiImageUpload
+                        v-model="formData.cover"
+                        :max="1"
+                        accept="image/*"
+                      />
+                    </FormGroup>
+                  </Form>
+                </div>
+                <div v-else class="course-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item">
+                      <div class="detail-label">课程标题</div>
+                      <div class="detail-value">{{ nodeData.title }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">课程描述</div>
+                      <div class="detail-value description">{{ nodeData.description }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">课程状态</div>
+                      <div class="detail-value">
+                        <span :class="`status-badge ${nodeData.status === 'published' ? 'status-published' : 'status-draft'}`">
+                          {{ nodeData.status === 'published' ? '已发布' : '草稿' }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">课程封面</div>
+                      <div class="detail-value">
+                        <img v-if="nodeData.cover" :src="nodeData.cover" class="course-cover" alt="课程封面" />
+                        <div v-else class="no-cover">暂无封面</div>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">创建时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">更新时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 章节详情 -->
+              <div v-else-if="nodeType === 'chapter'" class="chapter-detail-container">
+                <!-- 章节编辑表单 -->
+                <div v-if="isEditing" class="chapter-form">
+                  <Form :model="formData">
+                    <FormGroup label="章节标题">
+                      <input
+                        v-model="formData.title"
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入章节标题"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="章节描述">
+                      <Textarea
+                        v-model="formData.description"
+                        placeholder="请输入章节描述"
+                        rows="4"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="章节类型">
+                      <Select
+                        v-model="formData.type"
+                        :options="[
+                          { value: 'video', label: '视频' },
+                          { value: 'text', label: '文本' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="视频地址" v-if="formData.type === 'video'">
+                      <input
+                        v-model="formData.videoUrl"
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入视频URL地址"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="章节内容" v-if="formData.type === 'text'">
+                      <Textarea
+                        v-model="formData.content"
+                        placeholder="请输入章节内容"
+                        rows="6"
+                      />
+                    </FormGroup>
+                  </Form>
+                </div>
+                
+                <!-- 章节详情展示 -->
+                <div v-else class="chapter-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item">
+                      <div class="detail-label">章节标题</div>
+                      <div class="detail-value">{{ nodeData.title }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">章节描述</div>
+                      <div class="detail-value description">{{ nodeData.description }}</div>
+                    </div>
+                    
+                    <div class="detail-item" v-if="nodeData.type">
+                      <div class="detail-label">章节类型</div>
+                      <div class="detail-value">
+                        <span class="lesson-type-badge" :class="`type-${nodeData.type}`">
+                          {{ nodeData.type === 'video' ? '视频' : nodeData.type === 'text' ? '文本' : '未知' }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-item" v-if="nodeData.type === 'video' && nodeData.videoUrl">
+                      <div class="detail-label">视频地址</div>
+                      <div class="detail-value">
+                        <a :href="nodeData.videoUrl" target="_blank" class="video-url">{{ nodeData.videoUrl }}</a>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-item" v-if="nodeData.type === 'text' && nodeData.content">
+                      <div class="detail-label">章节内容</div>
+                      <div class="detail-value description">{{ nodeData.content }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">小节数量</div>
+                      <div class="detail-value">{{ nodeData.lessons ? nodeData.lessons.length : 0 }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">创建时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">更新时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 小节详情 -->
+              <div v-else-if="nodeType === 'lesson'" class="lesson-detail-container">
+                <!-- 小节编辑表单 -->
+                <div v-if="isEditing" class="lesson-form">
+                  <Form :model="formData">
+                    <FormGroup label="小节标题">
+                      <input
+                        v-model="formData.title"
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入小节标题"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="小节类型">
+                      <Select
+                        v-model="formData.type"
+                        :options="[
+                          { value: 'video', label: '视频' },
+                          { value: 'text', label: '文本' },
+                          { value: 'quiz', label: '测验' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="时长(分钟)" v-if="formData.type === 'video'">
+                      <input
+                        v-model.number="formData.duration"
+                        type="number"
+                        min="0"
+                        class="form-input"
+                        placeholder="请输入视频时长"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="视频地址" v-if="formData.type === 'video'">
+                      <input
+                        v-model="formData.videoUrl"
+                        type="text"
+                        class="form-input"
+                        placeholder="请输入视频URL地址"
+                      />
+                    </FormGroup>
+                  </Form>
+                </div>
+                
+                <!-- 小节详情展示 -->
+                <div v-else class="lesson-detail">
+                  <div class="detail-grid">
+                    <div class="detail-item">
+                      <div class="detail-label">小节标题</div>
+                      <div class="detail-value">{{ nodeData.title }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">小节类型</div>
+                      <div class="detail-value">
+                        <span class="lesson-type-badge" :class="`type-${nodeData.type}`">
+                          {{ 
+                            nodeData.type === 'video' ? '视频' : 
+                            nodeData.type === 'text' ? '文本' : 
+                            nodeData.type === 'quiz' ? '测验' : '未知'
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-item" v-if="nodeData.type === 'video'">
+                      <div class="detail-label">视频时长</div>
+                      <div class="detail-value">{{ nodeData.duration }} 分钟</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">创建时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.createdAt).toLocaleString() }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <div class="detail-label">更新时间</div>
+                      <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div v-else class="lesson-content-preview">
-              <div v-if="nodeData.content" class="content-preview">
+            
+            <!-- 内容选项卡 -->
+            <div v-show="activeTab === 'content'" class="detail-tab-content h-full">
+              <div v-if="isEditing" class="lesson-content-editor">
                 <MarkdownEditor
-                  v-model="nodeData.content"
-                  preview-only
+                  v-model="formData.content"
+                  height="400px"
+                  :toolbars="{ 
+                    preview: true,
+                    upload: true,
+                    katex: true,
+                    mermaid: true
+                  }"
                 />
               </div>
-              <div v-else class="empty-content">
-                <i class="fa fa-file-text-o empty-icon"></i>
-                <p>暂无内容</p>
+              <div v-else class="lesson-content-preview">
+                <div v-if="nodeData.content" class="content-preview">
+                  <MarkdownEditor
+                    v-model="nodeData.content"
+                    preview-only
+                  />
+                </div>
+                <div v-else class="empty-content">
+                  <i class="fa fa-file-text-o empty-icon"></i>
+                  <p>暂无内容</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- 设置选项卡 -->
-          <div v-show="activeTab === 'settings'" class="detail-tab-content h-full">
-            <div class="settings-container">
-              <div class="settings-section">
-                <h3 class="settings-title">高级设置</h3>
-                <p class="settings-description">此处可以设置更多高级选项</p>
-                
-                <div class="settings-form">
-                  <div class="form-group">
-                    <label class="form-label">可见性</label>
-                    <select class="form-select">
-                      <option value="public">公开</option>
-                      <option value="private">私有</option>
-                      <option value="password">密码保护</option>
-                    </select>
-                  </div>
+            
+            <!-- 设置选项卡 -->
+            <div v-show="activeTab === 'settings'" class="detail-tab-content h-full">
+              <div class="settings-container">
+                <div class="settings-section">
+                  <h3 class="settings-title">高级设置</h3>
+                  <p class="settings-description">此处可以设置更多高级选项</p>
                   
-                  <div class="form-group">
-                    <label class="form-label">排序</label>
-                    <input type="number" class="form-input" :value="nodeData.order || 0" />
+                  <div class="settings-form">
+                    <div class="form-group">
+                      <label class="form-label">可见性</label>
+                      <select class="form-select">
+                        <option value="public">公开</option>
+                        <option value="private">私有</option>
+                        <option value="password">密码保护</option>
+                      </select>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="form-label">排序</label>
+                      <input type="number" class="form-input" :value="nodeData.order || 0" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
     
     <!-- 删除确认对话框 -->
     <Modal
@@ -740,22 +746,62 @@ const addLesson = () => {
         </div>
       </div>
     </Modal>
-  </Card>
+  </div>
 </template>
 
 <style scoped>
-.detail-panel {
+.detail-panel-container {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: var(--color-bg-primary, #ffffff);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.detail-panel-header-main {
+  display: flex;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  background-color: var(--color-bg-secondary, #f9fafb);
+}
+
+.detail-panel-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}
+
+.detail-panel-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.detail-panel-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-panel-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .detail-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 0 0.75rem 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 1.5rem 0;
   margin-bottom: 1rem;
 }
 
@@ -784,19 +830,39 @@ const addLesson = () => {
   font-weight: 500;
 }
 
-.detail-panel-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .detail-panel-content {
   flex: 1;
   overflow: auto;
+  padding: 0 1.5rem 1.5rem;
 }
 
 .detail-tab-content {
-  height: 100%;
-  overflow-y: auto;
+  min-height: calc(100% - 4rem);
+  overflow-y: visible;
+  padding-bottom: 1rem;
+}
+
+/* 针对不同类型表单的容器样式优化 */
+.course-form,
+.chapter-form,
+.lesson-form,
+.lesson-content-editor {
+  padding-bottom: 2rem;
+}
+
+/* 暗色模式适配 */
+:root.dark .detail-panel-container {
+  background-color: var(--color-bg-primary, #1f2937);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .detail-panel-header-main {
+  background-color: var(--color-bg-secondary, #111827);
+  border-bottom-color: var(--color-border, #374151);
+}
+
+:root.dark .detail-panel-title {
+  color: var(--color-text-primary, #f9fafb);
 }
 
 .loading-container,

@@ -300,17 +300,18 @@ export const LessonAPI = {
       // 确保数据格式正确
       let formattedData;
       if (Array.isArray(reorderData)) {
-        // 如果传入的是数组，包装成正确的格式
-        formattedData = { lessons: reorderData };
-        console.log('小节排序数据格式化: 数组转换为对象格式');
+        // 直接使用数组格式，不添加外层包装
+        formattedData = reorderData;
+        console.log('小节排序数据格式化: 使用原始数组格式');
       } else if (reorderData && typeof reorderData === 'object') {
-        // 如果已经是对象，但没有lessons字段
-        if (!reorderData.lessons && Object.keys(reorderData).length > 0) {
-          formattedData = { lessons: [reorderData] };
-          console.log('小节排序数据格式化: 单个对象转换为数组格式');
+        // 如果是对象且包含lessons字段，提取lessons数组
+        if (reorderData.lessons && Array.isArray(reorderData.lessons)) {
+          formattedData = reorderData.lessons;
+          console.log('小节排序数据格式化: 从对象中提取lessons数组');
         } else {
-          // 已经是正确的格式
-          formattedData = reorderData;
+          // 单个对象转为数组
+          formattedData = [reorderData];
+          console.log('小节排序数据格式化: 单个对象转换为数组');
         }
       } else {
         // 无效的数据格式

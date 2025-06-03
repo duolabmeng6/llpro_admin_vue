@@ -80,17 +80,17 @@ const formatPageInfo = computed(() => {
 </script>
 
 <template>
-  <div class="pagination-container flex items-center justify-between py-3">
+  <div class="pagination-container flex flex-col space-y-2">
     <!-- 页码信息 -->
-    <div class="text-sm text-gray-500 dark:text-gray-400" v-if="totalItems > 0">
+    <div class="text-xs text-gray-500 dark:text-gray-400 text-center" v-if="totalItems > 0">
       显示 {{ formatPageInfo }}
     </div>
-    <div v-else class="text-sm text-gray-500 dark:text-gray-400">
+    <div v-else class="text-xs text-gray-500 dark:text-gray-400 text-center">
       暂无数据
     </div>
     
     <!-- 分页按钮组 -->
-    <div class="flex items-center space-x-2" v-if="totalPages > 1">
+    <div class="flex items-center justify-center space-x-1" v-if="totalPages > 1">
       <!-- 上一页按钮 -->
       <button 
         class="pagination-btn"
@@ -165,14 +165,14 @@ const formatPageInfo = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.5rem;
-  font-size: 0.875rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
   background-color: var(--color-bg-secondary, #f9fafb);
   color: var(--color-text-primary, #1f2937);
   border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: 0.375rem;
+  border-radius: 0.25rem;
   transition: all 0.2s ease;
 }
 
@@ -196,8 +196,9 @@ const formatPageInfo = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary, #6b7280);
 }
 
