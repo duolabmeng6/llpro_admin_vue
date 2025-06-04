@@ -311,6 +311,11 @@ const handleCreateLesson = async (lessonData) => {
 const handlePageChange = (page) => {
   courseStore.handlePageChange(page);
 };
+
+// 处理每页显示数量变化
+const handlePageSizeChange = (size) => {
+  courseStore.handlePageSizeChange(size);
+};
 </script>
 
 <template>
@@ -393,13 +398,18 @@ const handlePageChange = (page) => {
           </div>
           
           <!-- 底部固定区域，包含分页功能 -->
-          <div v-if="totalItems > pageSize" class="course-list-footer px-3 pt-2 pb-3 border-t border-gray-200 dark:border-gray-700 z-10">
+          <div v-if="totalItems > 0" class="course-list-footer px-3 pt-2 pb-3 border-t border-gray-200 dark:border-gray-700 z-10">
             <Pagination
               :current-page="currentPage"
               :total-pages="totalPages"
               :page-size="pageSize"
               :total-items="totalItems"
+              :show-detailed-info="true"
+              :show-page-size-selector="true"
+              :show-quick-jumper="true"
+              :compact="true"
               @update:currentPage="handlePageChange"
+              @update:pageSize="handlePageSizeChange"
             />
           </div>
         </div>
