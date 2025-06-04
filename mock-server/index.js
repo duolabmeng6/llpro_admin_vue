@@ -6,6 +6,7 @@ import uploadRoutes from './routes/upload.js';
 import coursesRoutes from './routes/courses.js';
 import chaptersRoutes from './routes/chapters.js';
 import lessonsRoutes from './routes/lessons.js';
+import dbRoutes from './routes/db.js';
 import path from 'path';
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/chapters', chaptersRoutes);
 app.use('/api/lessons', lessonsRoutes);
+app.use('/api/db', dbRoutes);
 
 // Root route
 app.get('/', (req, res) => {

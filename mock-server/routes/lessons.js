@@ -7,6 +7,9 @@ const router = express.Router();
 // GET /api/lessons - 获取所有小节
 router.get('/', LessonController.getAllLessons);
 
+// POST /api/lessons - 创建小节
+router.post('/', LessonController.createLesson);
+
 // PUT /api/lessons/reorder - 重新排序小节
 router.put('/reorder', LessonController.reorderLessons);
 

@@ -1,38 +1,25 @@
 import { CourseModel } from '../models/course.js';
-import { ChapterModel, updateCourseIds } from '../models/chapter.js';
-import { LessonModel, updateChapterIds } from '../models/lesson.js';
-
-// 初始化关联ID
-const initializeIds = () => {
-  // 获取所有课程ID
-  const { courses } = CourseModel.getAll();
-  const courseIds = courses.map(course => course.id);
-  
-  // 更新章节中的课程ID
-  updateCourseIds(courseIds);
-  
-  // 获取所有章节ID
-  const chapters = ChapterModel.getAll();
-  const chapterIds = chapters.map(chapter => chapter.id);
-  
-  // 更新小节中的章节ID
-  updateChapterIds(chapterIds);
-};
-
-// 在模块加载时初始化关联ID
-initializeIds();
+import { ChapterModel } from '../models/chapter.js';
+import { LessonModel } from '../models/lesson.js';
 
 // 课程控制器
 const CourseController = {
   // 获取所有课程
-  getAllCourses: (req, res) => {
+  getAllCourses: async (req, res) => {
     try {
       // 获取分页参数
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
+      const status = req.query.status;
+      const search = req.query.search;
       
       // 获取所有课程，带分页
-      const { courses, total } = CourseModel.getAll({ page, limit });
+      const { courses, total } = await CourseModel.getAll({ 
+        page, 
+        limit,
+        status,
+        search
+      });
       
       // 构建分页响应
       res.json({
@@ -45,15 +32,16 @@ const CourseController = {
         }
       });
     } catch (error) {
+      console.error('获取所有课程失败:', error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 获取单个课程
-  getCourseById: (req, res) => {
+  getCourseById: async (req, res) => {
     try {
       const { id } = req.params;
-      const course = CourseModel.getById(id);
+      const course = await CourseModel.getById(id);
       
       if (!course) {
         return res.status(404).json({ message: '课程不存在' });
@@ -61,27 +49,29 @@ const CourseController = {
       
       res.json(course);
     } catch (error) {
+      console.error(`获取课程(ID: ${req.params.id})失败:`, error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 创建课程
-  createCourse: (req, res) => {
+  createCourse: async (req, res) => {
     try {
       const courseData = req.body;
-      const newCourse = CourseModel.create(courseData);
+      const newCourse = await CourseModel.create(courseData);
       res.status(201).json(newCourse);
     } catch (error) {
+      console.error('创建课程失败:', error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 更新课程
-  updateCourse: (req, res) => {
+  updateCourse: async (req, res) => {
     try {
       const { id } = req.params;
       const courseData = req.body;
-      const updatedCourse = CourseModel.update(id, courseData);
+      const updatedCourse = await CourseModel.update(id, courseData);
       
       if (!updatedCourse) {
         return res.status(404).json({ message: '课程不存在' });
@@ -89,15 +79,16 @@ const CourseController = {
       
       res.json(updatedCourse);
     } catch (error) {
+      console.error(`更新课程(ID: ${req.params.id})失败:`, error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 删除课程
-  deleteCourse: (req, res) => {
+  deleteCourse: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = CourseModel.delete(id);
+      const result = await CourseModel.delete(id);
       
       if (!result) {
         return res.status(404).json({ message: '课程不存在' });
@@ -105,57 +96,43 @@ const CourseController = {
       
       res.json({ message: '课程删除成功' });
     } catch (error) {
+      console.error(`删除课程(ID: ${req.params.id})失败:`, error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 获取课程的所有章节
-  getCourseChapters: (req, res) => {
+  getCourseChapters: async (req, res) => {
     try {
       const { id } = req.params;
-      const course = CourseModel.getById(id);
+      const course = await CourseModel.getById(id);
       
       if (!course) {
         return res.status(404).json({ message: '课程不存在' });
       }
       
-      const chapters = ChapterModel.getByCourseId(id);
+      const chapters = await ChapterModel.getByCourseId(id);
       res.json(chapters);
     } catch (error) {
+      console.error(`获取课程章节(课程ID: ${req.params.id})失败:`, error);
       res.status(500).json({ message: error.message });
     }
   },
 
   // 获取课程的完整结构（包括章节和小节）
-  getCourseStructure: (req, res) => {
+  getCourseStructure: async (req, res) => {
     try {
       const { id } = req.params;
-      const course = CourseModel.getById(id);
+      const course = await CourseModel.getById(id);
       
       if (!course) {
         return res.status(404).json({ message: '课程不存在' });
       }
       
-      // 获取课程的所有章节
-      const chapters = ChapterModel.getByCourseId(id);
-      
-      // 获取每个章节的小节
-      const chaptersWithLessons = chapters.map(chapter => {
-        const lessons = LessonModel.getByChapterId(chapter.id);
-        return {
-          ...chapter,
-          lessons
-        };
-      });
-      
-      // 构建完整的课程结构
-      const courseStructure = {
-        ...course,
-        chapters: chaptersWithLessons
-      };
-      
-      res.json(courseStructure);
+      // course已经包含了完整的嵌套结构（章节和小节）
+      res.json(course);
     } catch (error) {
+      console.error(`获取课程结构(课程ID: ${req.params.id})失败:`, error);
       res.status(500).json({ message: error.message });
     }
   }

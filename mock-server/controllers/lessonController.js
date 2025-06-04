@@ -2,20 +2,21 @@ import { LessonModel } from '../models/lesson.js';
 
 // 小节控制器
 // 获取所有小节
-export const getAllLessons = (req, res) => {
+export const getAllLessons = async (req, res) => {
   try {
-    const lessons = LessonModel.getAll();
+    const lessons = await LessonModel.getAll();
     res.json(lessons);
   } catch (error) {
+    console.error('获取所有小节失败:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // 获取单个小节
-export const getLessonById = (req, res) => {
+export const getLessonById = async (req, res) => {
   try {
     const { id } = req.params;
-    const lesson = LessonModel.getById(id);
+    const lesson = await LessonModel.getById(id);
     
     if (!lesson) {
       return res.status(404).json({ message: '小节不存在' });
@@ -23,27 +24,29 @@ export const getLessonById = (req, res) => {
     
     res.json(lesson);
   } catch (error) {
+    console.error(`获取小节(ID: ${req.params.id})失败:`, error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // 创建小节
-export const createLesson = (req, res) => {
+export const createLesson = async (req, res) => {
   try {
     const lessonData = req.body;
-    const newLesson = LessonModel.create(lessonData);
+    const newLesson = await LessonModel.create(lessonData);
     res.status(201).json(newLesson);
   } catch (error) {
+    console.error('创建小节失败:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // 更新小节
-export const updateLesson = (req, res) => {
+export const updateLesson = async (req, res) => {
   try {
     const { id } = req.params;
     const lessonData = req.body;
-    const updatedLesson = LessonModel.update(id, lessonData);
+    const updatedLesson = await LessonModel.update(id, lessonData);
     
     if (!updatedLesson) {
       return res.status(404).json({ message: '小节不存在' });
@@ -51,15 +54,16 @@ export const updateLesson = (req, res) => {
     
     res.json(updatedLesson);
   } catch (error) {
+    console.error(`更新小节(ID: ${req.params.id})失败:`, error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // 删除小节
-export const deleteLesson = (req, res) => {
+export const deleteLesson = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = LessonModel.delete(id);
+    const result = await LessonModel.delete(id);
     
     if (!result) {
       return res.status(404).json({ message: '小节不存在' });
@@ -67,12 +71,13 @@ export const deleteLesson = (req, res) => {
     
     res.json({ message: '小节删除成功' });
   } catch (error) {
+    console.error(`删除小节(ID: ${req.params.id})失败:`, error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // 重新排序小节
-export const reorderLessons = (req, res) => {
+export const reorderLessons = async (req, res) => {
   try {
     // 获取请求数据，可能是数组或包含lessons数组的对象
     let reorderData = req.body;
@@ -106,7 +111,7 @@ export const reorderLessons = (req, res) => {
     }
     
     console.log('验证通过，开始重新排序小节');
-    const updatedLessons = LessonModel.reorder(reorderData);
+    const updatedLessons = await LessonModel.reorder(reorderData);
     console.log('小节排序完成，返回更新后的小节:', updatedLessons.length, '个');
     
     res.json(updatedLessons);

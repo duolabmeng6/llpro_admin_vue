@@ -8,6 +8,9 @@ const router = express.Router();
 // GET /api/chapters - 获取所有章节
 router.get('/', ChapterController.getAllChapters);
 
+// POST /api/chapters - 创建章节
+router.post('/', ChapterController.createChapter);
+
 // GET /api/chapters/:id - 获取单个章节
 router.get('/:id', ChapterController.getChapterById);
 

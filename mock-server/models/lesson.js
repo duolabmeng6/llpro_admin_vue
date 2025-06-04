@@ -1,288 +1,123 @@
+import prisma from '../lib/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 
-// 初始小节数据
-let lessons = [
-  {
-    id: uuidv4(),
-    chapterId: '1', // 这里需要替换为实际的章节ID
-    title: '1.1 前端开发概述',
-    content: '本节介绍前端开发的基本概念和工具链',
-    duration: 15, // 分钟
-    type: 'video',
-    order: 100, // 使用较大的步长
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '1', // 这里需要替换为实际的章节ID
-    title: '1.2 HTML基础',
-    content: '学习HTML的基本标签和结构',
-    duration: 20,
-    type: 'video',
-    order: 200,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '1', // 这里需要替换为实际的章节ID
-    title: '1.3 CSS基础',
-    content: '学习CSS的基本标签和结构',
-    duration: 20,
-    type: 'video',
-    order: 300,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '1', // 这里需要替换为实际的章节ID
-    title: '1.4 JavaScript基础',
-    content: '学习JavaScript的基本标签和结构',
-    duration: 20,
-    type: 'video',
-    order: 400,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '2', // 这里需要替换为实际的章节ID
-    title: '2.1 CSS高级选择器',
-    content: '学习CSS的高级选择器和伪类',
-    duration: 25,
-    type: 'video',
-    order: 100, // 每个章节都从100开始
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  // 添加更多测试数据 - 第二章的小节
-  {
-    id: uuidv4(),
-    chapterId: '2', // 第二章
-    title: '2.2 CSS布局技术',
-    content: '学习Flexbox和Grid等现代CSS布局技术',
-    duration: 30,
-    type: 'video',
-    order: 200,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '2', // 第二章
-    title: '2.3 CSS动画与过渡',
-    content: '学习CSS动画、过渡和变换效果',
-    duration: 25,
-    type: 'video',
-    order: 300,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '2', // 第二章
-    title: '2.4 响应式设计',
-    content: '学习媒体查询和响应式网页设计原则',
-    duration: 35,
-    type: 'video',
-    order: 400,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  // 添加第三章的小节
-  {
-    id: uuidv4(),
-    chapterId: '3', // 第三章
-    title: '3.1 JavaScript进阶',
-    content: '深入学习JavaScript的高级特性和ES6+语法',
-    duration: 40,
-    type: 'video',
-    order: 100, // 每个章节都从100开始
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '3', // 第三章
-    title: '3.2 异步编程',
-    content: '学习Promise、async/await和事件循环',
-    duration: 35,
-    type: 'video',
-    order: 200,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    chapterId: '3', // 第三章
-    title: '3.3 前端框架介绍',
-    content: '了解主流前端框架的基本概念和比较',
-    duration: 30,
-    type: 'document',
-    order: 300,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
-
-// 小节模型
+// Lesson模型 - 使用Prisma
 const LessonModel = {
   // 获取所有小节
-  getAll: () => {
-    return lessons;
+  getAll: async () => {
+    try {
+      return await prisma.lesson.findMany({
+        orderBy: [
+          { chapterId: 'asc' },
+          { order: 'asc' }
+        ]
+      });
+    } catch (error) {
+      console.error('获取所有小节失败:', error);
+      throw error;
+    }
   },
 
   // 获取单个小节
-  getById: (id) => {
-    return lessons.find(lesson => lesson.id === id);
+  getById: async (id) => {
+    try {
+      return await prisma.lesson.findUnique({
+        where: { id }
+      });
+    } catch (error) {
+      console.error(`获取小节(ID: ${id})失败:`, error);
+      throw error;
+    }
   },
 
   // 获取章节的所有小节
-  getByChapterId: (chapterId) => {
-    return lessons.filter(lesson => lesson.chapterId === chapterId)
-      .sort((a, b) => a.order - b.order);
+  getByChapterId: async (chapterId) => {
+    try {
+      return await prisma.lesson.findMany({
+        where: { chapterId },
+        orderBy: { order: 'asc' }
+      });
+    } catch (error) {
+      console.error(`获取章节(ID: ${chapterId})的小节失败:`, error);
+      throw error;
+    }
   },
 
   // 创建小节
-  create: (lessonData) => {
-    // 获取当前章节最大的order值
-    const maxOrder = lessons
-      .filter(lesson => lesson.chapterId === lessonData.chapterId)
-      .reduce((max, lesson) => Math.max(max, lesson.order), 0);
-    
-    const newLesson = {
-      id: uuidv4(),
-      ...lessonData,
-      order: lessonData.order || maxOrder + 100, // 使用100作为步长
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    lessons.push(newLesson);
-    return newLesson;
+  create: async (lessonData) => {
+    try {
+      // 获取当前章节最大的order值
+      const maxOrderLesson = await prisma.lesson.findFirst({
+        where: { chapterId: lessonData.chapterId },
+        orderBy: { order: 'desc' }
+      });
+      
+      // 使用100作为步长
+      const order = maxOrderLesson ? maxOrderLesson.order + 100 : 100;
+      
+      return await prisma.lesson.create({
+        data: {
+          ...lessonData,
+          order: lessonData.order || order
+        }
+      });
+    } catch (error) {
+      console.error('创建小节失败:', error);
+      throw error;
+    }
   },
 
   // 更新小节
-  update: (id, lessonData) => {
-    const index = lessons.findIndex(lesson => lesson.id === id);
-    if (index === -1) return null;
-
-    const updatedLesson = {
-      ...lessons[index],
-      ...lessonData,
-      updatedAt: new Date().toISOString()
-    };
-    lessons[index] = updatedLesson;
-    return updatedLesson;
+  update: async (id, lessonData) => {
+    try {
+      return await prisma.lesson.update({
+        where: { id },
+        data: lessonData
+      });
+    } catch (error) {
+      console.error(`更新小节(ID: ${id})失败:`, error);
+      throw error;
+    }
   },
 
   // 删除小节
-  delete: (id) => {
-    const index = lessons.findIndex(lesson => lesson.id === id);
-    if (index === -1) return false;
-
-    lessons.splice(index, 1);
-    return true;
+  delete: async (id) => {
+    try {
+      await prisma.lesson.delete({
+        where: { id }
+      });
+      return true;
+    } catch (error) {
+      console.error(`删除小节(ID: ${id})失败:`, error);
+      return false;
+    }
   },
 
   // 重新排序小节
-  reorder: (reorderData) => {
-    console.log('小节排序 - 接收到的数据:', reorderData);
-    
-    // reorderData格式: [{id: '1', order: 2}, {id: '2', order: 1}]
-    const updatedLessons = [];
-    
-    // 记录排序前的状态，用于日志
-    const beforeState = {};
-    lessons.forEach(lesson => {
-      beforeState[lesson.id] = {
-        order: lesson.order,
-        chapterId: lesson.chapterId,
-        title: lesson.title
-      };
-    });
-    console.log('排序前的小节状态:', beforeState);
-    
-    // 更新指定小节的顺序
-    reorderData.forEach(item => {
-      const lesson = lessons.find(l => l.id === item.id);
-      if (lesson) {
-        console.log(`更新小节 ${lesson.id} 的顺序: ${lesson.order} -> ${item.order}`);
-        lesson.order = item.order;
-        lesson.updatedAt = new Date().toISOString();
-        updatedLessons.push({ ...lesson });
-      } else {
-        console.warn(`未找到小节: ${item.id}`);
-      }
-    });
-    
-    // 获取所有受影响的章节
-    const affectedChapterIds = new Set(updatedLessons.map(l => l.chapterId));
-    console.log('受影响的章节:', Array.from(affectedChapterIds));
-    
-    // 记录排序后的状态，用于日志
-    const afterState = {};
-    lessons.forEach(lesson => {
-      afterState[lesson.id] = {
-        order: lesson.order,
-        chapterId: lesson.chapterId,
-        title: lesson.title
-      };
-    });
-    console.log('排序后的小节状态:', afterState);
-    
-    // 记录变化的小节
-    const changes = {};
-    Object.keys(beforeState).forEach(id => {
-      if (beforeState[id].order !== afterState[id]?.order) {
-        changes[id] = {
-          before: beforeState[id],
-          after: afterState[id]
-        };
-      }
-    });
-    console.log('小节顺序变化:', changes);
-    
-    return updatedLessons;
+  reorder: async (reorderData) => {
+    try {
+      console.log('小节排序 - 接收到的数据:', reorderData);
+      
+      const updatedLessons = [];
+      
+      // 使用事务处理批量更新
+      await prisma.$transaction(async (tx) => {
+        for (const item of reorderData) {
+          const updatedLesson = await tx.lesson.update({
+            where: { id: item.id },
+            data: { order: item.order }
+          });
+          
+          updatedLessons.push(updatedLesson);
+        }
+      });
+      
+      return updatedLessons;
+    } catch (error) {
+      console.error('重新排序小节失败:', error);
+      throw error;
+    }
   }
 };
 
-// 更新初始数据中的章节ID
-const updateChapterIds = (chapterIds) => {
-  if (!chapterIds || !Array.isArray(chapterIds) || chapterIds.length === 0) {
-    console.warn('无效的章节ID数组，无法更新小节的章节ID关联');
-    return;
-  }
-  
-  console.log('更新小节的章节ID关联，可用章节ID:', chapterIds);
-  
-  // 为每个小节分配适当的章节ID
-  lessons.forEach((lesson) => {
-    // 从小节标题中提取章节编号
-    const titleMatch = lesson.title.match(/^(\d+)\./);
-    if (!titleMatch) {
-      console.warn(`无法从小节标题 "${lesson.title}" 中提取章节编号`);
-      return;
-    }
-    
-    const chapterNumber = parseInt(titleMatch[1], 10);
-    // 章节编号从1开始，数组索引从0开始，所以需要减1
-    const chapterIndex = chapterNumber - 1;
-    
-    if (chapterIndex >= 0 && chapterIndex < chapterIds.length) {
-      const newChapterId = chapterIds[chapterIndex];
-      console.log(`更新小节 "${lesson.title}" 的章节ID: ${lesson.chapterId} -> ${newChapterId}`);
-      lesson.chapterId = newChapterId;
-    } else {
-      console.warn(`章节编号 ${chapterNumber} 超出范围，无法为小节 "${lesson.title}" 分配章节ID`);
-    }
-  });
-  
-  console.log('小节章节ID更新完成');
-};
-
-export {
-  LessonModel,
-  updateChapterIds
-}; 
+export { LessonModel }; 

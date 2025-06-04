@@ -1,131 +1,129 @@
+import prisma from '../lib/prisma.js';
 import { v4 as uuidv4 } from 'uuid';
 
-// 初始章节数据
-let chapters = [
-  {
-    id: uuidv4(),
-    courseId: '1', // 这里需要替换为实际的课程ID
-    title: '第一章：基础知识',
-    description: '介绍前端开发的基础知识',
-    order: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    courseId: '1', // 这里需要替换为实际的课程ID
-    title: '第二章：进阶技术',
-    description: '深入学习前端进阶技术',
-    order: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: uuidv4(),
-    courseId: '1', // 这里需要替换为实际的课程ID
-    title: '第三章：高级技术',
-    description: '深入学习前端高级技术',
-    order: 3,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
-
-// 章节模型
+// Chapter模型 - 使用Prisma
 const ChapterModel = {
   // 获取所有章节
-  getAll: () => {
-    return chapters;
+  getAll: async () => {
+    try {
+      return await prisma.chapter.findMany({
+        orderBy: { order: 'asc' }
+      });
+    } catch (error) {
+      console.error('获取所有章节失败:', error);
+      throw error;
+    }
   },
 
   // 获取单个章节
-  getById: (id) => {
-    return chapters.find(chapter => chapter.id === id);
+  getById: async (id) => {
+    try {
+      return await prisma.chapter.findUnique({
+        where: { id },
+        include: {
+          lessons: {
+            orderBy: { order: 'asc' }
+          }
+        }
+      });
+    } catch (error) {
+      console.error(`获取章节(ID: ${id})失败:`, error);
+      throw error;
+    }
   },
 
   // 获取课程的所有章节
-  getByCourseId: (courseId) => {
-    return chapters.filter(chapter => chapter.courseId === courseId)
-      .sort((a, b) => a.order - b.order);
+  getByCourseId: async (courseId) => {
+    try {
+      return await prisma.chapter.findMany({
+        where: { courseId },
+        orderBy: { order: 'asc' },
+        include: {
+          lessons: {
+            orderBy: { order: 'asc' }
+          }
+        }
+      });
+    } catch (error) {
+      console.error(`获取课程(ID: ${courseId})的章节失败:`, error);
+      throw error;
+    }
   },
 
   // 创建章节
-  create: (chapterData) => {
-    // 获取当前课程最大的order值
-    const maxOrder = chapters
-      .filter(chapter => chapter.courseId === chapterData.courseId)
-      .reduce((max, chapter) => Math.max(max, chapter.order), 0);
-    
-    const newChapter = {
-      id: uuidv4(),
-      ...chapterData,
-      order: chapterData.order || maxOrder + 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    chapters.push(newChapter);
-    return newChapter;
+  create: async (chapterData) => {
+    try {
+      // 获取当前课程最大的order值
+      const maxOrderChapter = await prisma.chapter.findFirst({
+        where: { courseId: chapterData.courseId },
+        orderBy: { order: 'desc' }
+      });
+      
+      const order = maxOrderChapter ? maxOrderChapter.order + 1 : 1;
+      
+      return await prisma.chapter.create({
+        data: {
+          ...chapterData,
+          order: chapterData.order || order
+        }
+      });
+    } catch (error) {
+      console.error('创建章节失败:', error);
+      throw error;
+    }
   },
 
   // 更新章节
-  update: (id, chapterData) => {
-    const index = chapters.findIndex(chapter => chapter.id === id);
-    if (index === -1) return null;
-
-    const updatedChapter = {
-      ...chapters[index],
-      ...chapterData,
-      updatedAt: new Date().toISOString()
-    };
-    chapters[index] = updatedChapter;
-    return updatedChapter;
+  update: async (id, chapterData) => {
+    try {
+      return await prisma.chapter.update({
+        where: { id },
+        data: chapterData
+      });
+    } catch (error) {
+      console.error(`更新章节(ID: ${id})失败:`, error);
+      throw error;
+    }
   },
 
   // 删除章节
-  delete: (id) => {
-    const index = chapters.findIndex(chapter => chapter.id === id);
-    if (index === -1) return false;
-
-    chapters.splice(index, 1);
-    return true;
+  delete: async (id) => {
+    try {
+      await prisma.chapter.delete({
+        where: { id }
+      });
+      return true;
+    } catch (error) {
+      console.error(`删除章节(ID: ${id})失败:`, error);
+      return false;
+    }
   },
 
   // 重新排序章节
-  reorder: (reorderData) => {
-    console.log('章节排序 - 接收到的数据:', reorderData);
-    
-    // reorderData格式: [{id: '1', order: 2}, {id: '2', order: 1}]
-    const updatedChapters = [];
-    
-    reorderData.forEach(item => {
-      const chapter = chapters.find(c => c.id === item.id);
-      if (chapter) {
-        console.log(`更新章节 ${chapter.id} 的顺序: ${chapter.order} -> ${item.order}`);
-        chapter.order = item.order;
-        chapter.updatedAt = new Date().toISOString();
-        updatedChapters.push({ ...chapter });
-      } else {
-        console.warn(`未找到章节: ${item.id}`);
-      }
-    });
-    
-    // 重新排序所有章节
-    chapters.sort((a, b) => a.order - b.order);
-    console.log('排序后的所有章节:', chapters.map(c => ({ id: c.id, order: c.order })));
-    
-    return updatedChapters;
+  reorder: async (reorderData) => {
+    try {
+      console.log('章节排序 - 接收到的数据:', reorderData);
+      
+      const updatedChapters = [];
+      
+      // 使用事务处理批量更新
+      await prisma.$transaction(async (tx) => {
+        for (const item of reorderData) {
+          const updatedChapter = await tx.chapter.update({
+            where: { id: item.id },
+            data: { order: item.order }
+          });
+          
+          updatedChapters.push(updatedChapter);
+        }
+      });
+      
+      return updatedChapters;
+    } catch (error) {
+      console.error('重新排序章节失败:', error);
+      throw error;
+    }
   }
 };
 
-// 更新初始数据中的课程ID
-const updateCourseIds = (courseIds) => {
-  if (courseIds && courseIds.length >= 2) {
-    chapters[0].courseId = courseIds[0];
-    chapters[1].courseId = courseIds[0];
-  }
-};
-
-export {
-  ChapterModel,
-  updateCourseIds
-}; 
+export { ChapterModel }; 
