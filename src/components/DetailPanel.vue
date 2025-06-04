@@ -65,6 +65,12 @@ const newLessonData = ref({
   status: 'draft'
 });
 
+// 判断表单是否有未保存的修改
+const hasUnsavedChanges = ref(false);
+
+// 原始数据副本，用于比较是否有修改
+const originalData = ref({});
+
 // 监听节点数据变化，重置表单数据
 watch(() => props.nodeData, (newVal) => {
   if (newVal) {
@@ -136,6 +142,37 @@ watch(() => props.editMode, (newVal) => {
     formData.value = processedData;
   }
 }, { immediate: true });
+
+// 监听表单数据变化，检测未保存的修改
+watch(formData, (newVal) => {
+  if (!isEditing.value) return;
+  
+  // 简单比较是否有变化
+  hasUnsavedChanges.value = JSON.stringify(newVal) !== JSON.stringify(originalData.value);
+  console.log('表单数据变更，未保存状态:', hasUnsavedChanges.value);
+}, { deep: true });
+
+// 进入编辑模式时，保存原始数据副本
+watch(isEditing, (newVal) => {
+  if (newVal) {
+    originalData.value = JSON.parse(JSON.stringify(formData.value));
+    hasUnsavedChanges.value = false;
+    console.log('进入编辑模式，保存原始数据副本');
+  } else {
+    hasUnsavedChanges.value = false;
+    console.log('退出编辑模式，重置未保存状态');
+  }
+});
+
+// 定义一个方法，检查是否有未保存的修改
+const checkUnsavedChanges = () => {
+  return isEditing.value && hasUnsavedChanges.value;
+};
+
+// 将方法暴露给父组件
+defineExpose({
+  checkUnsavedChanges
+});
 
 // 计算面板标题
 const panelTitle = computed(() => {

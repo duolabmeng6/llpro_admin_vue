@@ -20,6 +20,10 @@ const showCreateCourseModal = ref(false);
 const showAddChapterModal = ref(false);
 // 是否显示创建小节对话框
 const showAddLessonModal = ref(false);
+// 是否显示未保存修改确认对话框
+const showUnsavedChangesModal = ref(false);
+// 待执行的操作
+const pendingAction = ref(null);
 // 详情面板是否处于编辑模式
 const detailPanelEditMode = ref(false);
 // 树结构是否处于展开状态
@@ -88,6 +92,8 @@ const totalItems = computed(() => pagination.value.totalItems);
 
 // 添加树形结构组件引用
 const treeViewRef = ref(null);
+// 添加详情面板组件引用
+const detailPanelRef = ref(null);
 
 // 展开全部节点
 const expandAllNodes = () => {
@@ -127,48 +133,10 @@ onMounted(async () => {
   }
 });
 
-// 选择课程
-const selectCourse = async (courseId) => {
-  if (currentCourseId.value === courseId && mainAreaViewMode.value === 'content') return;
-  
-  currentCourseId.value = courseId;
-  mainAreaViewMode.value = 'content'; // 选中课程后，切换到内容显示模式
-  
-  try {
-    await courseStore.fetchCourseStructure(courseId);
-  } catch (error) {
-    console.error(`获取课程 ${courseId} 结构失败:`, error);
-  }
-};
-
-// 创建课程
-const createCourse = async () => {
-  try {
-    const newCourse = await courseStore.createCourse(newCourseData.value);
-    showCreateCourseModal.value = false;
-    newCourseData.value = {
-      title: '',
-      description: '',
-      content: '',
-      price: 0,
-      pricingType: 'free',
-      status: 'draft',
-      cover: ''
-    };
-    
-    // 选择新创建的课程
-    selectCourse(newCourse.id);
-  } catch (error) {
-    console.error('创建课程失败:', error);
-  }
-};
-
 // 树节点点击事件
 const handleNodeClick = (node) => {
-  // 重置编辑模式
-  detailPanelEditMode.value = false;
-  // 选中节点
-  courseStore.selectNode(node);
+  // 使用导航处理逻辑
+  handlePendingNavigation({ type: 'selectNode', payload: node });
 };
 
 // 树节点添加事件
@@ -329,6 +297,76 @@ const handlePageChange = (page) => {
 // 处理每页显示数量变化
 const handlePageSizeChange = (size) => {
   courseStore.handlePageSizeChange(size);
+};
+
+// 处理可能导致离开编辑状态的导航
+const handlePendingNavigation = (action) => {
+  if (detailPanelRef.value && detailPanelRef.value.checkUnsavedChanges()) {
+    pendingAction.value = action;
+    showUnsavedChangesModal.value = true;
+  } else {
+    executePendingAction(action);
+  }
+};
+
+// 执行待处理的操作
+const executePendingAction = (action) => {
+  if (!action) return;
+  
+  if (action.type === 'selectNode') {
+    detailPanelEditMode.value = false;
+    courseStore.selectNode(action.payload);
+  } else if (action.type === 'selectCourse') {
+    currentCourseId.value = action.payload;
+    mainAreaViewMode.value = 'content';
+    courseStore.fetchCourseStructure(action.payload).catch(error => {
+      console.error(`获取课程 ${action.payload} 结构失败:`, error);
+    });
+  }
+  
+  pendingAction.value = null;
+};
+
+// 确认离开编辑状态
+const confirmNavigation = () => {
+  showUnsavedChangesModal.value = false;
+  executePendingAction(pendingAction.value);
+};
+
+// 取消离开编辑状态
+const cancelNavigation = () => {
+  showUnsavedChangesModal.value = false;
+  pendingAction.value = null;
+};
+
+// 选择课程
+const selectCourse = (courseId) => {
+  if (currentCourseId.value === courseId && mainAreaViewMode.value === 'content') return;
+  
+  // 使用导航处理逻辑
+  handlePendingNavigation({ type: 'selectCourse', payload: courseId });
+};
+
+// 创建课程
+const createCourse = async () => {
+  try {
+    const newCourse = await courseStore.createCourse(newCourseData.value);
+    showCreateCourseModal.value = false;
+    newCourseData.value = {
+      title: '',
+      description: '',
+      content: '',
+      price: 0,
+      pricingType: 'free',
+      status: 'draft',
+      cover: ''
+    };
+    
+    // 选择新创建的课程
+    selectCourse(newCourse.id);
+  } catch (error) {
+    console.error('创建课程失败:', error);
+  }
 };
 </script>
 
@@ -492,6 +530,7 @@ const handlePageSizeChange = (size) => {
           <!-- 右侧：详情面板 -->
           <div class="flex-1 h-full overflow-hidden flex flex-col">
             <DetailPanel
+              ref="detailPanelRef"
               :node-type="selectedNodeType"
               :node-data="selectedNodeData"
               :loading="loading"
@@ -735,6 +774,21 @@ const handlePageSizeChange = (size) => {
         </div>
       </transition-group>
     </div>
+    
+    <!-- 未保存修改确认对话框 -->
+    <Modal
+      v-model:show="showUnsavedChangesModal"
+      title="未保存的修改"
+      confirm-text="放弃修改"
+      cancel-text="继续编辑"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    >
+      <div class="p-4">
+        <p class="text-gray-700 dark:text-gray-300">您有未保存的修改，是否要离开当前页面？</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">如果离开，您的修改将会丢失。</p>
+      </div>
+    </Modal>
   </div>
 </template>
 
