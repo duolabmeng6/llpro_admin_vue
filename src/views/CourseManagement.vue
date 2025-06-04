@@ -28,6 +28,9 @@ const treeExpanded = ref(true);
 const newCourseData = ref({
   title: '',
   description: '',
+  content: '',
+  price: 0,
+  pricingType: 'free',
   status: 'draft',
   cover: ''
 });
@@ -35,7 +38,8 @@ const newCourseData = ref({
 const newChapterData = ref({
   title: '',
   description: '',
-  order: 0
+  order: 0,
+  status: 'draft'
 });
 // 新小节表单数据
 const newLessonData = ref({
@@ -43,7 +47,10 @@ const newLessonData = ref({
   content: '',
   duration: 0,
   type: 'video',
-  videoUrl: ''
+  videoUrl: '',
+  order: 100,
+  status: 'draft',
+  isFreePreview: false
 });
 
 // 计算属性：树形数据
@@ -142,6 +149,9 @@ const createCourse = async () => {
     newCourseData.value = {
       title: '',
       description: '',
+      content: '',
+      price: 0,
+      pricingType: 'free',
       status: 'draft',
       cover: ''
     };
@@ -280,7 +290,8 @@ const handleCreateChapter = async (chapterData) => {
     newChapterData.value = {
       title: '',
       description: '',
-      order: 0
+      order: 0,
+      status: 'draft'
     };
   } catch (error) {
     console.error('创建章节失败:', error);
@@ -300,7 +311,10 @@ const handleCreateLesson = async (lessonData) => {
       content: '',
       duration: 0,
       type: 'video',
-      videoUrl: ''
+      videoUrl: '',
+      order: 100,
+      status: 'draft',
+      isFreePreview: false
     };
   } catch (error) {
     console.error('创建小节失败:', error);
@@ -525,6 +539,31 @@ const handlePageSizeChange = (size) => {
         </div>
         
         <div class="flex flex-col gap-1.5">
+          <label for="course-pricing-type" class="font-medium text-sm text-gray-700 dark:text-gray-300">付费类型</label>
+          <select
+            id="course-pricing-type"
+            v-model="newCourseData.pricingType"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="free">免费</option>
+            <option value="paid">付费</option>
+          </select>
+        </div>
+        
+        <div v-if="newCourseData.pricingType === 'paid'" class="flex flex-col gap-1.5">
+          <label for="course-price" class="font-medium text-sm text-gray-700 dark:text-gray-300">价格</label>
+          <input
+            id="course-price"
+            v-model.number="newCourseData.price"
+            type="number"
+            min="0"
+            step="0.01"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="请输入课程价格"
+          />
+        </div>
+        
+        <div class="flex flex-col gap-1.5">
           <label for="course-status" class="font-medium text-sm text-gray-700 dark:text-gray-300">课程状态</label>
           <select
             id="course-status"
@@ -566,6 +605,18 @@ const handlePageSizeChange = (size) => {
             placeholder="请输入章节描述"
             rows="4"
           ></textarea>
+        </div>
+        
+        <div class="flex flex-col gap-1.5">
+          <label for="chapter-status" class="font-medium text-sm text-gray-700 dark:text-gray-300">章节状态</label>
+          <select
+            id="chapter-status"
+            v-model="newChapterData.status"
+            class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="draft">草稿</option>
+            <option value="published">已发布</option>
+          </select>
         </div>
       </div>
     </Modal>
@@ -623,6 +674,31 @@ const handlePageSizeChange = (size) => {
             class="p-3 border border-gray-200 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="请输入小节时长"
           />
+        </div>
+        
+        <div class="form-group">
+          <label for="lesson-status" class="form-label">状态</label>
+          <select
+            id="lesson-status"
+            v-model="newLessonData.status"
+            class="form-select"
+          >
+            <option value="draft">草稿</option>
+            <option value="published">已发布</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="new-lesson-free-preview"
+              v-model="newLessonData.isFreePreview"
+              class="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <label for="new-lesson-free-preview" class="ml-2 text-gray-700 dark:text-gray-300">允许试看</label>
+          </div>
+          <div class="text-xs text-gray-500 mt-1 ml-7">勾选后，未购买课程的用户也可以查看此小节内容</div>
         </div>
       </div>
     </Modal>

@@ -21,7 +21,8 @@ const CourseModel = {
       if (options.search) {
         where.OR = [
           { title: { contains: options.search } },
-          { description: { contains: options.search } }
+          { description: { contains: options.search } },
+          { content: { contains: options.search } }
         ];
       }
       
@@ -71,8 +72,18 @@ const CourseModel = {
   // 创建课程
   create: async (courseData) => {
     try {
+      const { title, description, content, price, pricingType, status, cover } = courseData;
+      
       return await prisma.course.create({
-        data: courseData
+        data: {
+          title,
+          description,
+          content,
+          price: price !== undefined ? Number(price) : null,
+          pricingType: pricingType || 'free',
+          status: status || 'draft',
+          cover
+        }
       });
     } catch (error) {
       console.error('创建课程失败:', error);
@@ -83,12 +94,31 @@ const CourseModel = {
   // 更新课程
   update: async (id, courseData) => {
     try {
-      return await prisma.course.update({
+      console.log(`尝试更新课程(ID: ${id})，原始数据:`, JSON.stringify(courseData, null, 2));
+      
+      // 过滤掉关系字段
+      const { chapters, ...courseDataWithoutRelations } = courseData;
+      
+      console.log(`过滤关系字段后的数据:`, JSON.stringify(courseDataWithoutRelations, null, 2));
+      
+      if (courseDataWithoutRelations.price !== undefined) {
+        courseDataWithoutRelations.price = Number(courseDataWithoutRelations.price);
+      }
+      
+      const updatedCourse = await prisma.course.update({
         where: { id },
-        data: courseData
+        data: courseDataWithoutRelations
       });
+      
+      console.log(`课程更新成功(ID: ${id})，更新后数据:`, JSON.stringify(updatedCourse, null, 2));
+      
+      return updatedCourse;
     } catch (error) {
       console.error(`更新课程(ID: ${id})失败:`, error);
+      console.error('错误详情:', error.message);
+      if (error.code) {
+        console.error('错误代码:', error.code);
+      }
       throw error;
     }
   },

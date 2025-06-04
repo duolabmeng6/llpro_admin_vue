@@ -279,6 +279,36 @@ const addLesson = () => {
                       />
                     </FormGroup>
                     
+                    <FormGroup label="课程内容">
+                      <MarkdownEditor
+                        v-model="formData.content"
+                        height="300px"
+                        :toolbars="['bold', 'underline', 'italic', '-', 'title', 'quote', 'unorderedList', 'orderedList', '-', 'codeRow', 'code', 'link', 'image', 'table', 'mermaid', 'katex', '-', 'preview', 'save', 'fullscreen']"
+                        placeholder="请输入课程内容"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="价格">
+                      <input
+                        v-model.number="formData.price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        class="form-input"
+                        placeholder="请输入课程价格"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="付费类型">
+                      <Select
+                        v-model="formData.pricingType"
+                        :options="[
+                          { value: 'free', label: '免费' },
+                          { value: 'paid', label: '付费' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
                     <FormGroup label="课程状态">
                       <Select
                         v-model="formData.status"
@@ -308,6 +338,30 @@ const addLesson = () => {
                     <div class="detail-row">
                       <div class="detail-label">课程描述</div>
                       <div class="detail-value description">{{ nodeData.description }}</div>
+                    </div>
+                    
+                    <div v-if="nodeData.content" class="detail-row">
+                      <div class="detail-label">课程内容</div>
+                      <div class="detail-value content-preview">
+                        <MarkdownEditor
+                          v-model="nodeData.content"
+                          preview-only
+                        />
+                      </div>
+                    </div>
+                    
+                    <div class="detail-row">
+                      <div class="detail-label">付费类型</div>
+                      <div class="detail-value">
+                        <span :class="`pricing-badge ${nodeData.pricingType === 'free' ? 'pricing-free' : 'pricing-paid'}`">
+                          {{ nodeData.pricingType === 'free' ? '免费' : '付费' }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div v-if="nodeData.pricingType === 'paid'" class="detail-row">
+                      <div class="detail-label">价格</div>
+                      <div class="detail-value">{{ nodeData.price || 0 }} 元</div>
                     </div>
                     
                     <div class="detail-row">
@@ -493,6 +547,18 @@ const addLesson = () => {
                       />
                     </FormGroup>
                     
+                    <FormGroup label="是否可试看">
+                      <div class="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="free-preview-checkbox"
+                          v-model="formData.isFreePreview"
+                          class="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        <label for="free-preview-checkbox" class="ml-2 text-gray-700 dark:text-gray-300">允许未购买课程的用户试看此小节</label>
+                      </div>
+                    </FormGroup>
+                    
                     <FormGroup label="内容">
                       <MarkdownEditor
                         v-model="formData.content"
@@ -548,6 +614,15 @@ const addLesson = () => {
                     <div class="detail-row">
                       <div class="detail-label">排序</div>
                       <div class="detail-value">{{ nodeData.order }}</div>
+                    </div>
+                    
+                    <div class="detail-row">
+                      <div class="detail-label">试看状态</div>
+                      <div class="detail-value">
+                        <span :class="`preview-badge ${nodeData.isFreePreview ? 'preview-enabled' : 'preview-disabled'}`">
+                          {{ nodeData.isFreePreview ? '允许试看' : '不可试看' }}
+                        </span>
+                      </div>
                     </div>
                     
                     <div class="detail-row">
@@ -1007,5 +1082,41 @@ const addLesson = () => {
 .status-published {
   background-color: rgba(34, 197, 94, 0.15);
   color: #10b981; /* 绿色 */
+}
+
+.pricing-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pricing-free {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6; /* 蓝色 */
+}
+
+.pricing-paid {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b; /* 黄色 */
+}
+
+.preview-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.preview-enabled {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981; /* 绿色 */
+}
+
+.preview-disabled {
+  background-color: rgba(107, 114, 128, 0.15);
+  color: #6b7280; /* 灰色 */
 }
 </style> 

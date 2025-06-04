@@ -110,7 +110,9 @@ export const ChapterAPI = {
   // 更新章节
   updateChapter: async (id, chapterData) => {
     try {
+      console.log(`更新章节(ID: ${id})，数据:`, JSON.stringify(chapterData, null, 2));
       const response = await axiosInstance.put(`/chapters/${id}`, chapterData);
+      console.log(`更新章节(ID: ${id})响应:`, response);
       return response;
     } catch (error) {
       console.error(`更新章节 ${id} 失败:`, error);

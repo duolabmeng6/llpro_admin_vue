@@ -76,12 +76,27 @@ const ChapterModel = {
   // 更新章节
   update: async (id, chapterData) => {
     try {
-      return await prisma.chapter.update({
+      console.log(`尝试更新章节(ID: ${id})，原始数据:`, JSON.stringify(chapterData, null, 2));
+      
+      // 过滤掉关系字段
+      const { lessons, ...chapterDataWithoutRelations } = chapterData;
+      
+      console.log(`过滤关系字段后的数据:`, JSON.stringify(chapterDataWithoutRelations, null, 2));
+      
+      const updatedChapter = await prisma.chapter.update({
         where: { id },
-        data: chapterData
+        data: chapterDataWithoutRelations
       });
+      
+      console.log(`章节更新成功(ID: ${id})，更新后数据:`, JSON.stringify(updatedChapter, null, 2));
+      
+      return updatedChapter;
     } catch (error) {
       console.error(`更新章节(ID: ${id})失败:`, error);
+      console.error('错误详情:', error.message);
+      if (error.code) {
+        console.error('错误代码:', error.code);
+      }
       throw error;
     }
   },

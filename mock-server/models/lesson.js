@@ -55,10 +55,20 @@ const LessonModel = {
       // 使用100作为步长
       const order = maxOrderLesson ? maxOrderLesson.order + 100 : 100;
       
+      // 处理新字段
+      const { title, content, duration, type, videoUrl, isFreePreview, status, chapterId } = lessonData;
+      
       return await prisma.lesson.create({
         data: {
-          ...lessonData,
-          order: lessonData.order || order
+          title,
+          content,
+          duration: duration ? Number(duration) : null,
+          type: type || 'video',
+          videoUrl,
+          order: lessonData.order || order,
+          status: status || 'draft',
+          chapterId,
+          isFreePreview: isFreePreview !== undefined ? Boolean(isFreePreview) : false
         }
       });
     } catch (error) {
@@ -83,6 +93,11 @@ const LessonModel = {
       }
       
       console.log(`找到小节(ID: ${id})，当前数据:`, JSON.stringify(existingLesson, null, 2));
+      
+      // 确保isFreePreview字段是布尔类型
+      if (lessonData.isFreePreview !== undefined) {
+        lessonData.isFreePreview = Boolean(lessonData.isFreePreview);
+      }
       
       // 执行更新操作
       const updatedLesson = await prisma.lesson.update({
