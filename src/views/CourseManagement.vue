@@ -65,8 +65,6 @@ const selectedNodeType = computed(() => courseStore.getSelectedNodeType);
 const selectedNodeData = computed(() => courseStore.getSelectedNode);
 // 计算属性：加载状态
 const loading = computed(() => courseStore.loading);
-// 计算属性：错误信息
-const error = computed(() => courseStore.error);
 // 计算属性：当前选中的节点ID
 const selectedNodeId = computed(() => {
   if (!selectedNodeType.value) return null;
@@ -166,21 +164,6 @@ const handleNodeEdit = (node) => {
 // 处理详情面板编辑模式变更
 const handleEditModeChange = (value) => {
   detailPanelEditMode.value = value;
-};
-
-// 获取小节所在的章节
-const getLessonsFromChapter = (lessonId) => {
-  if (!courseStore.courseStructure?.chapters) {
-    return null;
-  }
-  
-  for (const chapter of courseStore.courseStructure.chapters) {
-    if (chapter.lessons && chapter.lessons.some(l => l.id === lessonId)) {
-      return chapter;
-    }
-  }
-  
-  return null;
 };
 
 // 简单的消息提示函数（模拟实现）
@@ -471,7 +454,6 @@ const createCourse = async () => {
       <div class="flex-1 flex overflow-hidden h-full">
         <!-- 欢迎视图 -->
         <div v-if="mainAreaViewMode === 'welcome'" class="flex-1 flex items-center justify-center p-6 h-full">
-          <!-- 欢迎内容已移除 -->
         </div>
 
         <!-- 内容视图：课程结构与详情 -->
@@ -817,7 +799,6 @@ const createCourse = async () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* background-color: var(--color-bg-primary, #ffffff); - 已移除 */
 }
 
 .course-list-header {
@@ -845,22 +826,9 @@ const createCourse = async () => {
 }
 
 .course-list-scroll::-webkit-scrollbar-thumb {
-  /* background-color: rgba(0, 0, 0, 0.2); - 已移除 */
   border-radius: 3px;
 }
 
-.course-list-scroll::-webkit-scrollbar-track {
-  /* background-color: rgba(0, 0, 0, 0.05); - 已移除 */
-}
-
-/* 暗色模式滚动条 */
-:root.dark .course-list-scroll::-webkit-scrollbar-thumb {
-  /* background-color: rgba(255, 255, 255, 0.2); - 已移除 */
-}
-
-:root.dark .course-list-scroll::-webkit-scrollbar-track {
-  /* background-color: rgba(255, 255, 255, 0.05); - 已移除 */
-}
 
 /* 课程结构树视图容器 */
 .tree-view-container {
@@ -884,20 +852,7 @@ const createCourse = async () => {
 }
 
 .tree-view-container :deep(.tree-container::-webkit-scrollbar-thumb) {
-  /* background-color: rgba(0, 0, 0, 0.2); - 已移除 */
   border-radius: 3px;
 }
 
-.tree-view-container :deep(.tree-container::-webkit-scrollbar-track) {
-  /* background-color: rgba(0, 0, 0, 0.05); - 已移除 */
-}
-
-/* 暗色模式滚动条 */
-:root.dark .tree-view-container :deep(.tree-container::-webkit-scrollbar-thumb) {
-  /* background-color: rgba(255, 255, 255, 0.2); - 已移除 */
-}
-
-:root.dark .tree-view-container :deep(.tree-container::-webkit-scrollbar-track) {
-  /* background-color: rgba(255, 255, 255, 0.05); - 已移除 */
-}
 </style> 
