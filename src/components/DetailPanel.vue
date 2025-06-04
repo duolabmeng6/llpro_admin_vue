@@ -557,12 +557,7 @@ const addLesson = () => {
                 <MarkdownEditor
                   v-model="formData.content"
                   height="400px"
-                  :toolbars="{ 
-                    preview: true,
-                    upload: true,
-                    katex: true,
-                    mermaid: true
-                  }"
+                  :toolbars="['bold', 'underline', 'italic', '-', 'title', 'quote', 'unorderedList', 'orderedList', '-', 'codeRow', 'code', 'link', 'image', 'table', 'mermaid', 'katex', '-', 'preview', 'save', 'fullscreen']"
                 />
               </div>
               <div v-else class="lesson-content-preview">
@@ -754,9 +749,7 @@ const addLesson = () => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--color-bg-primary, #ffffff);
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -854,7 +847,6 @@ const addLesson = () => {
 }
 
 :root.dark .detail-panel-header-main {
-  border-bottom-color: var(--color-border, #374151);
 }
 
 .loading-container,

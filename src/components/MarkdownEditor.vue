@@ -1,23 +1,34 @@
 <template>
-  <MdEditor
-    v-model="content"
-    :style="{ height }"
-    :theme="theme"
-    :preview-theme="previewTheme"
-    :code-theme="codeTheme"
-    :toolbars="toolbarConfig"
-    :show-code-row-number="showCodeRowNumber"
-    :language="language"
-    :on-upload-img="handleUploadImage"
-    @onSave="handleSave"
-    @onGetCatalog="handleGetCatalog"
-  />
+  <div class="markdown-editor-container">
+    <!-- 预览模式使用 MdPreview 组件 -->
+    <div v-if="previewOnly" class="preview-container">
+      <MdPreview :id="previewId" :modelValue="content" :theme="theme" :preview-theme="previewTheme" :code-theme="codeTheme" :language="language" />
+      <MdCatalog v-if="showCatalog" :editorId="previewId" scrollElement=".preview-container" />
+    </div>
+    <!-- 编辑模式使用完整的 MdEditor 组件 -->
+    <MdEditor
+      v-else
+      v-model="content"
+      :style="{ height }"
+      :theme="theme"
+      :preview-theme="previewTheme"
+      :code-theme="codeTheme"
+      :toolbars="toolbarConfig"
+      :show-code-row-number="showCodeRowNumber"
+      :language="language"
+      :on-upload-img="handleUploadImage"
+      @onSave="handleSave"
+      @onGetCatalog="handleGetCatalog"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { MdEditor } from 'md-editor-v3';
-import 'md-editor-v3/lib/style.css';
+import { ref, computed, watch, onMounted } from 'vue';
+import { MdEditor, MdPreview, MdCatalog } from 'md-editor-v3';
+// 仅导入必要的CSS
+import 'md-editor-v3/lib/preview.css'; // 预览模式需要的CSS
+// 编辑器模式的CSS会在需要时动态导入
 
 const props = defineProps({
   modelValue: {
@@ -56,6 +67,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  previewOnly: {
+    type: Boolean,
+    default: false,
+  },
+  showCatalog: {
+    type: Boolean,
+    default: false, // 默认不显示目录
+  }
 });
 
 const emit = defineEmits([
@@ -67,6 +86,8 @@ const emit = defineEmits([
 
 // 内部状态
 const content = ref(props.modelValue);
+// 预览模式的唯一ID
+const previewId = ref(`preview-${Math.random().toString(36).substring(2, 9)}`);
 
 // 工具栏配置
 const toolbarConfig = computed(() => {
@@ -131,3 +152,17 @@ const handleGetCatalog = (catalog) => {
   emit('onGetCatalog', catalog);
 };
 </script>
+
+<style scoped>
+.markdown-editor-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.preview-container {
+  height: 100%;
+  overflow: auto;
+  padding-right: 20px; /* 为目录留出空间 */
+}
+</style>
