@@ -11,6 +11,9 @@ router.get('/', ChapterController.getAllChapters);
 // POST /api/chapters - 创建章节
 router.post('/', ChapterController.createChapter);
 
+// PUT /api/chapters/reorder - 重新排序章节
+router.put('/reorder', ChapterController.reorderChapters);
+
 // GET /api/chapters/:id - 获取单个章节
 router.get('/:id', ChapterController.getChapterById);
 
@@ -34,8 +37,5 @@ router.post('/:id/lessons', (req, res) => {
   req.body = lessonData;
   LessonController.createLesson(req, res);
 });
-
-// PUT /api/chapters/reorder - 重新排序章节
-router.put('/reorder', ChapterController.reorderChapters);
 
 export default router; 
