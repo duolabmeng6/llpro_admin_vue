@@ -68,7 +68,33 @@ const newLessonData = ref({
 // 监听节点数据变化，重置表单数据
 watch(() => props.nodeData, (newVal) => {
   if (newVal) {
-    formData.value = { ...newVal };
+    console.log(`DetailPanel - nodeData changed, nodeType: ${props.nodeType}, content type:`, typeof newVal.content);
+    
+    // 创建formData的副本
+    const processedData = { ...newVal };
+    
+    // 处理特殊字段
+    if (props.nodeType === 'course') {
+      // 确保content字段是字符串
+      if (processedData.content === null || processedData.content === undefined) {
+        console.log('课程content字段为null或undefined，设置为空字符串');
+        processedData.content = '';
+      } else if (typeof processedData.content !== 'string') {
+        console.log(`课程content字段类型为${typeof processedData.content}，转换为字符串`);
+        processedData.content = String(processedData.content);
+      }
+    } else if (props.nodeType === 'lesson') {
+      // 确保lesson的content字段也是字符串
+      if (processedData.content === null || processedData.content === undefined) {
+        console.log('小节content字段为null或undefined，设置为空字符串');
+        processedData.content = '';
+      } else if (typeof processedData.content !== 'string') {
+        console.log(`小节content字段类型为${typeof processedData.content}，转换为字符串`);
+        processedData.content = String(processedData.content);
+      }
+    }
+    
+    formData.value = processedData;
     isEditing.value = false;
   } else {
     formData.value = {};
@@ -81,7 +107,33 @@ watch(() => props.editMode, (newVal) => {
   if (newVal && !isEditing.value && props.nodeData) {
     // 当外部设置editMode为true且当前不在编辑状态时进入编辑模式
     isEditing.value = true;
-    formData.value = { ...props.nodeData };
+    
+    console.log(`DetailPanel - 进入编辑模式, nodeType: ${props.nodeType}, content type:`, typeof props.nodeData.content);
+    
+    // 创建formData的副本并处理特殊字段
+    const processedData = { ...props.nodeData };
+    
+    if (props.nodeType === 'course') {
+      // 确保content字段是字符串
+      if (processedData.content === null || processedData.content === undefined) {
+        console.log('进入编辑模式 - 课程content字段为null或undefined，设置为空字符串');
+        processedData.content = '';
+      } else if (typeof processedData.content !== 'string') {
+        console.log(`进入编辑模式 - 课程content字段类型为${typeof processedData.content}，转换为字符串`);
+        processedData.content = String(processedData.content);
+      }
+    } else if (props.nodeType === 'lesson') {
+      // 确保lesson的content字段也是字符串
+      if (processedData.content === null || processedData.content === undefined) {
+        console.log('进入编辑模式 - 小节content字段为null或undefined，设置为空字符串');
+        processedData.content = '';
+      } else if (typeof processedData.content !== 'string') {
+        console.log(`进入编辑模式 - 小节content字段类型为${typeof processedData.content}，转换为字符串`);
+        processedData.content = String(processedData.content);
+      }
+    }
+    
+    formData.value = processedData;
   }
 }, { immediate: true });
 
@@ -109,6 +161,20 @@ const showAddChapterButton = computed(() => {
 // 计算是否显示添加小节按钮
 const showAddLessonButton = computed(() => {
   return props.nodeType === 'chapter';
+});
+
+// 确保content字段是字符串类型
+const safeContent = computed(() => {
+  if (props.nodeType === 'course' && props.nodeData && props.nodeData.content) {
+    return typeof props.nodeData.content === 'string' 
+      ? props.nodeData.content 
+      : String(props.nodeData.content);
+  } else if (props.nodeType === 'lesson' && props.nodeData && props.nodeData.content) {
+    return typeof props.nodeData.content === 'string' 
+      ? props.nodeData.content 
+      : String(props.nodeData.content);
+  }
+  return '';
 });
 
 // 切换编辑模式
@@ -344,7 +410,7 @@ const addLesson = () => {
                       <div class="detail-label">课程内容</div>
                       <div class="detail-value content-preview">
                         <MarkdownEditor
-                          v-model="nodeData.content"
+                          v-model="safeContent"
                           preview-only
                         />
                       </div>
@@ -635,11 +701,11 @@ const addLesson = () => {
                       <div class="detail-value">{{ new Date(nodeData.updatedAt).toLocaleString() }}</div>
                     </div>
                     
-                    <div class="detail-row" v-if="nodeData.content">
-                      <div class="detail-label">内容预览</div>
+                    <div v-if="nodeData.content" class="detail-row">
+                      <div class="detail-label">内容</div>
                       <div class="detail-value content-preview">
                         <MarkdownEditor
-                          v-model="nodeData.content"
+                          v-model="safeContent"
                           preview-only
                         />
                       </div>
