@@ -70,18 +70,21 @@ export const useCourseStore = defineStore('course', {
           id: state.courseStructure.id,
           label: state.courseStructure.title,
           type: 'course',
+          status: state.courseStructure.status || 'draft',
           children: state.courseStructure.chapters?.map(chapter => ({
             id: chapter.id,
             label: chapter.title,
             type: 'chapter',
             parentId: state.courseStructure.id,
             order: chapter.order,
+            status: chapter.status || 'draft',
             children: chapter.lessons?.map(lesson => ({
               id: lesson.id,
               label: lesson.title,
               type: 'lesson',
               parentId: chapter.id,
-              order: lesson.order
+              order: lesson.order,
+              status: lesson.status || 'draft'
             })).sort((a, b) => a.order - b.order) || []
           })).sort((a, b) => a.order - b.order) || []
         }

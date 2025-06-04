@@ -51,7 +51,8 @@ const showAddLessonModal = ref(false);
 const newChapterData = ref({
   title: '',
   description: '',
-  order: 1
+  order: 1,
+  status: 'draft'
 });
 // 新小节表单数据
 const newLessonData = ref({
@@ -60,7 +61,8 @@ const newLessonData = ref({
   duration: 0,
   type: 'video',
   videoUrl: '',
-  order: 100
+  order: 100,
+  status: 'draft'
 });
 
 // 监听节点数据变化，重置表单数据
@@ -144,7 +146,8 @@ const addChapter = () => {
   newChapterData.value = {
     title: '',
     description: '',
-    order: 1
+    order: 1,
+    status: 'draft'
   };
 };
 
@@ -158,7 +161,8 @@ const addLesson = () => {
     duration: 0,
     type: 'video',
     videoUrl: '',
-    order: 100
+    order: 100,
+    status: 'draft'
   };
 };
 </script>
@@ -358,6 +362,16 @@ const addLesson = () => {
                       />
                     </FormGroup>
                     
+                    <FormGroup label="章节状态">
+                      <Select
+                        v-model="formData.status"
+                        :options="[
+                          { value: 'draft', label: '草稿' },
+                          { value: 'published', label: '已发布' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
                     <FormGroup label="排序">
                       <input
                         v-model.number="formData.order"
@@ -381,6 +395,15 @@ const addLesson = () => {
                     <div class="detail-row">
                       <div class="detail-label">章节描述</div>
                       <div class="detail-value description">{{ nodeData.description }}</div>
+                    </div>
+                    
+                    <div class="detail-row">
+                      <div class="detail-label">章节状态</div>
+                      <div class="detail-value">
+                        <span :class="`status-badge ${nodeData.status === 'published' ? 'status-published' : 'status-draft'}`">
+                          {{ nodeData.status === 'published' ? '已发布' : '草稿' }}
+                        </span>
+                      </div>
                     </div>
                     
                     <div class="detail-row">
@@ -427,6 +450,16 @@ const addLesson = () => {
                           { value: 'video', label: '视频' },
                           { value: 'text', label: '文本' },
                           { value: 'quiz', label: '测验' }
+                        ]"
+                      />
+                    </FormGroup>
+                    
+                    <FormGroup label="小节状态">
+                      <Select
+                        v-model="formData.status"
+                        :options="[
+                          { value: 'draft', label: '草稿' },
+                          { value: 'published', label: '已发布' }
                         ]"
                       />
                     </FormGroup>
@@ -487,6 +520,15 @@ const addLesson = () => {
                             nodeData.type === 'text' ? '文本' : 
                             nodeData.type === 'quiz' ? '测验' : '未知'
                           }}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="detail-row">
+                      <div class="detail-label">小节状态</div>
+                      <div class="detail-value">
+                        <span :class="`status-badge ${nodeData.status === 'published' ? 'status-published' : 'status-draft'}`">
+                          {{ nodeData.status === 'published' ? '已发布' : '草稿' }}
                         </span>
                       </div>
                     </div>
@@ -593,6 +635,18 @@ const addLesson = () => {
             placeholder="请输入排序值"
           />
         </div>
+        
+        <div class="form-group">
+          <label for="chapter-status" class="form-label">状态</label>
+          <select
+            id="chapter-status"
+            v-model="newChapterData.status"
+            class="form-select"
+          >
+            <option value="draft">草稿</option>
+            <option value="published">已发布</option>
+          </select>
+        </div>
       </div>
     </Modal>
     
@@ -660,6 +714,18 @@ const addLesson = () => {
             class="form-input"
             placeholder="请输入排序值"
           />
+        </div>
+        
+        <div class="form-group">
+          <label for="lesson-status" class="form-label">状态</label>
+          <select
+            id="lesson-status"
+            v-model="newLessonData.status"
+            class="form-select"
+          >
+            <option value="draft">草稿</option>
+            <option value="published">已发布</option>
+          </select>
         </div>
       </div>
     </Modal>
@@ -923,5 +989,23 @@ const addLesson = () => {
   .detail-item:nth-child(2) {
     grid-column: span 2;
   }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-draft {
+  background-color: rgba(251, 146, 60, 0.15);
+  color: #f97316; /* 橙色 */
+}
+
+.status-published {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #10b981; /* 绿色 */
 }
 </style> 

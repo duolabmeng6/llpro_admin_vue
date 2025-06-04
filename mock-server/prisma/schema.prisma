@@ -27,6 +27,9 @@ model Course {
   id          String    @id @default(uuid())
   title       String
   description String?
+  content     String?
+  price       Float?
+  pricingType String    @default("free")
   status      String    @default("draft")
   cover       String?
   createdAt   DateTime  @default(now())
@@ -41,6 +44,7 @@ model Chapter {
   title       String
   description String?
   order       Int
+  status      String   @default("draft")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -49,15 +53,17 @@ model Chapter {
 
 // 小节模型
 model Lesson {
-  id        String   @id @default(uuid())
-  chapterId String
-  title     String
-  content   String?
-  duration  Int?
-  type      String   @default("video")
-  videoUrl  String?
-  order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid())
+  chapterId    String
+  title        String
+  content      String?
+  duration     Int?
+  type         String   @default("video")
+  videoUrl     String?
+  order        Int
+  status       String   @default("draft")
+  isFreePreview Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 } 

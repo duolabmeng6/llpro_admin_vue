@@ -18,8 +18,16 @@
         </span>
         <span v-else class="tree-node-expand-placeholder"></span>
         
-        <span class="tree-node-icon" :class="`node-type-${node.type}`">
-          <i :class="`fa ${getNodeTypeIcon(node)}`"></i>
+        <span 
+          class="tree-node-icon" 
+          :class="`node-type-${node.type}`"
+        >
+          <i 
+            :class="[
+              `fa ${getNodeTypeIcon(node)}`,
+              node.status === 'draft' ? 'node-status-draft' : 'node-status-published'
+            ]"
+          ></i>
         </span>
         
         <span class="tree-node-label">{{ node.title || node.label }}</span>
@@ -319,7 +327,16 @@ const handleChildDragChange = (evt) => {
 }
 
 .node-type-lesson .fa {
-  color: var(--color-success, #059669);
+  color: #6366f1;
+}
+
+/* 状态颜色样式 - 直接应用于图标 */
+i.node-status-draft {
+  color: #f97316 !important; /* 橙色，使用 !important 确保优先级高于节点类型颜色 */
+}
+
+i.node-status-published {
+  color: #10b981 !important; /* 绿色，使用 !important 确保优先级高于节点类型颜色 */
 }
 
 .tree-node-label {
