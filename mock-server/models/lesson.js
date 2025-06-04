@@ -70,12 +70,38 @@ const LessonModel = {
   // 更新小节
   update: async (id, lessonData) => {
     try {
-      return await prisma.lesson.update({
+      console.log(`尝试更新小节(ID: ${id})，数据:`, JSON.stringify(lessonData, null, 2));
+      
+      // 首先检查小节是否存在
+      const existingLesson = await prisma.lesson.findUnique({
+        where: { id }
+      });
+      
+      if (!existingLesson) {
+        console.error(`更新失败：找不到ID为 ${id} 的小节`);
+        return null;
+      }
+      
+      console.log(`找到小节(ID: ${id})，当前数据:`, JSON.stringify(existingLesson, null, 2));
+      
+      // 执行更新操作
+      const updatedLesson = await prisma.lesson.update({
         where: { id },
         data: lessonData
       });
+      
+      console.log(`小节(ID: ${id})更新成功，更新后数据:`, JSON.stringify(updatedLesson, null, 2));
+      
+      return updatedLesson;
     } catch (error) {
       console.error(`更新小节(ID: ${id})失败:`, error);
+      console.error('错误详情:', error.message);
+      if (error.code) {
+        console.error('错误代码:', error.code);
+      }
+      if (error.meta) {
+        console.error('错误元数据:', error.meta);
+      }
       throw error;
     }
   },
