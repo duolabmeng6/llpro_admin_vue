@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --ext .js,.vue src --fix",
-    "mock": "nodemon mock-server/index.js"
+    "server": "nodemon mock-server/index.js"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
