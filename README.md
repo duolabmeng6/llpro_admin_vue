@@ -763,7 +763,8 @@ type(scope): description
 
 - **项目主页**: [GitHub Repository](https://github.com/duolabmeng6/llpro_admin_vue)
 - **问题反馈**: [GitHub Issues](https://github.com/duolabmeng6/llpro_admin_vue/issues)
-- **讨论交流**: [GitHub Discussions](https://github.com/duolabmeng6/llpro_admin_vue/discussions)
+
+QQ: 1715109585
 
 ## 💖 支持项目
 
