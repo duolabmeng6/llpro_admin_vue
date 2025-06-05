@@ -1,4 +1,4 @@
-# LL Pro Admin Web
+# LL Pro Admin Web (基于人工智能技术构建的后台管理系统)
 
 <div align="center">
 
