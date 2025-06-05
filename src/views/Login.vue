@@ -121,7 +121,7 @@ const handleLogin = async () => {
           
           <div class="login-demo-info">
             <p>
-              演示账号: admin / admin123
+              演示账号: admin / admin
             </p>
           </div>
         </form>

@@ -38,3 +38,6 @@ pnpm run dev
 pnpm run build
 
 ```
+
+# 打赏
+![alt text](image.png)
